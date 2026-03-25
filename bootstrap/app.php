@@ -39,8 +39,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->use([
 //            TrustHosts::class,
             TrustProxies::class,
-            CollapseDuplicatePathSlashes::class,
             HandleCors::class,
+            // بعد HandleCors حتى تُضاف ترويسات CORS على استجابة إعادة التوجيه 301
+            CollapseDuplicatePathSlashes::class,
             PreventRequestsDuringMaintenance::class,
             ValidatePostSize::class,
             TrimStrings::class,
