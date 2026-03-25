@@ -221,7 +221,7 @@
                                                    placeholder="{{ translate('Ex : 100') }}"
                                                    onkeydown="return !['e','E','+','-'].includes(event.key)"
                                                    oninput="
-                                                   if (this.value !== '' && parseFloat(this.value) < 1) this.value = 1;
+                                                   if (this.value !== '' && parseFloat(this.value) < 0) this.value = 0;
                                                    if (this.value.includes('.')) {this.value = this.value.split('.').map((part, index) => index === 1 ? part.slice(0, 2) : part).join('.');}
                                                    typeof syncUserTypePricePlaceholders === 'function' && syncUserTypePricePlaceholders(this.value);
                                                    ">
@@ -236,7 +236,7 @@
                                                    class="form-control"
                                                    placeholder="{{ translate('Ex : 100') }}"
                                                    onkeydown="return !['e','E','+','-','.'].includes(event.key)"
-                                                   oninput="if (this.value !== '' && parseInt(this.value, 10) < 1) this.value = 1;">
+                                                   oninput="if (this.value !== '' && parseInt(this.value, 10) < 0) this.value = 0;">
                                             <span class="error-text" data-error="total_stock"></span>
                                         </div>
                                     </div>
@@ -542,7 +542,8 @@
             hasEditors: true,
             languages: @json(json_decode($language) ?? []),
             successMessage: '{{ translate("product uploaded successfully!") }}',
-            redirectUrl: '{{ route('admin.product.list') }}'
+            redirectUrl: '{{ route('admin.product.list') }}',
+            redirectDelay: 0
         });
 
         $(document).on('click', '.translate-btn', function() {

@@ -282,19 +282,24 @@ function submitByAjax(formSelector, options = {}) {
             }
         });
 
-        $.post({
+        $.ajax({
+            type: 'POST',
             url: $(this).attr('action'),
             data: formData,
             cache: false,
             contentType: false,
             processData: false,
+            dataType: 'json',
             success: function (data) {
                 $('.error-text').text('');
                 $('input, textarea, select, .select2-selection, .image-preview, .bootstrap-tagsinput').removeClass('is-invalid');
 
-                if (data?.errors) {
+                const validationErrors = data?.errors;
+                const hasErrors = Array.isArray(validationErrors) && validationErrors.length > 0;
+
+                if (hasErrors) {
                     let firstErrorElement = null;
-                    $.each(data.errors, function (field, messages) {
+                    $.each(validationErrors, function (field, messages) {
                         if (messages.code.startsWith('images')) {
                             let allMessages = Array.isArray(messages.message) ? messages.message.join('<br>') : messages.message;
                             $('[data-error="images"]').html(allMessages);
@@ -369,14 +374,18 @@ function submitByAjax(formSelector, options = {}) {
                     });
 
                     if (options.redirectUrl) {
+                        const delay = options.redirectDelay !== undefined ? options.redirectDelay : 2000;
                         setTimeout(function () {
                             location.href = options.redirectUrl;
-                        }, options.redirectDelay ?? 2000);
+                        }, delay);
                     }
                 }
             },
-            error: function (xhr) {
-                console.log(xhr)
+            error: function () {
+                toastr.error('Request failed. Please try again.', {
+                    CloseButton: true,
+                    ProgressBar: true
+                });
             }
         });
     });

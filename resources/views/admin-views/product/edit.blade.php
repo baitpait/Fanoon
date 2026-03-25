@@ -69,18 +69,17 @@
                     @php
                         $languageSetting = \App\Models\BusinessSetting::where('key','language')->first();
                         $language = $languageSetting?->value ?? null;
-                        $default_lang = 'ar';
-                        if ($language) {
-                            $default_lang = json_decode($language)[0] ?? 'ar';
-                        }
+                        $canonicalLocale = strtolower((string) config('app.locale', 'ar'));
                         $langListForValidation = $language ? json_decode($language, true) : [];
                         if (!is_array($langListForValidation)) {
                             $langListForValidation = [];
                         }
-                        $defaultLocaleForProductName = config('app.locale', 'ar');
-                        $default_name_field_index = array_search($defaultLocaleForProductName, $langListForValidation, true);
-                        if ($default_name_field_index === false) {
-                            $default_name_field_index = 0;
+                        $default_name_field_index = 0;
+                        foreach ($langListForValidation as $idx => $lc) {
+                            if (strtolower((string) $lc) === $canonicalLocale) {
+                                $default_name_field_index = (int) $idx;
+                                break;
+                            }
                         }
                     @endphp
                     @if($language)
@@ -88,7 +87,7 @@
 
                             @foreach(json_decode($language) as $lang)
                                 <li class="nav-item">
-                                    <a class="nav-link lang_link {{$lang == $default_lang? 'active':''}}" href="#" id="{{$lang}}-link">{{\App\CentralLogics\Helpers::get_language_name($lang).'('.strtoupper($lang).')'}}</a>
+                                    <a class="nav-link lang_link {{ strtolower((string) $lang) === $canonicalLocale ? 'active' : '' }}" href="#" id="{{$lang}}-link">{{\App\CentralLogics\Helpers::get_language_name($lang).'('.strtoupper($lang).')'}}</a>
                                 </li>
                             @endforeach
 
@@ -108,15 +107,15 @@
                                     }
                                 }
                                 @endphp
-                            <div class="card p-4 {{$lang != $default_lang? 'd-none':''}} lang_form mb-3" id="{{$lang}}-form">
+                            <div class="card p-4 {{ strtolower((string) $lang) !== $canonicalLocale ? 'd-none' : '' }} lang_form mb-3" id="{{$lang}}-form">
                                 <div class="form-group">
                                     <label class="input-label" for="{{$lang}}_name">
                                         {{translate('name')}} ({{strtoupper($lang)}})
-                                        @if($lang == $default_lang)
+                                        @if(strtolower((string) $lang) === $canonicalLocale)
                                             <span class="input-label-secondary text-danger">*</span>
                                         @endif
                                     </label>
-                                    <input type="text" name="name[]" id="{{$lang}}_name" value="{{$lang==$default_lang?$product['name']:($translate[$lang]['name']??'')}}" class="form-control" placeholder="New Product" >
+                                    <input type="text" name="name[]" id="{{$lang}}_name" value="{{ strtolower((string) $lang) === $canonicalLocale ? $product['name'] : ($translate[$lang]['name'] ?? '') }}" class="form-control" placeholder="New Product" >
                                     @if((int) $langIdx === (int) $default_name_field_index)
                                         <span class="error-text" data-error="name.{{ $default_name_field_index }}"></span>
                                     @endif
@@ -125,22 +124,22 @@
                                 <div class="form-group pt-4">
                                     <label class="input-label"
                                            for="{{$lang}}_description">{{translate('short')}} {{translate('description')}}  ({{strtoupper($lang)}})</label>
-                                    <div id="{{$lang}}_editor" class="min-h-15">{!! \App\CentralLogics\Helpers::sanitizeHtmlForDisplay($lang==$default_lang?$product['description']:($translate[$lang]['description']??'')) !!}</div>
+                                    <div id="{{$lang}}_editor" class="min-h-15">{!! \App\CentralLogics\Helpers::sanitizeHtmlForDisplay(strtolower((string) $lang) === $canonicalLocale ? $product['description'] : ($translate[$lang]['description'] ?? '')) !!}</div>
                                     <textarea name="description[]" style="display:none" id="{{$lang}}_hiddenArea"></textarea>
                                 </div>
                             </div>
                         @endforeach
                     @else
-                        <div class="card p-4" id="{{ $default_lang }}-form">
+                        <div class="card p-4" id="{{ $canonicalLocale }}-form">
                             <div class="form-group">
                                 <label class="input-label" for="exampleFormControlInput1">
-                                    {{translate('name')}} ({{ strtoupper($default_lang) }})
+                                    {{translate('name')}} ({{ strtoupper($canonicalLocale) }})
                                     <span class="input-label-secondary text-danger">*</span>
                                 </label>
                                 <input type="text" name="name[]" value="{{$product['name']}}" class="form-control" placeholder="New Product" required>
                                 <span class="error-text" data-error="name.0"></span>
                             </div>
-                            <input type="hidden" name="lang[]" value="{{ $default_lang }}">
+                            <input type="hidden" name="lang[]" value="{{ $canonicalLocale }}">
                             <div class="form-group pt-4">
                                 <label class="input-label"
                                        for="exampleFormControlInput1">{{translate('short')}} {{translate('description')}} (EN)</label>
@@ -156,7 +155,7 @@
                                 <div class="form-group">
                                     <label class="input-label"
                                            for="exampleFormControlInput1">{{translate('price')}}<span class="input-label-secondary text-danger">*</span></label>
-                                    <input type="number" id="product_base_price" value="{{$product['price']}}" min="1" max="100000000" name="price"
+                                    <input type="number" id="product_base_price" value="{{$product['price']}}" min="0" max="100000000" name="price"
                                            class="form-control" step="0.01"
                                            placeholder="Ex : 100"
                                            onkeydown="return !['e','E','+','-'].includes(event.key)"
@@ -378,7 +377,7 @@
 
             let form_id = this.id;
             let lang = form_id.split("-")[0];
-            let defaultLang = @json($default_lang ?? 'ar');
+            let defaultLang = @json($canonicalLocale ?? 'ar');
             $("#"+lang+"-form").removeClass('d-none');
             if(lang == defaultLang)
             {
@@ -537,7 +536,8 @@
             hasEditors: true,
             languages: @json(json_decode($language) ?? []),
             successMessage: '{{ translate("product uploaded successfully!") }}',
-            redirectUrl: '{{ route('admin.product.list') }}'
+            redirectUrl: '{{ route('admin.product.list') }}',
+            redirectDelay: 0
         });
 
         function update_qty() {

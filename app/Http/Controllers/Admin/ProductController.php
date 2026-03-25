@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -414,19 +415,15 @@ class ProductController extends Controller
             return $check;
         }
 
-        $defaultLocale = config('app.locale', 'ar');
-        $langOrder = $request->input('lang', []);
-        $defaultIdx = is_array($langOrder) ? array_search($defaultLocale, $langOrder, true) : false;
-        if ($defaultIdx === false) {
-            $defaultIdx = 0;
-        }
+        $defaultIdx = $this->resolveDefaultLangIndex($request);
+        $primaryLocale = $this->primaryLocaleFromRequest($request, $defaultIdx);
         $nameField = 'name.' . $defaultIdx;
         $descField = 'description.' . $defaultIdx;
 
         $validator = Validator::make($request->all(), [
             $nameField => 'required|unique:products,name',
             $descField => 'nullable|string',
-            'price' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:0',
             'unit' => 'nullable|string|in:kg,gm,ltr,pc',
             'tax' => 'nullable|numeric',
             'tax_type' => 'nullable|string|in:percent,amount',
@@ -611,7 +608,7 @@ class ProductController extends Controller
 
         $data = [];
         foreach ($request->lang as $index => $key) {
-            if ($request->name[$index] && $key != $defaultLocale) {
+            if ($request->name[$index] && strtolower((string) $key) !== $primaryLocale) {
                 $data[] = array(
                     'translationable_type' => Product::class,
                     'translationable_id' => $product->id,
@@ -620,7 +617,7 @@ class ProductController extends Controller
                     'value' => $request->name[$index],
                 );
             }
-            if (isset($request->description[$index]) && $request->description[$index] && $key != $defaultLocale) {
+            if (isset($request->description[$index]) && $request->description[$index] && strtolower((string) $key) !== $primaryLocale) {
                 $data[] = array(
                     'translationable_type' => Product::class,
                     'translationable_id' => $product->id,
@@ -719,19 +716,18 @@ class ProductController extends Controller
             return $check;
         }
 
-        $defaultLocale = config('app.locale', 'ar');
-        $langOrder = $request->input('lang', []);
-        $defaultIdx = is_array($langOrder) ? array_search($defaultLocale, $langOrder, true) : false;
-        if ($defaultIdx === false) {
-            $defaultIdx = 0;
-        }
+        $defaultIdx = $this->resolveDefaultLangIndex($request);
+        $primaryLocale = $this->primaryLocaleFromRequest($request, $defaultIdx);
         $nameField = 'name.' . $defaultIdx;
         $descField = 'description.' . $defaultIdx;
 
         $validator = Validator::make($request->all(), [
-            $nameField => 'required|unique:products,name,' . $id,
+            $nameField => [
+                'required',
+                Rule::unique('products', 'name')->ignore($id),
+            ],
             $descField => 'nullable|string',
-            'price' => 'required|numeric|min:1',
+            'price' => 'required|numeric|min:0',
             'unit' => 'nullable|string|in:kg,gm,ltr,pc',
             'tax' => 'nullable|numeric',
             'tax_type' => 'nullable|string|in:percent,amount',
@@ -914,7 +910,7 @@ class ProductController extends Controller
         $product->relatedProducts()->sync(collect($relatedIds)->mapWithKeys(fn ($id, $i) => [$id => ['sort_order' => $i]])->toArray());
 
         foreach ($request->lang as $index => $key) {
-            if ($request->name[$index] && $key != $defaultLocale) {
+            if ($request->name[$index] && strtolower((string) $key) !== $primaryLocale) {
                 $this->translation->updateOrInsert(
                     ['translationable_type' => Product::class,
                         'translationable_id' => $product->id,
@@ -923,7 +919,7 @@ class ProductController extends Controller
                     ['value' => $request->name[$index]]
                 );
             }
-            if (isset($request->description[$index]) && $request->description[$index] && $key != $defaultLocale) {
+            if (isset($request->description[$index]) && $request->description[$index] && strtolower((string) $key) !== $primaryLocale) {
                 $this->translation->updateOrInsert(
                     ['translationable_type' => Product::class,
                         'translationable_id' => $product->id,
@@ -1237,5 +1233,37 @@ class ProductController extends Controller
         }
 
         return (new FastExcel($storage))->download('products.xlsx');
+    }
+
+    /**
+     * Locale code at the same index as products.name (from submitted lang[]), lowercased.
+     */
+    private function primaryLocaleFromRequest(Request $request, int $defaultIdx): string
+    {
+        $langOrder = $request->input('lang', []);
+        if (is_array($langOrder) && array_key_exists($defaultIdx, $langOrder)) {
+            return strtolower((string) $langOrder[$defaultIdx]);
+        }
+
+        return strtolower((string) config('app.locale', 'ar'));
+    }
+
+    /**
+     * Match submitted lang[] order to config app locale (case-insensitive) for name/description rules and storage index.
+     */
+    private function resolveDefaultLangIndex(Request $request): int
+    {
+        $defaultLocale = strtolower((string) config('app.locale', 'ar'));
+        $langOrder = $request->input('lang', []);
+        if (! is_array($langOrder)) {
+            return 0;
+        }
+        foreach ($langOrder as $idx => $lang) {
+            if (strtolower((string) $lang) === $defaultLocale) {
+                return (int) $idx;
+            }
+        }
+
+        return 0;
     }
 }
