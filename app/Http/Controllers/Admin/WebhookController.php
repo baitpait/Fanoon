@@ -13,7 +13,11 @@ use Illuminate\View\View;
 
 class WebhookController extends Controller
 {
-    public function __construct()
+    /**
+     * لا تضع abort() في __construct: أمر route:list (وما شابهه) يُنشئ المتحكم
+     * لقراءة getMiddleware() فيتعطل عند إخفاء Webhooks.
+     */
+    private function ensureWebhooksEnabled(): void
     {
         if (config('feature_flags.hide_webhooks', true)) {
             abort(403, __('This feature is disabled.'));
@@ -22,12 +26,14 @@ class WebhookController extends Controller
 
     public function list(): View
     {
+        $this->ensureWebhooksEnabled();
         $endpoints = WebhookEndpoint::orderByDesc('created_at')->paginate(20);
         return view('admin-views.webhook.list', compact('endpoints'));
     }
 
     public function create(): View
     {
+        $this->ensureWebhooksEnabled();
         $events = [
             WebhookService::EVENT_ORDER_CREATED => translate('order_created'),
             WebhookService::EVENT_ORDER_STATUS_CHANGED => translate('order_status_changed'),
@@ -37,6 +43,7 @@ class WebhookController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->ensureWebhooksEnabled();
         $request->validate([
             'name' => 'nullable|string|max:255',
             'url' => 'required|url|max:500',
@@ -58,6 +65,7 @@ class WebhookController extends Controller
 
     public function edit(WebhookEndpoint $webhook): View
     {
+        $this->ensureWebhooksEnabled();
         $events = [
             WebhookService::EVENT_ORDER_CREATED => translate('order_created'),
             WebhookService::EVENT_ORDER_STATUS_CHANGED => translate('order_status_changed'),
@@ -67,6 +75,7 @@ class WebhookController extends Controller
 
     public function update(Request $request, WebhookEndpoint $webhook): RedirectResponse
     {
+        $this->ensureWebhooksEnabled();
         $request->validate([
             'name' => 'nullable|string|max:255',
             'url' => 'required|url|max:500',
@@ -91,6 +100,7 @@ class WebhookController extends Controller
 
     public function delete(WebhookEndpoint $webhook): RedirectResponse
     {
+        $this->ensureWebhooksEnabled();
         $webhook->delete();
         Toastr::success(translate('Webhook removed!'));
         return back();
@@ -98,6 +108,7 @@ class WebhookController extends Controller
 
     public function status(WebhookEndpoint $webhook): RedirectResponse
     {
+        $this->ensureWebhooksEnabled();
         $webhook->update(['is_active' => !$webhook->is_active]);
         Toastr::success(translate('Webhook status updated!'));
         return back();
