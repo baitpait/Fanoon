@@ -73,6 +73,15 @@
                         if ($language) {
                             $default_lang = json_decode($language)[0] ?? 'ar';
                         }
+                        $langListForValidation = $language ? json_decode($language, true) : [];
+                        if (!is_array($langListForValidation)) {
+                            $langListForValidation = [];
+                        }
+                        $defaultLocaleForProductName = config('app.locale', 'ar');
+                        $default_name_field_index = array_search($defaultLocaleForProductName, $langListForValidation, true);
+                        if ($default_name_field_index === false) {
+                            $default_name_field_index = 0;
+                        }
                     @endphp
                     @if($language)
                         <ul class="nav nav-tabs mb-4">
@@ -84,7 +93,7 @@
                             @endforeach
 
                         </ul>
-                        @foreach(json_decode($language) as $lang)
+                        @foreach(json_decode($language) as $langIdx => $lang)
                                 @php
                                 $translate = [];
                                 if(count($product['translations'])){
@@ -108,8 +117,8 @@
                                         @endif
                                     </label>
                                     <input type="text" name="name[]" id="{{$lang}}_name" value="{{$lang==$default_lang?$product['name']:($translate[$lang]['name']??'')}}" class="form-control" placeholder="New Product" >
-                                    @if($lang == $default_lang)
-                                        <span class="error-text" data-error="name.0"></span>
+                                    @if((int) $langIdx === (int) $default_name_field_index)
+                                        <span class="error-text" data-error="name.{{ $default_name_field_index }}"></span>
                                     @endif
                                 </div>
                                 <input type="hidden" name="lang[]" value="{{$lang}}">

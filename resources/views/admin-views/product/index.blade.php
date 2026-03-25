@@ -66,6 +66,13 @@
                       enctype="multipart/form-data">
                     @php($language=\App\Models\BusinessSetting::where('key','language')->first()?->value ?? null)
                     @php($default_lang = 'ar')
+                    @php($langListForValidation = $language ? json_decode($language, true) : [])
+                    @php($langListForValidation = is_array($langListForValidation) ? $langListForValidation : [])
+                    @php($defaultLocaleForProductName = config('app.locale', 'ar'))
+                    @php($default_name_field_index = array_search($defaultLocaleForProductName, $langListForValidation, true))
+                    @if($default_name_field_index === false)
+                        @php($default_name_field_index = 0)
+                    @endif
                     @if($language)
                         @php($default_lang = json_decode($language)[0] ?? 'ar')
                         <ul class="nav nav-tabs mb-4 max-content">
@@ -78,7 +85,7 @@
                             @endforeach
 
                         </ul>
-                        @foreach(json_decode($language) as $lang)
+                        @foreach(json_decode($language) as $langIdx => $lang)
                             <div class="card mb-3 card-body {{$lang != $default_lang ? 'd-none':''}} lang_form"
                                  id="{{$lang}}-form">
                                 <div class="form-group">
@@ -101,8 +108,8 @@
                                            id="{{$lang}}_name" class="form-control"
                                            placeholder="{{ translate('New Product') }}"
                                            >
-                                    @if($lang == $default_lang)
-                                        <span class="error-text" data-error="name.0"></span>
+                                    @if((int) $langIdx === (int) $default_name_field_index)
+                                        <span class="error-text" data-error="name.{{ $default_name_field_index }}"></span>
                                     @endif
                                 </div>
                                 <input type="hidden" name="lang[]" value="{{$lang}}">
@@ -125,8 +132,8 @@
                                     <div id="{{$lang}}_editor"></div>
                                     <textarea name="description[]" style="display:none"
                                               id="{{$lang}}_hiddenArea"></textarea>
-                                    @if($lang == $default_lang)
-                                        <span class="error-text" data-error="description.0"></span>
+                                    @if((int) $langIdx === (int) $default_name_field_index)
+                                        <span class="error-text" data-error="description.{{ $default_name_field_index }}"></span>
                                     @endif
                                 </div>
                             </div>

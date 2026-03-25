@@ -414,9 +414,18 @@ class ProductController extends Controller
             return $check;
         }
 
+        $defaultLocale = config('app.locale', 'ar');
+        $langOrder = $request->input('lang', []);
+        $defaultIdx = is_array($langOrder) ? array_search($defaultLocale, $langOrder, true) : false;
+        if ($defaultIdx === false) {
+            $defaultIdx = 0;
+        }
+        $nameField = 'name.' . $defaultIdx;
+        $descField = 'description.' . $defaultIdx;
+
         $validator = Validator::make($request->all(), [
-            'name.0' => 'required|unique:products,name',
-            'description.0' => 'nullable|string',
+            $nameField => 'required|unique:products,name',
+            $descField => 'nullable|string',
             'price' => 'required|numeric|min:1',
             'unit' => 'nullable|string|in:kg,gm,ltr,pc',
             'tax' => 'nullable|numeric',
@@ -432,7 +441,7 @@ class ProductController extends Controller
             'choice.*'  => 'sometimes|string',
             'choice_options_*' => 'sometimes|array',
         ], [
-            'name.0.required' => 'Product name is required!',
+            $nameField . '.required' => 'Product name is required!',
             'category_id.required' => 'Category  is required!',
             'images.*.max' => 'Each image may not be greater than ' . $this->maxImageSizeReadable . '.',
             'images.*.mimes' => 'Image must be a file of type: ' . implode(',', array_column(IMAGE_EXTENSIONS, 'key')),
@@ -473,12 +482,6 @@ class ProductController extends Controller
             $image_data = json_encode($imageName);
         } else {
             $image_data = json_encode([]);
-        }
-
-        $defaultLocale = config('app.locale', 'ar');
-        $defaultIdx = array_search($defaultLocale, $request->lang);
-        if ($defaultIdx === false) {
-            $defaultIdx = 0;
         }
 
         $product= new Product;
@@ -718,9 +721,18 @@ class ProductController extends Controller
             return $check;
         }
 
+        $defaultLocale = config('app.locale', 'ar');
+        $langOrder = $request->input('lang', []);
+        $defaultIdx = is_array($langOrder) ? array_search($defaultLocale, $langOrder, true) : false;
+        if ($defaultIdx === false) {
+            $defaultIdx = 0;
+        }
+        $nameField = 'name.' . $defaultIdx;
+        $descField = 'description.' . $defaultIdx;
+
         $validator = Validator::make($request->all(), [
-            'name.0' => 'required|unique:products,name,' . $id,
-            'description.0' => 'nullable|string',
+            $nameField => 'required|unique:products,name,' . $id,
+            $descField => 'nullable|string',
             'price' => 'required|numeric|min:1',
             'unit' => 'nullable|string|in:kg,gm,ltr,pc',
             'tax' => 'nullable|numeric',
@@ -736,7 +748,7 @@ class ProductController extends Controller
             'choice.*'  => 'sometimes|string',
             'choice_options_*' => 'sometimes|array',
         ], [
-            'name.0.required' => 'Product name is required!',
+            $nameField . '.required' => 'Product name is required!',
             'category_id.required' => 'Category  is required!',
             'images.*.max' => 'Each image may not be greater than ' . $this->maxImageSizeReadable . '.',
             'images.*.mimes' => 'Image must be a file of type: ' . implode(',', array_column(IMAGE_EXTENSIONS, 'key')),
@@ -766,12 +778,6 @@ class ProductController extends Controller
                     return true;
                 });
             }
-        }
-
-        $defaultLocale = config('app.locale', 'ar');
-        $defaultIdx = array_search($defaultLocale, $request->lang);
-        if ($defaultIdx === false) {
-            $defaultIdx = 0;
         }
 
         $product = $this->product->find($id);
