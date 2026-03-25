@@ -211,7 +211,7 @@
                             data-hs-chartjs-options='{
                         "type": "line",
                         "data": {
-                           "labels": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                           "labels": ["1","2","3","4","5","6","7","8","9","10","11","12"],
                            "datasets": [{
                             "data": [{{$sold[1]}},{{$sold[2]}},{{$sold[3]}},{{$sold[4]}},{{$sold[5]}},{{$sold[6]}},{{$sold[7]}},{{$sold[8]}},{{$sold[9]}},{{$sold[10]}},{{$sold[11]}},{{$sold[12]}}],
                             "backgroundColor": ["rgba(55, 125, 255, 0)", "rgba(255, 255, 255, 0)"],
@@ -318,7 +318,7 @@
                 startDate: moment().startOf('hour'),
                 endDate: moment().startOf('hour').add(32, 'hour'),
                 locale: {
-                    format: 'M/DD hh:mm A'
+                    format: 'DD/MM/YYYY HH:mm'
                 }
             });
 
@@ -326,7 +326,7 @@
             let end = moment();
 
             function cb(start, end) {
-                $('#js-daterangepicker-predefined .js-daterangepicker-predefined-preview').html(start.format('MMM D') + ' - ' + end.format('MMM D, YYYY'));
+                $('#js-daterangepicker-predefined .js-daterangepicker-predefined-preview').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
             }
 
             $('#js-daterangepicker-predefined').daterangepicker({
@@ -416,7 +416,7 @@
                                 unit: 'week',
                                 round: 'week',
                                 displayFormats: {
-                                    week: 'MMM'
+                                    week: 'DD/MM'
                                 }
                             },
                             ticks: {

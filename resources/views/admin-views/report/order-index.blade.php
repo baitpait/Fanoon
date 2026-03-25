@@ -313,7 +313,7 @@
                             data-hs-chartjs-options='{
                         "type": "line",
                         "data": {
-                           "labels": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                           "labels": ["1","2","3","4","5","6","7","8","9","10","11","12"],
                            "datasets": [{
                             "data": [{{$delivered[1]}},{{$delivered[2]}},{{$delivered[3]}},{{$delivered[4]}},{{$delivered[5]}},{{$delivered[6]}},{{$delivered[7]}},{{$delivered[8]}},{{$delivered[9]}},{{$delivered[10]}},{{$delivered[11]}},{{$delivered[12]}}],
                             "backgroundColor": ["rgba(55, 125, 255, 0)", "rgba(255, 255, 255, 0)"],
@@ -452,7 +452,7 @@
                                             <h5 class="text-hover-primary mb-0">{{translate('order')}} {{translate('amount')}}
                                                 : {{ Helpers::set_symbol($order['order_amount']) }}</h5>
                                             <small
-                                                class="text-body">{{date('d M Y',strtotime($order['created_at']))}}</small>
+                                                class="text-body">{{ date('d/m/Y', strtotime($order['created_at'])) }}</small>
                                         </div>
 
                                         <div class="col-sm-auto align-self-sm-end">
@@ -484,7 +484,7 @@
                                             <h5 class="text-hover-primary mb-0">{{translate('order')}} {{translate('amount')}}
                                                 : {{ Helpers::set_symbol($order['order_amount']) }} </h5>
                                             <small
-                                                class="text-body">{{date('d M Y',strtotime($order['created_at']))}}</small>
+                                                class="text-body">{{ date('d/m/Y', strtotime($order['created_at'])) }}</small>
                                         </div>
 
                                         <div class="col-sm-auto align-self-sm-end">
@@ -530,7 +530,7 @@
                 startDate: moment().startOf('hour'),
                 endDate: moment().startOf('hour').add(32, 'hour'),
                 locale: {
-                    format: 'M/DD hh:mm A'
+                    format: 'DD/MM/YYYY HH:mm'
                 }
             });
 
@@ -538,7 +538,7 @@
             let end = moment();
 
             function cb(start, end) {
-                $('#js-daterangepicker-predefined .js-daterangepicker-predefined-preview').html(start.format('MMM D') + ' - ' + end.format('MMM D, YYYY'));
+                $('#js-daterangepicker-predefined .js-daterangepicker-predefined-preview').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
             }
 
             $('#js-daterangepicker-predefined').daterangepicker({
@@ -628,7 +628,7 @@
                                 unit: 'week',
                                 round: 'week',
                                 displayFormats: {
-                                    week: 'MMM'
+                                    week: 'DD/MM'
                                 }
                             },
                             ticks: {

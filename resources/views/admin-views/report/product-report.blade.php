@@ -116,7 +116,7 @@
                                         <td>
                                             <a href="{{route('admin.orders.details',['id'=>$row['order_id']])}}">{{$row['order_id']}}</a>
                                         </td>
-                                        <td>{{date('d M Y',strtotime($row['date']))}}</td>
+                                        <td>{{ date('d/m/Y', strtotime($row['date'])) }}</td>
                                         <td>{{$row['quantity']}}</td>
                                         <td>{{ Helpers::set_symbol($row['price']) }}</td>
                                     </tr>
