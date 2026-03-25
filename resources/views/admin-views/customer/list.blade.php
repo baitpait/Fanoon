@@ -115,7 +115,6 @@
                                 </a>
                             </td>
                             <td>
-                                <div><a class="text-dark" href="mailto:{{$customer['email']}}">{{$customer['email']}}</a></div>
                                 <div><a class="text-dark" href="tel:{{$customer['phone']}}">{{$customer['phone']}}</a></div>
                             </td>
                             <td>
