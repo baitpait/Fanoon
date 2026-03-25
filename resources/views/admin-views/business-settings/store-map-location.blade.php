@@ -27,9 +27,14 @@
                         {{ translate('store_location_map') }}
                     </h4>
                 </div>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#storeMapHelpModal" title="{{ translate('help_store_map_btn') }}">
-                    <i class="tio-book-outlined"></i> {{ translate('help_store_map_btn') }}
-                </button>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <a href="{{ route('public.store-location') }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm">
+                        <i class="tio-globe"></i> {{ translate('view_public_store_map') }}
+                    </a>
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#storeMapHelpModal" title="{{ translate('help_store_map_btn') }}">
+                        <i class="tio-book-outlined"></i> {{ translate('help_store_map_btn') }}
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <form action="{{ route('admin.business-settings.update-store-location-map') }}" method="post">

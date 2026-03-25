@@ -1341,6 +1341,8 @@
   'See Setup Instructions' => 'See Setup Instructions',
   'social_media_chat' => 'WhatsApp chat',
   'store_location_map' => 'Store location (Google Maps)',
+  'open_in_google_maps' => 'Open in Google Maps',
+  'view_public_store_map' => 'Open public page (no login)',
   'store_google_maps_url_label' => 'Map link',
   'store_google_maps_url_hint' => 'Paste the link from Google Maps (share or address bar). Used in the app/site to open the store in Google Maps. For /@… coordinate links, extra tracking parameters are removed when you save (same map view).',
   'store_google_maps_url_help' => 'Paste a link starting with https:// that opens your store in Google Maps. Leave empty to hide the link in customer-facing UIs.',

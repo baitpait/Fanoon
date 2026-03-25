@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\PublicStoreLocationController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/store-location', PublicStoreLocationController::class)->name('public.store-location');
 
 Route::get('/image-proxy', function () {
     $url = request('url');
