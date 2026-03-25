@@ -162,7 +162,7 @@
                         @endphp
                         <tr class="{{ $isLowStock ? 'table-row-low-stock' : '' }}">
                             <td>{{$products->firstitem()+$key}}</td>
-                            <td>
+                            <td class="product-list-name-cell">
                                 <div class="media gap-3 align-items-center">
                                     <div class="avatar rounded border">
                                         <img
@@ -172,8 +172,8 @@
                                             loading="lazy">
                                     </div>
                                     <a href="{{route('admin.product.view',[$product['id']])}}"
-                                       class="media-body text-dark">
-                                        {{substr($product['name'],0,20)}}{{strlen($product['name'])>20?'...':''}}
+                                       class="media-body text-dark text-break">
+                                        {{ $product['name'] }}
                                     </a>
                                 </div>
                             </td>

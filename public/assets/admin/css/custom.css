@@ -17,6 +17,15 @@ body, html, .main, #content {
     border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
+/* قائمة المنتجات: اسم كامل مع التفاف رغم .table-nowrap */
+.table.table-nowrap td.product-list-name-cell {
+    white-space: normal;
+    word-break: break-word;
+}
+.table.table-nowrap td.product-list-name-cell .media {
+    align-items: flex-start;
+}
+
 /* تحسين قراءة النظام بالكامل - خط مناسب ومقروء */
 #content .form-label,
 #content .form-label.small,
