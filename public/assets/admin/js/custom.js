@@ -298,7 +298,7 @@ function submitByAjax(formSelector, options = {}) {
                 $('.error-text').text('');
                 $('input, textarea, select, .select2-selection, .image-preview, .bootstrap-tagsinput').removeClass('is-invalid');
 
-                const validationErrors = data?.errors;
+                const validationErrors = (data && typeof data === 'object' && !Array.isArray(data)) ? data.errors : undefined;
                 const hasErrors = Array.isArray(validationErrors) && validationErrors.length > 0;
 
                 if (hasErrors) {
@@ -385,8 +385,23 @@ function submitByAjax(formSelector, options = {}) {
                     }
                 }
             },
-            error: function () {
-                toastr.error('Request failed. Please try again.', {
+            error: function (xhr) {
+                let msg = 'Request failed. Please try again.';
+                if (xhr.status === 419) {
+                    msg = 'Session expired (419). Reload the page and sign in again.';
+                } else if (xhr.status === 401 || xhr.status === 403) {
+                    msg = 'Not authorized. Sign in again or check permissions.';
+                } else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                } else if (xhr.responseText && xhr.responseText.indexOf('<!DOCTYPE') === 0) {
+                    msg = 'Server returned HTML instead of JSON (often 500 or login redirect). Check Network tab status code.';
+                }
+                if (typeof console !== 'undefined' && console.error) {
+                    console.error('submitByAjax', xhr.status, xhr.statusText, (xhr.responseText || '').substring(0, 400));
+                }
+                toastr.error(msg, {
                     CloseButton: true,
                     ProgressBar: true
                 });

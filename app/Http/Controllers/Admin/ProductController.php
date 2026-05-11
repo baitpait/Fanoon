@@ -822,8 +822,17 @@ class ProductController extends Controller
             }
         }
 
-        $product = $this->product->find($id);
-        $images = json_decode($product->image);
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)]);
+        }
+
+        $product = $this->product->withoutGlobalScopes()->find($id);
+        if (!$product) {
+            return response()->json(['errors' => [['code' => 'product', 'message' => translate('Product not found')]]], 404);
+        }
+
+        $imagesDecoded = json_decode($product->image ?? '[]', true);
+        $images = is_array($imagesDecoded) ? $imagesDecoded : [];
         if (!empty($request->file('images'))) {
             foreach ($request->images as $img) {
                 $image_data = Helpers::upload('product/', APPLICATION_IMAGE_FORMAT, $img);
@@ -834,6 +843,10 @@ class ProductController extends Controller
 
         if (!count($images)) {
             $validator->getMessageBag()->add('images', 'Image can not be empty!');
+        }
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)]);
         }
 
         $product->name = $request->name[$defaultIdx];
@@ -1016,7 +1029,7 @@ class ProductController extends Controller
             }
         }
 
-        return response()->json([], 200);
+        return response()->json(['success' => true, 'message' => translate('product updated successfully!')], 200);
     }
 
     /**
