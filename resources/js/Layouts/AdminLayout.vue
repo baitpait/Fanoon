@@ -23,7 +23,26 @@ function isActive(pattern) {
     try { return route().current(pattern); } catch (e) { return false; }
 }
 
-const navGroups = [
+/* ── Role-based nav visibility ── */
+const ROLE_PERMISSIONS = {
+    orders_manager:    ['admin.dashboard', 'admin.orders.', 'admin.customers.', 'admin.zones.'],
+    products_manager:  ['admin.dashboard', 'admin.products.', 'admin.templates.', 'admin.categories.', 'admin.subcategories.', 'admin.designs.'],
+    general_supervisor:['admin.dashboard', 'admin.orders.index', 'admin.orders.show', 'admin.customers.index',
+                        'admin.products.index', 'admin.products.edit', 'admin.templates.index',
+                        'admin.categories.index', 'admin.designs.index',
+                        'admin.reports.', 'admin.reviews.', 'admin.companies.'],
+};
+
+function canSeeRoute(routeName) {
+    const role = user.value?.admin_role;
+    if (!role || role === 'super_admin') return true;
+    const allowed = ROLE_PERMISSIONS[role] ?? [];
+    return allowed.some(entry =>
+        entry.endsWith('.') ? routeName.startsWith(entry) : routeName === entry
+    );
+}
+
+const allNavGroups = [
     {
         title: null,
         items: [
@@ -33,33 +52,40 @@ const navGroups = [
     {
         title: 'المتجر',
         items: [
-            { label: 'الطلبات', icon: '🧾', route: 'admin.orders.index', pattern: 'admin.orders.*' },
-            { label: 'التصنيفات', icon: '🗂', route: 'admin.categories.index', pattern: 'admin.categories.*' },
-            { label: 'المنتجات', icon: '📦', route: 'admin.products.index', pattern: 'admin.products.*' },
-            { label: 'القوالب', icon: '▦', route: 'admin.templates.index', pattern: 'admin.templates.*' },
-            { label: 'تصاميم الزبائن', icon: '🎨', route: 'admin.designs.index', pattern: 'admin.designs.*' },
-            { label: 'العملاء', icon: '👥', route: 'admin.customers.index', pattern: 'admin.customers.*' },
-            { label: 'الشركات', icon: '🏢', route: 'admin.companies.index', pattern: 'admin.companies.*' },
+            { label: 'الطلبات',        icon: '🧾', route: 'admin.orders.index',    pattern: 'admin.orders.*' },
+            { label: 'التصنيفات',      icon: '🗂', route: 'admin.categories.index', pattern: 'admin.categories.*' },
+            { label: 'المنتجات',       icon: '📦', route: 'admin.products.index',   pattern: 'admin.products.*' },
+            { label: 'القوالب',        icon: '▦',  route: 'admin.templates.index',  pattern: 'admin.templates.*' },
+            { label: 'تصاميم الزبائن', icon: '🎨', route: 'admin.designs.index',    pattern: 'admin.designs.*' },
+            { label: 'العملاء',        icon: '👥', route: 'admin.customers.index',  pattern: 'admin.customers.*' },
+            { label: 'الشركات',        icon: '🏢', route: 'admin.companies.index',  pattern: 'admin.companies.*' },
         ],
     },
     {
         title: 'التقارير',
         items: [
-            { label: 'تقارير المبيعات', icon: '📊', route: 'admin.reports.sales', pattern: 'admin.reports.sales' },
-            { label: 'التقارير المالية', icon: '💵', route: 'admin.reports.financial', pattern: 'admin.reports.financial' },
-            { label: 'الزوار والإحصائيات', icon: '📈', route: 'admin.reports.visitors', pattern: 'admin.reports.visitors' },
+            { label: 'تقارير المبيعات',     icon: '📊', route: 'admin.reports.sales',    pattern: 'admin.reports.sales' },
+            { label: 'التقارير المالية',     icon: '💵', route: 'admin.reports.financial', pattern: 'admin.reports.financial' },
+            { label: 'الزوار والإحصائيات', icon: '📈', route: 'admin.reports.visitors',  pattern: 'admin.reports.visitors' },
         ],
     },
     {
         title: 'الإعدادات',
         items: [
             { label: 'إعدادات الموقع', icon: '⚙', route: 'admin.settings.edit', pattern: 'admin.settings.*' },
-            { label: 'مناطق التوصيل', icon: '📍', route: 'admin.zones.index', pattern: 'admin.zones.*' },
-            { label: 'المستخدمون', icon: '🛡', route: 'admin.users.index', pattern: 'admin.users.*' },
-            { label: 'التقييمات', icon: '⭐', route: 'admin.reviews.index', pattern: 'admin.reviews.*' },
+            { label: 'مناطق التوصيل', icon: '📍', route: 'admin.zones.index',   pattern: 'admin.zones.*' },
+            { label: 'المستخدمون',    icon: '🛡', route: 'admin.users.index',   pattern: 'admin.users.*' },
+            { label: 'التقييمات',    icon: '⭐', route: 'admin.reviews.index',  pattern: 'admin.reviews.*' },
         ],
     },
 ];
+
+// Only show groups/items the current user is allowed to see
+const navGroups = computed(() =>
+    allNavGroups
+        .map(g => ({ ...g, items: g.items.filter(n => canSeeRoute(n.route)) }))
+        .filter(g => g.items.length > 0)
+);
 
 onMounted(() => {
     isDark.value = localStorage.getItem('elite-theme') !== 'light';
@@ -109,7 +135,7 @@ onMounted(() => {
                         <div class="avatar">{{ (user?.name || 'A').charAt(0) }}</div>
                         <div class="who-meta">
                             <div class="who-name">{{ user?.name }}</div>
-                            <div class="who-role">مدير النظام</div>
+                            <div class="who-role">{{ user?.admin_role_label || 'مدير النظام' }}</div>
                         </div>
                     </div>
                 </div>

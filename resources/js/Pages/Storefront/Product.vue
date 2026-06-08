@@ -16,8 +16,8 @@ function proceed() {
         window.location.href = route('login');
         return;
     }
-    // → Polotno embedded editor (primary flow)
-    window.location.href = route('design.editor', selected.value);
+    // → Canva external editor (or upload directly if no Canva URL)
+    window.location.href = route('canva.start', selected.value);
 }
 </script>
 
@@ -61,7 +61,7 @@ function proceed() {
                     <!-- Template picker -->
                     <div class="picker-section">
                         <h2 class="picker-title">اختر القالب</h2>
-                        <p class="picker-sub">ستنتقل إلى كانفا لتخصيص التصميم كما تريد</p>
+                        <p class="picker-sub">اختر قالباً وخصّصه، أو ارفع تصميمك الجاهز مباشرة</p>
 
                         <div class="templates-row">
                             <button v-for="t in product.templates" :key="t.id"
@@ -84,10 +84,28 @@ function proceed() {
 
                     <!-- CTA -->
                     <div class="cta-area">
-                        <button class="cta-btn" :disabled="!selected || !product.templates.length" @click="proceed">
-                            <span>{{ authed ? 'ابدأ التصميم في كانفا' : 'سجّل دخولك للبدء' }}</span>
-                            <span class="cta-icon">🎨 ←</span>
+                        <!-- Primary: design from template -->
+                        <button v-if="product.templates.length"
+                                class="cta-btn" :disabled="!selected" @click="proceed">
+                            <span>{{ authed ? 'ابدأ التصميم من القالب' : 'سجّل دخولك للبدء' }}</span>
+                            <span class="cta-icon">✏️ ←</span>
                         </button>
+
+                        <!-- Divider -->
+                        <div class="or-divider"><span>أو</span></div>
+
+                        <!-- Secondary: upload ready design -->
+                        <a v-if="authed"
+                           :href="route('upload.page', product.slug)"
+                           class="upload-btn">
+                            📤 ارفع تصميمك الجاهز
+                        </a>
+                        <a v-else
+                           :href="route('login')"
+                           class="upload-btn">
+                            📤 ارفع تصميمك الجاهز
+                        </a>
+
                         <p v-if="!authed" class="auth-note">
                             <Link :href="route('login')" class="auth-link">تسجيل الدخول</Link>
                             أو
@@ -116,9 +134,9 @@ function proceed() {
                     <div class="how-card">
                         <h3 class="how-title">كيف يعمل؟</h3>
                         <div class="steps">
-                            <div class="step"><span class="step-n">1</span><span>اختر القالب المناسب</span></div>
-                            <div class="step"><span class="step-n">2</span><span>صمّم في كانفا بسهولة</span></div>
-                            <div class="step"><span class="step-n">3</span><span>حمّل ملفك للسلة</span></div>
+                            <div class="step"><span class="step-n">1</span><span>اختر القالب أو ارفع تصميمك</span></div>
+                            <div class="step"><span class="step-n">2</span><span>خصّص التصميم كما تريد</span></div>
+                            <div class="step"><span class="step-n">3</span><span>أضفه للسلة وأكمل الطلب</span></div>
                             <div class="step"><span class="step-n">4</span><span>نطبع ونوصّل لبابك</span></div>
                         </div>
                     </div>
@@ -173,6 +191,13 @@ function proceed() {
 .cta-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(52,215,127,.35); }
 .cta-btn:disabled { opacity: .45; cursor: default; transform: none; box-shadow: none; }
 .cta-icon { font-size: 18px; }
+
+.or-divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; }
+.or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--hair); }
+
+.upload-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--bg2); color: var(--ink); border: 1.5px solid var(--hair); border-radius: 18px; padding: 15px 24px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .3s; text-decoration: none; }
+.upload-btn:hover { border-color: var(--emerald-soft); color: var(--emerald-soft); background: rgba(52,215,127,.04); transform: translateY(-1px); }
+
 .auth-note { font-size: 13px; color: var(--muted); text-align: center; }
 .auth-link { color: var(--emerald-soft); text-decoration: none; font-weight: 600; }
 

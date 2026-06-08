@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\CanvaController;
-use App\Http\Controllers\DesignEditorController;
+use App\Http\Controllers\DirectUploadController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
@@ -61,16 +61,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-/* ---------------- Design editor + Canva flow (auth required) ---------------- */
+/* ---------------- Direct upload (auth required) ---------------- */
 Route::middleware('auth')->group(function () {
-    // Polotno embedded editor (primary design flow)
-    Route::get('/design/{productTemplate}', [DesignEditorController::class, 'show'])->name('design.editor');
+    Route::get('/upload/{product:slug}', [DirectUploadController::class, 'page'])->name('upload.page');
+    Route::post('/upload/{product:slug}', [DirectUploadController::class, 'store'])->name('upload.store');
+});
 
-    // Canva external flow (for templates that have a Canva URL)
+/* ---------------- Canva flow (auth required) ---------------- */
+Route::middleware('auth')->group(function () {
+    // Canva external flow — redirects to Canva copy link then returns here to upload
     Route::get('/canva/start/{productTemplate}', [CanvaController::class, 'start'])->name('canva.start');
     Route::get('/canva/submit/{productTemplate}', [CanvaController::class, 'submitPage'])->name('canva.submit');
-
-    // Single endpoint — accepts exported PNG from Polotno OR uploaded file from Canva
     Route::post('/canva/submit/{productTemplate}', [CanvaController::class, 'submit'])->name('canva.submit.store');
 });
 
@@ -128,6 +129,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // المستخدمون (المدراء)
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // التقارير

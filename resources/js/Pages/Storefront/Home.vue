@@ -13,7 +13,7 @@ defineProps({ categories: Array });
             <div>
                 <span class="eyebrow rv">تصميم وطباعة احترافية</span>
                 <h1 class="rv d1">صمّم مطبوعاتك<br>وحوّلها إلى <span class="grad">واقع مبهر</span></h1>
-                <p class="rv d2">من الدروع التذكارية إلى البطاقات والشوادر — صمّم في كانفا، نطبع ونوصّل لبابك بأرقى الخامات وأدق التفاصيل.</p>
+                <p class="rv d2">من الدروع التذكارية إلى البطاقات والشوادر — خصّص تصميمك، نطبع ونوصّل لبابك بأرقى الخامات وأدق التفاصيل.</p>
                 <div class="hero-cta rv d3">
                     <Link class="big-btn big-fill" :href="route('categories')">تصفّح التصنيفات<span class="bib">←</span></Link>
                     <Link class="big-btn big-ghost" :href="route('register')">أنشئ حسابك مجاناً</Link>
@@ -43,7 +43,7 @@ defineProps({ categories: Array });
             <div class="shead">
                 <span class="eyebrow rv">تصنيفاتنا</span>
                 <h2 class="rv d1">ماذا تريد أن <span class="grad">تطبع؟</span></h2>
-                <p class="rv d2">اختر من بين ثمانية تصنيفات رئيسية — لكل منتج قوالب جاهزة تعدّلها في كانفا كما تريد</p>
+                <p class="rv d2">اختر من بين ثمانية تصنيفات رئيسية — لكل منتج قوالب جاهزة تعدّلها كما تريد</p>
             </div>
 
             <div class="cat-grid">
@@ -77,7 +77,7 @@ defineProps({ categories: Array });
             </div>
             <div class="bento">
                 <div class="cell rv"><div class="cell-in"><div class="stepnum">١</div><h3>اختر المنتج</h3><p>تصفّح التصنيفات واختر المنتج الذي يناسب احتياجك</p></div></div>
-                <div class="cell rv d1"><div class="cell-in"><div class="stepnum">٢</div><h3>صمّم في كانفا</h3><p>افتح القالب في كانفا وعدّل النصوص والألوان والشعارات بحرية</p></div></div>
+                <div class="cell rv d1"><div class="cell-in"><div class="stepnum">٢</div><h3>خصّص تصميمك</h3><p>اختر قالباً وعدّل النصوص والألوان والشعارات كما تريد</p></div></div>
                 <div class="cell rv d2"><div class="cell-in"><div class="stepnum">٣</div><h3>ارفع ملفك</h3><p>حمّل ملفك النهائي وأضفه إلى سلة مشترياتك بنقرة واحدة</p></div></div>
                 <div class="cell rv d3"><div class="cell-in"><div class="stepnum">٤</div><h3>استلم طلبك</h3><p>نطبع بجودة عالية ونوصّل مباشرة إلى بابك</p></div></div>
             </div>

@@ -44,22 +44,38 @@ class CartController extends Controller
     /** @return \Illuminate\Support\Collection */
     public static function items($user)
     {
-        return CartItem::with(['design', 'template'])
+        return CartItem::with(['design', 'template', 'productTemplate.product', 'product'])
             ->where('user_id', $user->id)
             ->latest()
             ->get()
             ->map(function (CartItem $item) use ($user) {
-                $price = $item->template ? $item->template->priceFor($user) : 0;
+                // Resolve price: old Template → ProductTemplate.product → direct Product
+                $price = 0;
+                if ($item->template) {
+                    $price = $item->template->priceFor($user);
+                } elseif ($item->productTemplate?->product) {
+                    $price = $item->productTemplate->product->priceFor($user);
+                } elseif ($item->product) {
+                    $price = $item->product->priceFor($user);
+                }
+
+                // Resolve title
+                $title = $item->template?->name
+                    ?? $item->productTemplate?->product?->name
+                    ?? $item->product?->name
+                    ?? $item->design?->name
+                    ?? 'تصميم مخصّص';
 
                 return [
-                    'id' => $item->id,
-                    'title' => $item->template?->name ?? $item->design?->name ?? 'تصميم مخصّص',
-                    'preview' => $item->design?->preview_path,
-                    'design_id' => $item->design_id,
+                    'id'          => $item->id,
+                    'title'       => $title,
+                    'preview'     => $item->design?->preview_path,
+                    'design_id'   => $item->design_id,
                     'template_id' => $item->template_id,
-                    'quantity' => $item->quantity,
-                    'unit_price' => $price,
-                    'line_total' => $price * $item->quantity,
+                    'quantity'    => $item->quantity,
+                    'unit_price'  => $price,
+                    'line_total'  => $price * $item->quantity,
+                    'is_direct'   => ! $item->template_id && ! $item->product_template_id,
                 ];
             });
     }

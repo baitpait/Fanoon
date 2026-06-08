@@ -66,7 +66,6 @@ watch(() => page.component, () => nextTick(initReveal));
                 <Link :href="route('home')" class="logo"><img src="/logo.png" alt="Elite" class="logo-img"></Link>
                 <div class="nlinks">
                     <Link :href="route('home')">الرئيسية</Link>
-                    <Link :href="route('categories')">التصنيفات</Link>
                     <Link :href="route('shop')">المتجر</Link>
                     <Link :href="route('track')">تتبع طلبي</Link>
                     <Link :href="route('about')">من نحن</Link>
@@ -112,7 +111,6 @@ watch(() => page.component, () => nextTick(initReveal));
                     <div class="fc">
                         <h4>روابط</h4>
                         <Link :href="route('home')">الرئيسية</Link>
-                        <Link :href="route('categories')">التصنيفات</Link>
                         <Link :href="route('shop')">المتجر</Link>
                     </div>
                     <div class="fc">

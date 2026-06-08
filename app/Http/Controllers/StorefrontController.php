@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\Template;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -30,21 +31,9 @@ class StorefrontController extends Controller
         ]);
     }
 
-    public function shop(Request $request): Response
+    public function shop(Request $request): RedirectResponse
     {
-        $category = $request->query('category');
-
-        $query = Template::where('is_active', true)->orderBy('sort_order');
-        if ($category) {
-            $query->where('category', $category);
-        }
-
-        $user = $request->user();
-
-        return Inertia::render('Storefront/Shop', [
-            'templates' => $query->get()->map(fn ($t) => $this->present($t, $user)),
-            'category' => $category,
-        ]);
+        return redirect()->route('categories');
     }
 
     public function categories(Request $request): Response

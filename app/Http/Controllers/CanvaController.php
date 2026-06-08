@@ -21,22 +21,19 @@ class CanvaController extends Controller
      *   shows the 3-step workflow page so the customer knows what to do next).
      * • Template has no Canva URL → skip directly to the upload step.
      */
-    public function start(ProductTemplate $productTemplate): Response|RedirectResponse
+    public function start(ProductTemplate $productTemplate): Response
     {
         abort_if(! $productTemplate->is_active, 404);
 
         $productTemplate->load('product.subcategory.category');
 
-        if ($productTemplate->canva_template_url) {
-            return Inertia::render('Storefront/CanvaStart', [
-                'template'  => $this->present($productTemplate),
-                'canvaUrl'  => $productTemplate->canva_template_url,
-                'submitUrl' => route('canva.submit', $productTemplate),
-            ]);
-        }
-
-        // No Canva link → go straight to the upload page
-        return redirect()->route('canva.submit', $productTemplate);
+        // Always render CanvaStart — it handles both cases:
+        //  • canvaUrl set   → shows open-canva → edit → upload flow
+        //  • canvaUrl null  → jumps straight to the upload step
+        return Inertia::render('Storefront/CanvaStart', [
+            'template' => $this->present($productTemplate),
+            'canvaUrl' => $productTemplate->canva_template_url,
+        ]);
     }
 
     /** Step 2 — Show the file-upload page. */

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Design extends Model
 {
     protected $fillable = [
-        'user_id', 'template_id', 'product_template_id', 'name', 'fabric_json', 'preview_path',
+        'user_id', 'template_id', 'product_template_id', 'product_id', 'name', 'fabric_json', 'preview_path',
     ];
 
     protected $casts = [
@@ -28,5 +28,10 @@ class Design extends Model
     public function productTemplate(): BelongsTo
     {
         return $this->belongsTo(ProductTemplate::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }
