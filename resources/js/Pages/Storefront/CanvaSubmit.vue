@@ -54,11 +54,21 @@ function submit() {
                         <img v-if="template.preview_image" :src="'/storage/' + template.preview_image" :alt="template.name" class="tmpl-img">
                         <div v-else class="tmpl-ph">🎨</div>
                     </div>
-                    <div>
+                    <div class="tmpl-meta">
                         <div class="tmpl-name">{{ template.name }}</div>
                         <div class="tmpl-prod">{{ template.product.name }}</div>
                         <div class="tmpl-path">{{ template.product.category }} ← {{ template.product.subcategory }}</div>
                     </div>
+                    <a v-if="template.canva_template_url"
+                       :href="template.canva_template_url"
+                       target="_blank" rel="noopener noreferrer"
+                       class="reopen-btn" title="فتح كانفا مجدداً">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                        كانفا
+                    </a>
                 </div>
 
                 <form @submit.prevent="submit" class="upload-form">
@@ -117,9 +127,15 @@ function submit() {
 .tmpl-img-wrap { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; background: var(--glass); flex-shrink: 0; }
 .tmpl-img { width: 100%; height: 100%; object-fit: cover; }
 .tmpl-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.tmpl-meta { flex: 1; min-width: 0; }
 .tmpl-name { font-weight: 700; font-size: 15px; }
 .tmpl-prod { font-size: 13px; color: var(--muted); margin-top: 2px; }
 .tmpl-path { font-size: 11px; color: var(--muted); opacity: .6; margin-top: 2px; }
+.reopen-btn { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+              background: linear-gradient(150deg,#7c3aed,#4f46e5); color: #fff;
+              border-radius: 10px; padding: 8px 14px; font-size: 12px; font-weight: 600;
+              text-decoration: none; transition: all .3s; white-space: nowrap; }
+.reopen-btn:hover { transform: translateY(-1px); opacity: .9; }
 
 .upload-form { display: flex; flex-direction: column; gap: 16px; }
 

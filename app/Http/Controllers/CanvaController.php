@@ -15,88 +15,96 @@ use Inertia\Response;
 class CanvaController extends Controller
 {
     /**
-     * Start the design process for a product template.
-     * If the template has a Canva URL → open Canva in a new tab and show the upload page.
-     * If it has fabric_json → redirect to the existing Fabric.js editor.
+     * Step 1 — Start the design process.
+     *
+     * • Template has a Canva URL  → render CanvaStart (auto-opens Canva in a new tab,
+     *   shows the 3-step workflow page so the customer knows what to do next).
+     * • Template has no Canva URL → skip directly to the upload step.
      */
-    public function start(Request $request, ProductTemplate $productTemplate): Response|RedirectResponse
+    public function start(ProductTemplate $productTemplate): Response|RedirectResponse
     {
+        abort_if(! $productTemplate->is_active, 404);
+
         $productTemplate->load('product.subcategory.category');
 
         if ($productTemplate->canva_template_url) {
             return Inertia::render('Storefront/CanvaStart', [
-                'template' => $this->presentTemplate($productTemplate),
-                'canvaUrl' => $productTemplate->canva_template_url,
+                'template'  => $this->present($productTemplate),
+                'canvaUrl'  => $productTemplate->canva_template_url,
                 'submitUrl' => route('canva.submit', $productTemplate),
             ]);
         }
 
-        if ($productTemplate->fabric_json) {
-            return redirect()->route('editor', ['product_template' => $productTemplate->id]);
-        }
-
-        return redirect()->route('editor');
+        // No Canva link → go straight to the upload page
+        return redirect()->route('canva.submit', $productTemplate);
     }
 
-    /** Show the file-upload page for a Canva-edited design. */
+    /** Step 2 — Show the file-upload page. */
     public function submitPage(ProductTemplate $productTemplate): Response
     {
+        abort_if(! $productTemplate->is_active, 404);
+
         $productTemplate->load('product.subcategory.category');
 
         return Inertia::render('Storefront/CanvaSubmit', [
-            'template' => $this->presentTemplate($productTemplate),
+            'template' => $this->present($productTemplate),
         ]);
     }
 
-    /** Accept the uploaded Canva export, save as Design, add to cart. */
+    /**
+     * Step 3 — Accept the uploaded file, create Design + CartItem.
+     *
+     * Accepts: JPG, PNG, WEBP, PDF — max 20 MB.
+     */
     public function submit(Request $request, ProductTemplate $productTemplate): RedirectResponse
     {
         $request->validate([
-            'file' => 'required|file|mimes:jpg,jpeg,png,pdf,webp|max:20480',
+            'file'     => 'required|file|mimes:jpg,jpeg,png,pdf,webp|max:20480',
             'quantity' => 'nullable|integer|min:1|max:999',
         ]);
 
         $user = $request->user();
         $file = $request->file('file');
-
-        $ext = $file->getClientOriginalExtension();
+        $ext  = strtolower($file->getClientOriginalExtension()) ?: 'png';
         $path = 'designs/' . Str::uuid() . '.' . $ext;
+
         Storage::disk('public')->put($path, file_get_contents($file->getRealPath()));
 
         $productTemplate->load('product');
 
         $design = Design::create([
-            'user_id' => $user->id,
+            'user_id'             => $user->id,
             'product_template_id' => $productTemplate->id,
-            'name' => $productTemplate->name . ' — ' . $productTemplate->product->name,
-            'fabric_json' => [],
-            'preview_path' => $path,
+            'name'                => $productTemplate->product->name . ' — ' . $productTemplate->name,
+            'preview_path'        => $path,
         ]);
 
         CartItem::create([
-            'user_id' => $user->id,
-            'design_id' => $design->id,
+            'user_id'             => $user->id,
+            'design_id'           => $design->id,
             'product_template_id' => $productTemplate->id,
-            'quantity' => $request->input('quantity', 1),
+            'quantity'            => $request->integer('quantity', 1),
         ]);
 
         return redirect()->route('cart.index')
-            ->with('success', 'تمت إضافة تصميمك إلى السلة بنجاح.');
+            ->with('success', 'تمت إضافة تصميمك إلى السلة بنجاح 🎉');
     }
 
-    private function presentTemplate(ProductTemplate $t): array
+    /* ─── helpers ─── */
+
+    private function present(ProductTemplate $t): array
     {
         return [
-            'id' => $t->id,
-            'name' => $t->name,
-            'preview_image' => $t->preview_image,
+            'id'                 => $t->id,
+            'name'               => $t->name,
+            'preview_image'      => $t->preview_image,
             'canva_template_url' => $t->canva_template_url,
-            'product' => [
-                'id' => $t->product->id,
-                'name' => $t->product->name,
-                'slug' => $t->product->slug,
+            'product'            => [
+                'id'          => $t->product->id,
+                'name'        => $t->product->name,
+                'slug'        => $t->product->slug,
                 'subcategory' => $t->product->subcategory->name,
-                'category' => $t->product->subcategory->category->name,
+                'category'    => $t->product->subcategory->category->name,
             ],
         ];
     }

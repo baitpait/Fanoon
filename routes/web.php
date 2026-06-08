@@ -18,8 +18,6 @@ use App\Http\Controllers\Admin\TemplateController as AdminTemplateController;
 use App\Http\Controllers\CanvaController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\DesignController;
-use App\Http\Controllers\EditorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
@@ -40,14 +38,8 @@ Route::get('/contact', [StorefrontController::class, 'contact'])->name('contact'
 Route::get('/faq', [StorefrontController::class, 'faq'])->name('faq');
 Route::get('/track', [OrderTrackingController::class, 'index'])->name('track');
 
-/* ---------------- Editor (browse free, save requires auth) ---------------- */
-Route::get('/editor', [EditorController::class, 'index'])->name('editor');
-
 /* ---------------- Authenticated customer area ---------------- */
 Route::middleware('auth')->group(function () {
-    // Save customized design + add to cart
-    Route::post('/designs', [DesignController::class, 'store'])->name('designs.store');
-
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');

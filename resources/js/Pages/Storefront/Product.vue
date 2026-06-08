@@ -85,7 +85,7 @@ function proceed() {
                     <div class="cta-area">
                         <button class="cta-btn" :disabled="!selected || !product.templates.length" @click="proceed">
                             <span>{{ authed ? 'ابدأ التصميم في كانفا' : 'سجّل دخولك للبدء' }}</span>
-                            <span class="cta-icon">{{ selectedTemplate?.has_canva ? '🎨' : '✏️' }} ←</span>
+                            <span class="cta-icon">🎨 ←</span>
                         </button>
                         <p v-if="!authed" class="auth-note">
                             <Link :href="route('login')" class="auth-link">تسجيل الدخول</Link>
