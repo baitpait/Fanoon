@@ -7,6 +7,7 @@
 /public/build
 /public/storage
 /storage/*.key
+/storage/oauth-*.key
 /storage/debugbar
 /vendor
 .phpunit.result.cache
@@ -26,3 +27,11 @@ yarn-error.log
 .idea
 /elitevape_deploy
 elitevape_deploy.zip
+
+# بيانات الإنتاج — لا تُرفع (استخدم migrations + seeders)
+*.sql
+*.zip
+
+# ملفات الرفع والوسائط (يُنشأ محلياً عبر storage:link)
+/storage/app/public/**
+!/storage/app/public/.gitignore

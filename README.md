@@ -1,16 +1,18 @@
-# Admin Anagheem Home
+# Fanoon — لوحة تحكم المتجر الإلكتروني
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-Proprietary-blue.svg)](LICENSE)
 
-Backend رسمي لمتجر **Anagheem Home**: **لوحة تحكم إدارية** + **REST API** للتطبيقات والواجهات الخارجية (Flutter / Web).
+نسخة جاهزة للتطوير من **لوحة التحكم + REST API** لمتجر إلكتروني (منتجات، طلبات، عملاء، تقارير، إعدادات).
+
+> هذه النسخة **لا تتضمن** بيانات قاعدة بيانات إنتاجية ولا ملفات الوسائط المرفوعة (`storage`). ابدأ بقاعدة بيانات فارغة عبر `migrate` و`seed`.
 
 | العنصر | الوصف |
 |--------|--------|
-| **لوحة التحكم** | منتجات، طلبات، عملاء، تقارير، إعدادات، مدن ومناطق توصيل |
+| **لوحة التحكم** | إدارة المنتجات، الطلبات، العملاء، التقارير، الإعدادات، المدن والمناطق |
 | **API** | `api/v1/*` — مصادقة **Laravel Passport** (OAuth2) |
-| **النشر المستهدف** | `https://admin.anagheemhome.com` (جذر الويب = مجلد `public`) |
+| **الاستهداف** | تطبيقات Flutter / Web تتصل بالـ API |
 
 ---
 
@@ -26,25 +28,26 @@ Backend رسمي لمتجر **Anagheem Home**: **لوحة تحكم إدارية*
 ## التثبيت السريع (محلي)
 
 ```bash
-git clone https://github.com/baitpait/AdminAnagheemHome.git
-cd AdminAnagheemHome
+git clone https://github.com/baitpait/Fanoon.git
+cd Fanoon
 
 composer install
 
 cp .env.example .env
 php artisan key:generate
 
-# عدّل .env: DB_*, APP_URL, CORS_ALLOWED_ORIGINS (للإنتاج)
+# عدّل .env: DB_*, APP_URL, CORS_ALLOWED_ORIGINS
 
 php artisan migrate --force
+php artisan db:seed --class=BaitPaitSeeder
 php artisan passport:keys --force
 php artisan storage:link
 
 php artisan serve
 ```
 
-- **تسجيل دخول لوحة التحكم:** `/admin/auth/login`  
-- بعد أول تشغيل: أنشئ مشرفاً عبر البذور أو من قاعدة البيانات حسب إعدادكم (انظر `database/seeders/`).
+- **تسجيل دخول لوحة التحكم:** `/admin/auth/login`
+- بعد `BaitPaitSeeder`: استخدم بيانات المشرف الافتراضية من `database/seeders/BaitPaitSeeder.php`
 
 ---
 
@@ -59,42 +62,15 @@ php artisan serve
 
 ---
 
-## استيراد من WooCommerce (WordPress)
-
-```bash
-php artisan import:wordpress-woocommerce \
-  --sql=/مسار/للتصدير.sql \
-  --uploads=/مسار/wp-content/uploads \
-  --wipe --import-sql
-```
-
-يتطلب إعداد اتصال `wordpress_import` في `config/database.php` / `.env` (راجع `.env.example`).
-
----
-
-## النشر على الإنتاج
-
-دليل تفصيلي: **[docs/DEPLOY-ANAGHEEMHOME.md](docs/DEPLOY-ANAGHEEMHOME.md)**
-
-ملخص:
-
-1. جذر المشروع على السيرفر ≠ جذر الويب؛ **Document root** يجب أن يشير إلى **`public/`**.
-2. `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` و`FORCE_HTTPS=true`.
-3. `CORS_ALLOWED_ORIGINS` يضم كل نطاقات الواجهات التي تستدعي الـ API.
-4. بعد الرفع: `composer install --no-dev`, `php artisan storage:link`, كاش الإعدادات.
-
-**أساس API للعميل:** `https://admin.anagheemhome.com/api/v1/` (يُحدَّد حسب `APP_URL`).
-
----
-
 ## هيكل المشروع (مختصر)
 
 ```
 app/Http/Controllers/Admin/   # لوحة التحكم
 app/Http/Controllers/Api/V1/ # API التطبيق
-config/cors.php              # CORS + أنماط *.anagheemhome.com
-database/migrations/         # الهجرة الموحّدة + تعديلات Bait Pait
-docs/DEPLOY-ANAGHEEMHOME.md  # نشر الإنتاج
+config/cors.php
+database/migrations/
+database/seeders/
+docs/DEVELOPER-ONBOARDING.md
 routes/admin.php
 routes/api/v1/api.php
 ```
@@ -105,21 +81,19 @@ routes/api/v1/api.php
 
 - **لا** ترفع ملف `.env` أو مفاتيح `storage/*.key` إلى Git.
 - صلاحيات `storage/` و`bootstrap/cache/` قابلة للكتابة على السيرفر فقط.
-- بعد تسريب أي **Personal Access Token** لـ GitHub: ألغِه فوراً من الإعدادات وأنشئ رمزاً جديداً.
+- لا تضمّن نسخ SQL إنتاجية أو أرشيفات رفع في المستودع.
 
 ---
 
-## التوثيق الداخلي
+## التوثيق
 
 - [docs/DEVELOPER-ONBOARDING.md](docs/DEVELOPER-ONBOARDING.md)
-- [docs/DEPLOY-ANAGHEEMHOME.md](docs/DEPLOY-ANAGHEEMHOME.md)
+- [docs/DEPLOY-ANAGHEEMHOME.md](docs/DEPLOY-ANAGHEEMHOME.md) — مرجع نشر الإنتاج
 
 ---
 
 ## الحقوق
 
-© Bait Pait — مشروع خاص (Anagheem Home). الاستخدام والنشر بإذن صاحب المشروع.
+© Bait Pait — مشروع خاص. الاستخدام والنشر بإذن صاحب المشروع.
 
----
-
-**مستودع GitHub:** [github.com/baitpait/AdminAnagheemHome](https://github.com/baitpait/AdminAnagheemHome)
+**مستودع GitHub:** [github.com/baitpait/Fanoon](https://github.com/baitpait/Fanoon)
