@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
@@ -123,5 +124,40 @@ class Product extends Model
                 return $query->where('locale', app()->getLocale());
             }]);
         });
+=======
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Product extends Model
+{
+    protected $fillable = [
+        'subcategory_id', 'name', 'slug', 'description',
+        'retail_price', 'wholesale_price', 'badge', 'cover_image',
+        'sizes', 'sort_order', 'is_active',
+    ];
+
+    protected $casts = [
+        'retail_price' => 'decimal:2',
+        'wholesale_price' => 'decimal:2',
+        'is_active' => 'boolean',
+        'sizes' => 'array',
+    ];
+
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(Subcategory::class);
+    }
+
+    public function templates(): HasMany
+    {
+        return $this->hasMany(ProductTemplate::class)->orderBy('sort_order');
+    }
+
+    public function priceFor(?User $user): float
+    {
+        return $user && $user->seesWholesale()
+            ? (float) $this->wholesale_price
+            : (float) $this->retail_price;
+>>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     }
 }

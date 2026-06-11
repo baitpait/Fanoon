@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,5 +75,18 @@ class Category extends Model
                 return $query->where('locale', app()->getLocale());
             }]);
         });
+=======
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Category extends Model
+{
+    protected $fillable = ['name', 'slug', 'icon', 'description', 'cover_image', 'sort_order', 'is_active'];
+
+    protected $casts = ['is_active' => 'boolean'];
+
+    public function subcategories(): HasMany
+    {
+        return $this->hasMany(Subcategory::class)->orderBy('sort_order');
+>>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     }
 }
