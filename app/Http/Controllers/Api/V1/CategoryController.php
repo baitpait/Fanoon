@@ -19,16 +19,55 @@ class CategoryController extends Controller
     }
 
     /**
-     * @return JsonResponse
+     * Return root categories visible to the current caller (auth or guest).
+     *
+     * Category visibility rules (visible_to_user_types column):
+     *   NULL        → visible to everyone
+     *   []          → hidden from everyone
+     *   [0, ...]    → 0 = guest; any positive integer = user_type_id
      */
     public function getCategories(): JsonResponse
     {
-        $locale = app()->getLocale();
+        $locale   = app()->getLocale();
         $cacheKey = CACHE_CATEGORY_TABLE . '_' . $locale;
 
+        // Fetch all active root categories (cached, no per-user branching in DB)
         $categories = Cache::rememberForever($cacheKey, function () {
             return $this->category->where(['parent_id' => 0, 'status' => 1])->orderBy('position')->get();
         });
+
+        // ── Determine caller identity ─────────────────────────────────
+        $user        = auth('api')->user();
+        $isGuest     = $user === null;
+        $userTypeId  = $user?->user_type_id;   // null if user has no assigned type
+
+        // ── Filter by visibility ──────────────────────────────────────
+        $categories = $categories->filter(function ($category) use ($isGuest, $userTypeId) {
+            $allowed = $category->visible_to_user_types; // already cast to array|null
+
+            // NULL → visible to everyone
+            if ($allowed === null) {
+                return true;
+            }
+
+            // Empty array → hidden from everyone
+            if (empty($allowed)) {
+                return false;
+            }
+
+            // Guest visitors: must have 0 in the allowed list
+            if ($isGuest) {
+                return in_array(0, $allowed);
+            }
+
+            // Logged-in user with no assigned type → no restriction
+            if ($userTypeId === null) {
+                return true;
+            }
+
+            // Logged-in user with a type → must be in the allowed list
+            return in_array((int) $userTypeId, $allowed);
+        })->values(); // re-index
 
         foreach ($categories as $category) {
             $category['products_count'] = Product::whereJsonContains('category_ids', ['id' => (string)$category['id']])->count();

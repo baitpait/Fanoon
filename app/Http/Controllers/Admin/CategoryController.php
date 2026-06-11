@@ -7,6 +7,7 @@ use App\CentralLogics\Helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Translation;
+use App\Models\UserType;
 use App\Traits\UploadSizeHelperTrait;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Contracts\Foundation\Application;
@@ -393,7 +394,8 @@ class CategoryController extends Controller
     {
         $category = $this->category->withoutGlobalScopes()->with('translations')->find($id);
         $parentCategoryTree = $this->buildParentCategoryTree((int) $id);
-        return view('admin-views.category.edit', compact('category', 'parentCategoryTree'));
+        $userTypes = UserType::orderBy('position')->get();
+        return view('admin-views.category.edit', compact('category', 'parentCategoryTree', 'userTypes'));
     }
 
     /**
@@ -512,6 +514,17 @@ class CategoryController extends Controller
         $category->parent_id = $request->parent_id == null ? 0 : $request->parent_id;
         $category->image = $request->has('image') ? Helpers::update('category/', $category->image, APPLICATION_IMAGE_FORMAT, $request->file('image')) : $category->image;
         $category->banner_image = null;
+
+        // ── Visibility by user type ──────────────────────────────────────
+        // 'visible_everyone' checkbox → NULL (no restriction)
+        // Otherwise: array of selected IDs (integers); 0 = guests
+        if ($request->boolean('visible_everyone', false)) {
+            $category->visible_to_user_types = null;
+        } else {
+            $rawIds = $request->input('visible_to_user_types', []);
+            $category->visible_to_user_types = array_map('intval', (array) $rawIds);
+        }
+
         $category->save();
         foreach ($request->lang as $index => $key) {
             if ($request->name[$index] && $key != $defaultLocale) {

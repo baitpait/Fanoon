@@ -59,7 +59,7 @@ body, html, .main, #content {
 }
 
 /* صفحات الأعمال - هوية بصرية */
-.pages-card-header { border-bottom: 2px solid var(--primary-clr, #EC2227); }
+.pages-card-header { border-bottom: 2px solid var(--primary-clr, #10b46a); }
 .pages-card-header h6 { font-size: 1.15rem !important; }
 
 /* قائمة إعدادات العمل - أزرار بتصميم فني */
@@ -84,26 +84,26 @@ body, html, .main, #content {
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .business-setup-nav-btns .btn-nav:hover {
-    color: var(--primary-clr, #EC2227) !important;
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%) !important;
-    border-color: rgba(236, 34, 39, 0.4) !important;
-    box-shadow: 0 4px 12px rgba(236, 34, 39, 0.15);
+    color: var(--primary-clr, #10b46a) !important;
+    background: linear-gradient(135deg, #fff 0%, #f0faf5 100%) !important;
+    border-color: rgba(16, 180, 106, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(16, 180, 106, 0.15);
     transform: translateY(-1px);
 }
 .business-setup-nav-btns li.active .btn-nav {
     color: #fff !important;
-    background: linear-gradient(135deg, var(--primary-clr, #EC2227) 0%, #c91d21 100%) !important;
-    border-color: var(--primary-clr, #EC2227) !important;
-    box-shadow: 0 4px 14px rgba(236, 34, 39, 0.35);
+    background: linear-gradient(135deg, var(--primary-clr, #10b46a) 0%, #0c8f52 100%) !important;
+    border-color: var(--primary-clr, #10b46a) !important;
+    box-shadow: 0 4px 14px rgba(16, 180, 106, 0.35);
 }
 .business-setup-nav-btns li.active .btn-nav:hover {
     color: #fff !important;
-    box-shadow: 0 6px 18px rgba(236, 34, 39, 0.4);
+    box-shadow: 0 6px 18px rgba(16, 180, 106, 0.4);
     transform: translateY(-1px);
 }
 
 .inline-page-menu ul li a { font-size: 1rem; }
-.inline-page-menu ul li.active a { color: var(--primary-clr, #EC2227) !important; border-color: var(--primary-clr, #EC2227) !important; }
+.inline-page-menu ul li.active a { color: var(--primary-clr, #10b46a) !important; border-color: var(--primary-clr, #10b46a) !important; }
 
 /* تحسين قائمة عدد العناصر في الترقيم - خط أكبر وقائمة منسدلة أوضح */
 .pagination-per-page-select {
@@ -231,7 +231,7 @@ body, html, .main, #content {
 .login-title {
     font-size: 1.75rem;
     font-weight: 600;
-    color: #e85d75;
+    color: #10b46a;
     margin-bottom: 0.35rem;
 }
 .login-subtitle {
@@ -262,8 +262,8 @@ body, html, .main, #content {
     text-align: inherit;
 }
 .login-input:focus {
-    border-color: #e85d75;
-    box-shadow: 0 0 0 3px rgba(232, 93, 117, 0.15);
+    border-color: #10b46a;
+    box-shadow: 0 0 0 3px rgba(16, 180, 106, 0.15);
     outline: none;
 }
 .login-input::placeholder {
@@ -276,7 +276,7 @@ body, html, .main, #content {
     inset-inline-end: 1rem;
     transform: translateY(-50%);
     font-size: 1.1rem;
-    color: #e85d75;
+    color: #10b46a;
     pointer-events: none;
 }
 .login-input-icon-wrap {
@@ -290,11 +290,11 @@ body, html, .main, #content {
     align-items: center;
     justify-content: center;
     padding: 0.25rem;
-    color: #e85d75;
+    color: #10b46a;
     text-decoration: none;
 }
 .login-input-icon-btn:hover {
-    color: #d94a62;
+    color: #0c8f52;
 }
 .login-options {
     margin-bottom: 1.5rem;
@@ -304,7 +304,7 @@ body, html, .main, #content {
     color: #6c757d !important;
 }
 .login-btn {
-    background: #f4a5b3 !important;
+    background: #10b46a !important;
     color: #fff !important;
     border: none;
     border-radius: 10px;
@@ -312,9 +312,10 @@ body, html, .main, #content {
     font-weight: 600;
     font-size: 0.9rem;
     letter-spacing: 0.5px;
+    transition: background 0.2s ease;
 }
 .login-btn:hover {
-    background: #e85d75 !important;
+    background: #0c8f52 !important;
     color: #fff !important;
 }
 .login-social-footer {
@@ -332,25 +333,25 @@ body, html, .main, #content {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    color: #e85d75;
+    color: #10b46a;
     font-size: 1.1rem;
     transition: color 0.2s, background 0.2s;
 }
 .login-social-icon:hover {
     color: #fff;
-    background: #e85d75;
+    background: #10b46a;
 }
 .login-demo-footer {
     border-top: 1px solid #eee;
 }
 .login-redesign-rtl .custom-control-input:checked ~ .custom-control-label::before {
-    border-color: #e85d75;
-    background-color: #e85d75;
+    border-color: #10b46a;
+    background-color: #10b46a;
 }
 
-/* Illustration section - soft pink blob */
+/* Illustration section - Elite green blob */
 .login-illustration-section {
-    background: #fff;
+    background: #f0faf5;
 }
 .login-blob-wrap {
     display: flex;
@@ -363,12 +364,12 @@ body, html, .main, #content {
     position: relative;
     width: 320px;
     height: 320px;
-    background: linear-gradient(145deg, #f4a5b3 0%, #f8c4cd 50%, #fce8ec 100%);
+    background: linear-gradient(145deg, #10b46a 0%, #1dd87e 50%, #d4f5e5 100%);
     border-radius: 60% 40% 50% 50% / 50% 60% 40% 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 20px 60px rgba(232, 93, 117, 0.2);
+    box-shadow: 0 20px 60px rgba(16, 180, 106, 0.25);
     animation: blob-float 8s ease-in-out infinite;
 }
 @keyframes blob-float {
@@ -396,12 +397,12 @@ body, html, .main, #content {
 .login-blob-mobile {
     width: 180px;
     height: 180px;
-    background: linear-gradient(145deg, #f4a5b3 0%, #f8c4cd 50%, #fce8ec 100%);
+    background: linear-gradient(145deg, #10b46a 0%, #1dd87e 50%, #d4f5e5 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 24px rgba(232, 93, 117, 0.2);
+    box-shadow: 0 8px 24px rgba(16, 180, 106, 0.25);
 }
 .login-blob-mobile .login-page-logo {
     max-width: 80%;
@@ -584,8 +585,11 @@ select.form-control:not([multiple]) {
 }
 
 :root {
-    --primary-clr: #EC2227;
-    --secondary-clr: #747113;
+    --primary-clr: #10b46a;
+    --primary-dark-clr: #0c8f52;
+    --primary-light-clr: #d4f5e5;
+    --primary-rgb: 16, 180, 106;
+    --secondary-clr: #0f6b3a;
     --light-gray-clr: #d2d3d4;
     --white-clr: #ffffff;
     --black-clr: #000000;
@@ -703,7 +707,7 @@ select.form-control:not([multiple]) {
     gap: 16px;
     padding-bottom: 20px;
     margin-bottom: 20px;
-    border-bottom: 2px solid var(--primary-clr, #EC2227);
+    border-bottom: 2px solid var(--primary-clr, #10b46a);
 }
 
 .coupon__details-header .coupon__title {
@@ -722,7 +726,7 @@ select.form-control:not([multiple]) {
     align-items: baseline;
     gap: 4px;
     padding: 8px 16px;
-    background: var(--primary-clr, #EC2227);
+    background: var(--primary-clr, #10b46a);
     color: #fff;
     border-radius: 8px;
     font-weight: 700;
@@ -1384,21 +1388,21 @@ select.form-control:not([multiple]) {
 
 .btn--primary {
     color: #ffffff;
-    background-color: #EC2227;
-    border-color: #EC2227
+    background-color: #10b46a;
+    border-color: #10b46a
 }
 
 .btn--primary:hover {
     color: #ffffff;
-    background-color: #c91d21;
-    border-color: #c91d21
+    background-color: #0c8f52;
+    border-color: #0c8f52
 }
 
 .btn--primary.focus, .btn-primary:focus {
     color: #ffffff;
-    background-color: #EC2227;
-    border-color: #EC2227;
-    box-shadow: 0 0 0 .2rem rgba(236, 34, 39, .4)
+    background-color: #10b46a;
+    border-color: #10b46a;
+    box-shadow: 0 0 0 .2rem rgba(16, 180, 106, .4)
 }
 
 .btn--primary.disabled, .btn--primary:disabled {
@@ -1409,12 +1413,12 @@ select.form-control:not([multiple]) {
 
 .btn--primary:not(:disabled):not(.disabled).active, .btn--primary:not(:disabled):not(.disabled):active, .show > .btn--primary.dropdown-toggle {
     color: #ffffff;
-    background-color: #c91d21;
-    border-color: #c91d21
+    background-color: #0c8f52;
+    border-color: #0c8f52
 }
 
 .btn--primary:not(:disabled):not(.disabled).active:focus, .btn--primary:not(:disabled):not(.disabled):active:focus, .show > .btn--primary.dropdown-toggle:focus {
-    box-shadow: 0 0 0 .2rem rgba(236, 34, 39, .4)
+    box-shadow: 0 0 0 .2rem rgba(16, 180, 106, .4)
 }
 
 .mb-30 {
@@ -1548,8 +1552,8 @@ body.modal-open .modal.fade.show .modal-content {
     background: #eef1f5;
 }
 .elite-unified-search-inner:focus-within {
-    border-color: rgba(236, 34, 39, 0.45);
-    box-shadow: 0 0 0 3px rgba(236, 34, 39, 0.12);
+    border-color: rgba(16, 180, 106, 0.45);
+    box-shadow: 0 0 0 3px rgba(16, 180, 106, 0.12);
     background: #fff;
 }
 .elite-unified-search-icon {
@@ -1562,7 +1566,7 @@ body.modal-open .modal.fade.show .modal-content {
     line-height: 1;
 }
 .elite-unified-search-inner:focus-within .elite-unified-search-icon {
-    color: var(--primary-clr, #EC2227);
+    color: var(--primary-clr, #10b46a);
 }
 .elite-unified-search-input {
     flex: 1 1 auto;

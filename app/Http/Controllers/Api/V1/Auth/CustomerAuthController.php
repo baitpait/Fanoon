@@ -11,6 +11,7 @@ use App\Models\PhoneVerification;
 use App\Models\LoginSetup;
 use App\Models\User;
 use App\Models\UserType;
+use App\Services\WaSenderService;
 use Carbon\CarbonInterval;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
@@ -90,6 +91,145 @@ class CustomerAuthController extends Controller
         $token = $user->createToken('RestaurantCustomerAuth')->accessToken;
 
         return response()->json(['token' => $token], 200);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  WhatsApp OTP — إرسال رمز تحقق عبر واتساب
+    // ══════════════════════════════════════════════════════════════
+
+    /**
+     * POST /api/v1/auth/send-whatsapp-otp
+     * توليد رمز OTP وإرساله عبر WaSender إلى رقم الهاتف.
+     */
+    public function sendWhatsAppOtp(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|min:9|max:15',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)], 422);
+        }
+
+        $phone = trim($request->input('phone'));
+
+        // منع إعادة الإرسال خلال 60 ثانية
+        $existing = PhoneVerification::where('phone', $phone)->first();
+        $resendInterval = (int) (Helpers::get_business_settings('otp_resend_time') ?? 60);
+        if ($existing && Carbon::parse($existing->updated_at)->diffInSeconds(now()) < $resendInterval) {
+            $wait = $resendInterval - Carbon::parse($existing->updated_at)->diffInSeconds(now());
+            return response()->json([
+                'errors' => [['code' => 'otp_wait', 'message' => "انتظر {$wait} ثانية قبل إعادة الإرسال"]],
+            ], 429);
+        }
+
+        // توليد رمز 6 أرقام
+        $otp = (string) random_int(100000, 999999);
+
+        // حفظ / تحديث في جدول phone_verifications
+        PhoneVerification::updateOrInsert(
+            ['phone' => $phone],
+            [
+                'token'            => $otp,
+                'otp_hit_count'    => 0,
+                'is_temp_blocked'  => 0,
+                'temp_block_time'  => null,
+                'created_at'       => now(),
+                'updated_at'       => now(),
+            ]
+        );
+
+        // إرسال عبر WhatsApp
+        $storeName = Helpers::get_business_settings('store_name') ?? 'المتجر';
+        $message   = "🏪 *{$storeName}*\n"
+                   . "──────────────────\n"
+                   . "رمز التحقق الخاص بك:\n\n"
+                   . "🔑 *{$otp}*\n\n"
+                   . "صالح لمدة 10 دقائق.\n"
+                   . "لا تشاركه مع أحد.\n"
+                   . "──────────────────";
+
+        $sent = (new WaSenderService())->sendMessage($phone, $message);
+
+        if (!$sent) {
+            Log::warning("WhatsApp OTP failed to send to {$phone}");
+            return response()->json([
+                'errors' => [['code' => 'wa_failed', 'message' => 'تعذّر إرسال رسالة واتساب. تأكد من الرقم وأعد المحاولة.']],
+            ], 500);
+        }
+
+        return response()->json(['message' => 'تم إرسال رمز التحقق على واتساب', 'phone' => $phone], 200);
+    }
+
+    /**
+     * POST /api/v1/auth/verify-whatsapp-otp
+     * التحقق من رمز OTP المُرسَل عبر واتساب.
+     */
+    public function verifyWhatsAppOtp(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required',
+            'otp'   => 'required|digits:6',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)], 422);
+        }
+
+        $phone = trim($request->input('phone'));
+        $otp   = trim($request->input('otp'));
+
+        $maxHits      = (int) (Helpers::get_business_settings('maximum_otp_hit') ?? 5);
+        $blockSeconds = (int) (Helpers::get_business_settings('temporary_block_time') ?? 600);
+
+        $record = PhoneVerification::where('phone', $phone)->first();
+
+        if (!$record) {
+            return response()->json([
+                'errors' => [['code' => 'otp_not_found', 'message' => 'لم يُرسَل رمز لهذا الرقم، ابدأ من جديد.']],
+            ], 404);
+        }
+
+        // فحص حظر مؤقت
+        if ($record->temp_block_time &&
+            Carbon::parse($record->temp_block_time)->diffInSeconds(now()) <= $blockSeconds) {
+            $wait = $blockSeconds - Carbon::parse($record->temp_block_time)->diffInSeconds(now());
+            return response()->json([
+                'errors' => [['code' => 'otp_blocked', 'message' => "محظور مؤقتاً، أعد المحاولة بعد {$wait} ثانية"]],
+            ], 429);
+        }
+
+        // فحص انتهاء صلاحية الرمز (10 دقائق)
+        if (Carbon::parse($record->updated_at)->diffInMinutes(now()) > 10) {
+            return response()->json([
+                'errors' => [['code' => 'otp_expired', 'message' => 'انتهت صلاحية الرمز، اطلب رمزاً جديداً.']],
+            ], 422);
+        }
+
+        if ($record->token !== $otp) {
+            $hits = $record->otp_hit_count + 1;
+            $update = ['otp_hit_count' => $hits];
+            if ($hits >= $maxHits) {
+                $update['is_temp_blocked']  = 1;
+                $update['temp_block_time']  = now();
+            }
+            $record->update($update);
+
+            $remaining = max(0, $maxHits - $hits);
+            return response()->json([
+                'errors' => [['code' => 'otp_wrong', 'message' => "رمز غير صحيح. المحاولات المتبقية: {$remaining}"]],
+            ], 422);
+        }
+
+        // ✅ رمز صحيح — حذف السجل
+        $record->delete();
+
+        // إنشاء session token مؤقت لتأكيد التحقق
+        $verifiedToken = hash('sha256', $phone . now()->timestamp . config('app.key'));
+
+        return response()->json([
+            'verified'        => true,
+            'phone'           => $phone,
+            'verified_token'  => $verifiedToken,
+        ], 200);
     }
 
     /**

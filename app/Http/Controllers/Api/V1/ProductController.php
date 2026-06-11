@@ -222,8 +222,10 @@ class ProductController extends Controller
         $finalProducts = collect([2, 1])->flatMap(function ($position) use ($relatedProducts) {
             return $relatedProducts->filter(function ($product) use ($position) {
                 $relatedCategories = json_decode($product->category_ids, true);
+                if (!is_array($relatedCategories)) return false;
                 foreach ($relatedCategories as $category) {
-                    if ($category['position'] == $position) {
+                    // Support both formats: {"id":"1","position":1} and {"id":"1"}
+                    if (isset($category['position']) && $category['position'] == $position) {
                         return true;
                     }
                 }
@@ -231,6 +233,11 @@ class ProductController extends Controller
             });
         })->unique('id') // Avoid duplicate products
         ->take(10); // Get first 10 products
+
+        // Fallback: if no products found via position filter, return all related products
+        if ($finalProducts->isEmpty()) {
+            $finalProducts = $relatedProducts->unique('id')->take(10);
+        }
 
         $relatedProducts = Helpers::product_data_formatting($finalProducts, true);
         $relatedProducts = Helpers::apply_user_type_prices_to_products($relatedProducts, true);

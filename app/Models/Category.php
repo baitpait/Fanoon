@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Storage;
 class Category extends Model
 {
     protected $casts = [
-        'parent_id' => 'integer',
-        'position' => 'integer',
-        'status' => 'integer',
-        'is_featured' => 'integer'
+        'parent_id'              => 'integer',
+        'position'               => 'integer',
+        'status'                 => 'integer',
+        'is_featured'            => 'integer',
+        'visible_to_user_types'  => 'array',  // NULL = everyone; [] = hidden; [id,...] = specific types; 0 = guests
     ];
 
     public function translations(): \Illuminate\Database\Eloquent\Relations\MorphMany

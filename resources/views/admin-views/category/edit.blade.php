@@ -32,10 +32,16 @@
                     <div class="col-12">
                         <form action="{{route('admin.category.update',[$category['id']])}}" method="post"
                               enctype="multipart/form-data" id="category_form">
-                            @php($language=\App\Models\BusinessSetting::where('key','language')->first()?->value ?? null)
-                            @php($default_lang = 'ar')
+                            @php
+                                $language     = \App\Models\BusinessSetting::where('key','language')->first()?->value ?? null;
+                                $default_lang = 'ar';
+                                // Read raw DB value (bypasses 'array' cast edge-cases with null)
+                                $rawVtu          = $category->getAttributes()['visible_to_user_types'] ?? null;
+                                $everyoneChecked = ($rawVtu === null || $rawVtu === '');
+                                $savedIds        = $everyoneChecked ? [] : (json_decode($rawVtu, true) ?? []);
+                            @endphp
                             @if($language)
-                                @php($default_lang = json_decode($language)[0] ?? 'ar')
+                                @php $default_lang = json_decode($language)[0] ?? 'ar'; @endphp
                                 <ul class="nav nav-tabs mb-4 max-content">
                                     @foreach(json_decode($language) as $lang)
                                         <li class="nav-item">
@@ -158,12 +164,82 @@
                                                 @endif
 
                                             </div>
+                                            {{-- ── Category Visibility by User Type ─────────────── --}}
+                                            <div class="card border mb-3">
+                                                <div class="card-header py-2">
+                                                    <h6 class="card-header-title mb-0">
+                                                        <i class="tio tio-user-switch"></i>
+                                                        {{ translate('category_visibility') ?: 'من يرى هذا التصنيف' }}
+                                                    </h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="text-muted small mb-3">
+                                                        اختر من يستطيع رؤية هذا التصنيف في المتجر. اترك «كل الزوار» محدداً ليظهر للجميع.
+                                                    </p>
+
+                                                    {{-- Everyone toggle --}}
+                                                    <div class="custom-control custom-checkbox mb-3">
+                                                        <input type="checkbox"
+                                                               class="custom-control-input"
+                                                               id="vis-everyone"
+                                                               name="visible_everyone"
+                                                               value="1"
+                                                               {{ $everyoneChecked ? 'checked' : '' }}
+                                                               onchange="toggleVisibilityPanel(this)">
+                                                        <label class="custom-control-label font-weight-bold" for="vis-everyone">
+                                                            كل الزوار (بدون قيود)
+                                                        </label>
+                                                    </div>
+
+                                                    {{-- Specific types panel --}}
+                                                    <div id="vis-panel" style="{{ $everyoneChecked ? 'display:none' : '' }}">
+                                                        <div class="custom-control custom-checkbox mb-2">
+                                                            <input type="checkbox"
+                                                                   class="custom-control-input"
+                                                                   id="vis-guest"
+                                                                   name="visible_to_user_types[]"
+                                                                   value="0"
+                                                                   {{ in_array(0, $savedIds) ? 'checked' : '' }}>
+                                                            <label class="custom-control-label" for="vis-guest">
+                                                                <i class="tio tio-user-add"></i> الزوار غير المسجلين
+                                                            </label>
+                                                        </div>
+                                                        @if(isset($userTypes) && $userTypes->count())
+                                                            @foreach($userTypes as $ut)
+                                                            <div class="custom-control custom-checkbox mb-2">
+                                                                <input type="checkbox"
+                                                                       class="custom-control-input"
+                                                                       id="vis-ut-{{ $ut->id }}"
+                                                                       name="visible_to_user_types[]"
+                                                                       value="{{ $ut->id }}"
+                                                                       {{ in_array($ut->id, $savedIds) ? 'checked' : '' }}>
+                                                                <label class="custom-control-label" for="vis-ut-{{ $ut->id }}">
+                                                                    {{ $ut->name }}
+                                                                    @if($ut->is_default)
+                                                                        <span class="badge badge-soft-success badge-sm">{{ translate('default') }}</span>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                            @endforeach
+                                                        @else
+                                                            <p class="text-muted small">لا توجد أنواع عملاء بعد. اذهب إلى <strong>العملاء ← أنواع العملاء</strong> لإنشائها.</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div class="d-flex justify-content-end gap-3">
                                                 <button type="reset"
                                                         class="btn btn-secondary">{{translate('reset')}}</button>
                                                 <button type="submit"
                                                         class="btn btn-primary">{{translate('update')}}</button>
                                             </div>
+
+                                            <script>
+                                            function toggleVisibilityPanel(cb){
+                                                document.getElementById('vis-panel').style.display = cb.checked ? 'none' : '';
+                                            }
+                                            </script>
                                     </div>
                                 </div>
                         </form>
