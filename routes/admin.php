@@ -99,6 +99,7 @@ Route::group(['as' => 'admin.'], function () {
 
         Route::group(['prefix' => 'design-template', 'as' => 'design-template.'], function () {
             Route::get('add-new', [DesignTemplateController::class, 'index'])->name('add-new');
+            Route::get('by-category', [DesignTemplateController::class, 'byCategory'])->name('by-category');
             Route::post('store', [DesignTemplateController::class, 'store'])->name('store');
             Route::get('edit/{id}', [DesignTemplateController::class, 'edit'])->name('edit');
             Route::put('update/{id}', [DesignTemplateController::class, 'update'])->name('update');

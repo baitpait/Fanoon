@@ -257,11 +257,18 @@
                                         <span class="text-truncate">{{translate('bulk_export')}}</span>
                                     </a>
                                 </li>
-                                <li class="nav-item {{Request::is('admin/design-template*')?'active':''}}">
+                                <li class="nav-item {{Request::is('admin/design-template/add-new')?'active':''}}">
                                     <a class="nav-link" href="{{ route('admin.design-template.add-new') }}"
                                        title="{{ translate('design_templates') ?: 'قوالب التصميم' }}">
                                         <span class="tio-circle nav-indicator-icon"></span>
-                                        <span class="text-truncate">{{ translate('design_templates') ?: 'قوالب التصميم' }}</span>
+                                        <span class="text-truncate">إضافة قالب</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{Request::is('admin/design-template/by-category')?'active':''}}">
+                                    <a class="nav-link" href="{{ route('admin.design-template.by-category') }}"
+                                       title="القوالب حسب التصنيف">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">القوالب حسب التصنيف</span>
                                     </a>
                                 </li>
                             </ul>

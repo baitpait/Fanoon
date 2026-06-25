@@ -25,6 +25,37 @@ class DesignTemplateController extends Controller
         return Product::withoutGlobalScopes()->select('id', 'name')->orderBy('name')->limit(600)->get();
     }
 
+    public function byCategory(Request $request)
+    {
+        $search = $request->input('search', '');
+
+        $query = DesignTemplate::with(['mainCategory.parent', 'product'])
+            ->orderBy('position')
+            ->orderBy('id', 'desc');
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $all = $query->get();
+
+        // Group by category: "بدون تصنيف" | "اسم الرئيسي > اسم الفرعي"
+        $grouped = $all->groupBy(function ($t) {
+            if (!$t->mainCategory) return '__none__';
+            if ($t->mainCategory->parent_id == 0) return $t->mainCategory->name;
+            return ($t->mainCategory->parent->name ?? '—') . ' › ' . $t->mainCategory->name;
+        })->sortKeys();
+
+        // Move "بدون تصنيف" to the end
+        if ($grouped->has('__none__')) {
+            $none = $grouped->pull('__none__');
+            $grouped->put('بدون تصنيف', $none);
+        }
+
+        return view('admin-views.design-template.by-category',
+            compact('grouped', 'search'));
+    }
+
     public function index(Request $request)
     {
         $search  = $request->input('search', '');
