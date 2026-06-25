@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\FlashSaleController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\DesignTemplateController;
 use App\Http\Controllers\Admin\BusinessSettingsController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
@@ -94,6 +95,15 @@ Route::group(['as' => 'admin.'], function () {
             Route::put('update/{id}', [ClientController::class, 'update'])->name('update');
             Route::get('status/{id}/{status}', [ClientController::class, 'status'])->name('status');
             Route::delete('delete/{id}', [ClientController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'design-template', 'as' => 'design-template.'], function () {
+            Route::get('add-new', [DesignTemplateController::class, 'index'])->name('add-new');
+            Route::post('store', [DesignTemplateController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [DesignTemplateController::class, 'edit'])->name('edit');
+            Route::put('update/{id}', [DesignTemplateController::class, 'update'])->name('update');
+            Route::get('status/{id}/{status}', [DesignTemplateController::class, 'status'])->name('status');
+            Route::delete('delete/{id}', [DesignTemplateController::class, 'delete'])->name('delete');
         });
 
         Route::group(['prefix' => 'attribute', 'as' => 'attribute.'], function () {

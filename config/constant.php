@@ -12,6 +12,7 @@ const CACHE_POPULAR_CATEGORY_TABLE = 'cache_popular_category_table';
 const CACHE_CATEGORY_CHILDREN = 'cache_category_children';
 const CACHE_FEATURED_CATEGORIES = 'cache_featured_categories';
 const CACHE_CLIENT_TABLE = 'cache_client_table';
+const CACHE_DESIGN_TEMPLATES = 'cache_design_templates';
 
 /** الفرع الافتراضي الوحيد في النظام (وضع فرع واحد فقط) */
 const DEFAULT_BRANCH_ID = 1;

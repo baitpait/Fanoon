@@ -167,106 +167,138 @@ button{font-family:var(--font);cursor:pointer}
 }
 .btn-design:hover{background:var(--red-10)}
 
-/* DESIGN MODAL */
-.design-veil{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;
-  display:none;align-items:center;justify-content:center
-}
+/* ══ DESIGN MODAL — Advanced Canva-like Editor ══ */
+.design-veil{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:600;display:none;flex-direction:column}
 .design-veil.on{display:flex}
-.design-modal{
-  background:#1a1f1c;border-radius:20px;overflow:hidden;
-  width:min(98vw,1200px);height:min(96vh,800px);
-  display:flex;flex-direction:column;
-  box-shadow:0 20px 60px rgba(0,0,0,.6)
-}
+.design-modal{flex:1;display:flex;flex-direction:column;overflow:hidden;font-family:'Cairo',sans-serif;background:#141817;min-height:0}
+
+/* Header / topbar */
 .dm-header{
-  background:#22282a;border-bottom:1px solid #3a4540;
-  padding:12px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0
+  background:#0e1210;border-bottom:1px solid #2a3330;
+  display:flex;align-items:center;gap:3px;padding:6px 10px;
+  flex-shrink:0;min-height:48px;overflow-x:auto
 }
-.dm-title{font-size:16px;font-weight:800;color:#e8f0eb;font-family:'Cairo',sans-serif}
-.dm-close{
-  margin-inline-start:auto;background:none;border:none;
-  color:#8fa895;font-size:20px;cursor:pointer;padding:4px 8px;
-  border-radius:8px;transition:all .15s
-}
-.dm-close:hover{background:rgba(255,255,255,.1);color:#fff}
-.dm-body{flex:1;overflow:hidden;display:flex}
+.dm-header::-webkit-scrollbar{height:3px}
+.dm-header::-webkit-scrollbar-thumb{background:#2a3330}
+.dm-title{font-size:13px;font-weight:800;color:#e2ede6;white-space:nowrap;margin-inline-end:4px}
+.dm-prod-lbl{font-size:11px;color:#7a9282;white-space:nowrap}
+.dm-close{margin-inline-start:auto;background:none;border:none;color:#7a9282;font-size:18px;cursor:pointer;padding:5px 8px;border-radius:7px;transition:all .15s;flex-shrink:0}
+.dm-close:hover{background:rgba(255,255,255,.1);color:#e2ede6}
+.dm-body{flex:1;display:flex;overflow:hidden;min-height:0}
 
-/* Toolbar inside modal */
-.dm-tools{
-  background:#22282a;border-inline-end:1px solid #3a4540;
-  width:56px;display:flex;flex-direction:column;align-items:center;
-  padding:12px 0;gap:6px;flex-shrink:0
-}
-.dm-tool-btn{
-  width:40px;height:40px;border-radius:8px;background:transparent;
-  border:1px solid transparent;color:#8fa895;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;transition:all .15s;flex-shrink:0
-}
-.dm-tool-btn:hover{background:#2a3230;border-color:#3a4540;color:#e8f0eb}
-.dm-tool-btn.act{background:rgba(16,180,106,.15);border-color:#10b46a;color:#10b46a}
-.dm-tool-btn title{display:none}
-.dm-sep{width:32px;height:1px;background:#3a4540;margin:4px 0}
+/* toolbar buttons */
+.dm-tb{display:inline-flex;align-items:center;gap:4px;padding:5px 8px;background:transparent;border:1px solid transparent;border-radius:6px;color:#7a9282;font-family:'Cairo',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .12s}
+.dm-tb:hover{background:#202825;border-color:#2a3330;color:#e2ede6}
+.dm-tb.on{background:rgba(16,180,106,.15);border-color:#10b46a;color:#10b46a}
+.dm-tb.primary{background:#10b46a;border-color:#10b46a;color:#fff}
+.dm-tb.primary:hover{background:#0c9456}
+.dm-tb i{font-size:11px}
+.dm-tb-sep{width:1px;height:24px;background:#2a3330;margin:0 3px;flex-shrink:0}
+.dm-sz{background:#202825;border:1px solid #2a3330;border-radius:6px;color:#e2ede6;font-family:'Cairo',sans-serif;font-size:11px;padding:4px 7px;cursor:pointer;outline:none;flex-shrink:0}
+.dm-zoom-lbl{font-size:10px;color:#7a9282;min-width:30px;text-align:center;flex-shrink:0}
+#dm-align-bar{display:none;align-items:center;gap:2px}
+#dm-draw-opts{display:none;align-items:center;gap:5px}
+#dm-draw-opts label{font-size:10px;color:#7a9282}
+#dm-draw-opts input[type=range]{width:70px;accent-color:#10b46a}
+.dm-shapes-dd{position:relative;flex-shrink:0}
+.dm-shapes-menu{display:none;position:absolute;top:calc(100% + 4px);right:0;background:#1a1f1d;border:1px solid #2a3330;border-radius:9px;padding:7px;z-index:400;min-width:150px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+.dm-shapes-menu.open{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.dm-shapes-menu button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;background:#202825;border:1px solid #2a3330;border-radius:6px;color:#7a9282;font-size:10px;cursor:pointer;transition:all .12s}
+.dm-shapes-menu button:hover{border-color:#10b46a;color:#10b46a}
+.dm-shapes-menu button i{font-size:15px}
 
-/* Canvas area inside modal */
-.dm-canvas-area{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  background:#0f1512;overflow:hidden;position:relative
-}
-.dm-canvas-area::before{
-  content:'';position:absolute;inset:0;
-  background-image:radial-gradient(circle,#1e2e26 1px,transparent 1px);
-  background-size:22px 22px;pointer-events:none
-}
-#dm-canvas-wrap{position:relative;z-index:1;
-  box-shadow:0 6px 30px rgba(0,0,0,.5)}
+/* ── Left sidebar ── */
+.dm-sidebar{width:190px;flex-shrink:0;background:#161b19;border-inline-end:1px solid #2a3330;display:flex;flex-direction:column;overflow:hidden}
+.dm-sb-tabs{display:flex;border-bottom:1px solid #2a3330}
+.dm-sb-tab{flex:1;padding:6px 2px;text-align:center;font-size:9px;color:#4a6055;cursor:pointer;border-bottom:2px solid transparent;transition:all .12s}
+.dm-sb-tab:hover{color:#7a9282}
+.dm-sb-tab.on{color:#10b46a;border-bottom-color:#10b46a}
+.dm-sb-tab i{display:block;font-size:13px;margin-bottom:2px}
+.dm-sb-panes{flex:1;overflow-y:auto;padding:9px}
+.dm-sb-pane{display:none}
+.dm-sb-pane.on{display:block}
+.dm-sb-panes::-webkit-scrollbar{width:3px}
+.dm-sb-panes::-webkit-scrollbar-thumb{background:#2a3330}
+.dm-ssec{font-size:10px;font-weight:700;color:#4a6055;text-transform:uppercase;letter-spacing:.5px;margin:8px 0 5px}
+.dm-ssec:first-child{margin-top:0}
+.dm-s-row{display:flex;gap:4px;margin-bottom:5px;flex-wrap:wrap}
+.dm-sbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:3px;padding:6px 5px;background:#202825;border:1px solid #2a3330;border-radius:6px;color:#7a9282;font-family:'Cairo',sans-serif;font-size:10px;cursor:pointer;transition:all .12s;text-align:center;white-space:nowrap}
+.dm-sbtn:hover{border-color:#10b46a;color:#10b46a;background:#252e2a}
+.dm-sbtn i{font-size:12px}
+.dm-styled-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px}
+.dm-styled{padding:6px 4px;background:#202825;border:1px solid #2a3330;border-radius:6px;cursor:pointer;text-align:center;font-size:10px;transition:all .12s;color:#e2ede6}
+.dm-styled:hover{border-color:#10b46a;background:#252e2a}
+.dm-fonts{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:5px}
+.dm-font{padding:3px 7px;border-radius:14px;font-size:10px;cursor:pointer;background:#202825;border:1px solid #2a3330;color:#7a9282;transition:all .12s}
+.dm-font.on,.dm-font:hover{background:rgba(16,180,106,.15);border-color:#10b46a;color:#10b46a}
+.dm-shapes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:6px}
+.dm-shape{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 3px;background:#202825;border:1px solid #2a3330;border-radius:6px;cursor:pointer;font-size:9px;color:#7a9282;transition:all .12s}
+.dm-shape:hover{border-color:#10b46a;color:#10b46a;background:#252e2a}
+.dm-shape i{font-size:15px}
+.dm-upload{border:2px dashed #2a3330;border-radius:7px;padding:14px 8px;text-align:center;cursor:pointer;margin-bottom:6px;transition:border-color .2s}
+.dm-upload:hover{border-color:#10b46a}
+.dm-upload i{font-size:20px;color:#4a6055;display:block;margin-bottom:3px}
+.dm-upload p{font-size:10px;color:#7a9282}
+.dm-upload input{display:none}
+.dm-swatches{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.dm-swatch{width:22px;height:22px;border-radius:4px;cursor:pointer;border:2px solid rgba(255,255,255,.1);transition:border-color .12s;flex-shrink:0}
+.dm-swatch:hover{border-color:#10b46a}
+.dm-gradients{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:6px}
+.dm-grad{height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:border-color .12s}
+.dm-grad:hover{border-color:#10b46a}
+.dm-tmpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.dm-tmpl{border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid #2a3330;transition:border-color .12s;background:#202825;padding:3px}
+.dm-tmpl:hover{border-color:#10b46a}
+.dm-tmpl img,.dm-tmpl .dm-tmpl-ph{width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;display:block}
+.dm-tmpl .dm-tmpl-ph{background:#252e2a;display:flex;align-items:center;justify-content:center;color:#4a6055}
+.dm-tmpl-nm{font-size:9px;text-align:center;color:#7a9282;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Canvas ── */
+.dm-canvas-area{flex:1;min-width:0;background:#1d2220;overflow:auto;padding:20px;display:flex;align-items:flex-start;justify-content:center;position:relative}
+#dm-canvas-wrap{transform-origin:top center;flex-shrink:0;box-shadow:0 6px 30px rgba(0,0,0,.5);position:relative}
 #dm-canvas{display:block}
+#dm-grid-canvas{position:absolute;top:0;left:0;pointer-events:none;display:none}
 
-/* Right props */
-.dm-props{
-  background:#22282a;border-inline-start:1px solid #3a4540;
-  width:200px;display:flex;flex-direction:column;padding:12px;
-  gap:8px;overflow-y:auto;flex-shrink:0;font-family:'Cairo',sans-serif
-}
-.dm-sec{font-size:11px;font-weight:700;color:#8fa895;
-  text-transform:uppercase;letter-spacing:.5px;margin-top:8px}
-.dm-inp{
-  background:#1a1f1c;border:1px solid #3a4540;border-radius:7px;
-  color:#e8f0eb;font-family:'Cairo',sans-serif;font-size:12px;
-  padding:6px 10px;outline:none;width:100%
-}
-.dm-inp:focus{border-color:#10b46a}
-.dm-inp-row{display:flex;align-items:center;gap:6px}
-.dm-inp-row label{font-size:11px;color:#8fa895;flex-shrink:0;min-width:36px}
-input[type="color"].dm-color{
-  width:34px;height:28px;padding:2px;border-radius:6px;
-  cursor:pointer;background:#1a1f1c;border:1px solid #3a4540
-}
-.dm-align-row{display:flex;gap:3px}
-.dm-align-btn{
-  flex:1;padding:6px;border-radius:6px;background:#1a1f1c;
-  border:1px solid #3a4540;color:#8fa895;cursor:pointer;
-  font-size:12px;text-align:center;transition:all .12s
-}
-.dm-align-btn:hover{background:rgba(16,180,106,.1);border-color:#10b46a;color:#10b46a}
+/* ── Right panel ── */
+.dm-panel{width:250px;flex-shrink:0;background:#1a1f1d;border-inline-start:1px solid #2a3330;overflow-y:auto;font-size:12px}
+.dm-panel::-webkit-scrollbar{width:3px}
+.dm-panel::-webkit-scrollbar-thumb{background:#2a3330}
+.dm-pp-sec{padding:9px 11px;border-bottom:1px solid rgba(34,41,38,.6)}
+.dm-pp-lbl{font-size:10px;font-weight:700;color:#4a6055;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.dm-pp-row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.dm-pp-row label{font-size:10px;color:#7a9282;flex-shrink:0;min-width:36px}
+.dm-pp-inp{flex:1;background:#202825;border:1px solid #2a3330;border-radius:5px;color:#e2ede6;font-family:'Cairo',sans-serif;font-size:11px;padding:3px 7px;outline:none}
+.dm-pp-inp:focus{border-color:#10b46a}
+input[type=color].dm-pp-clr{width:30px;height:26px;padding:2px;border-radius:4px;cursor:pointer;background:#202825;border:1px solid #2a3330;flex-shrink:0}
+input[type=range].dm-pp-range{width:100%;accent-color:#10b46a;flex:1}
+.dm-pp-num{width:50px;background:#202825;border:1px solid #2a3330;border-radius:5px;color:#e2ede6;font-family:'Cairo',sans-serif;font-size:10px;padding:3px 5px;outline:none;text-align:center}
+.dm-pp-tabs{display:flex;gap:2px;margin-bottom:6px}
+.dm-pp-tab{flex:1;padding:4px 3px;border-radius:5px;background:#202825;border:1px solid #2a3330;color:#7a9282;font-size:10px;cursor:pointer;text-align:center;transition:all .12s}
+.dm-pp-tab.on{background:rgba(16,180,106,.15);border-color:#10b46a;color:#10b46a}
+.dm-pp-btn{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;padding:5px 8px;border-radius:6px;background:#202825;border:1px solid #2a3330;color:#7a9282;font-family:'Cairo',sans-serif;font-size:10px;cursor:pointer;transition:all .12s;margin-top:3px}
+.dm-pp-btn:hover{border-color:#10b46a;color:#e2ede6}
+.dm-pp-btn.dng{border-color:#e05c5c;color:#e05c5c}
+.dm-pp-btn.dng:hover{background:rgba(224,92,92,.12)}
+.dm-pp-align{flex:1;padding:5px;border-radius:5px;background:#202825;border:1px solid #2a3330;color:#7a9282;cursor:pointer;text-align:center;font-size:11px;transition:all .12s}
+.dm-pp-align:hover{border-color:#10b46a;color:#10b46a}
+.dm-bold-row{display:flex;gap:2px;margin-bottom:5px}
+.dm-bold{flex:1;padding:4px;border-radius:5px;background:#202825;border:1px solid #2a3330;color:#7a9282;font-size:12px;cursor:pointer;text-align:center;transition:all .12s}
+.dm-bold.on,.dm-bold:hover{border-color:#10b46a;color:#10b46a}
+.dm-dash-row{display:flex;gap:3px;margin-bottom:5px}
+.dm-dash{flex:1;padding:4px 2px;border-radius:5px;background:#202825;border:1px solid #2a3330;color:#7a9282;font-size:9px;cursor:pointer;text-align:center;transition:all .12s}
+.dm-dash.on,.dm-dash:hover{border-color:#10b46a;color:#10b46a}
+.dm-pp-empty{padding:24px 11px;text-align:center;color:#4a6055}
+.dm-pp-empty i{font-size:24px;display:block;margin-bottom:7px;opacity:.5}
+.dm-pp-empty p{font-size:10px}
 
-/* Footer with add-to-cart */
-.dm-footer{
-  background:#22282a;border-top:1px solid #3a4540;
-  padding:14px 20px;display:flex;align-items:center;
-  gap:12px;flex-shrink:0
-}
-.dm-hint{font-size:12px;color:#8fa895;flex:1;font-family:'Cairo',sans-serif}
-.dm-btn{
-  display:inline-flex;align-items:center;gap:7px;padding:10px 20px;
-  border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;
-  font-weight:700;cursor:pointer;border:none;transition:all .15s
-}
-.dm-btn.secondary{background:#2a3230;color:#e8f0eb;border:1px solid #3a4540}
-.dm-btn.secondary:hover{background:#3a4540}
+/* Footer */
+.dm-footer{background:#0e1210;border-top:1px solid #2a3330;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.dm-hint{font-size:11px;color:#7a9282;flex:1}
+.dm-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+.dm-btn.secondary{background:#202825;color:#e2ede6;border:1px solid #2a3330}
+.dm-btn.secondary:hover{background:#2a3330}
 .dm-btn.primary{background:#10b46a;color:#fff}
-.dm-btn.primary:hover{background:#0c8f52}
+.dm-btn.primary:hover{background:#0c9456}
 .dm-btn.primary:disabled{opacity:.6;cursor:not-allowed}
 
 /* Cart design thumbnail */
@@ -457,138 +489,376 @@ input[type="color"].dm-color{
      DESIGN EDITOR MODAL
 ════════════════════════════════════ -->
 <div class="design-veil" id="design-veil">
-  <div class="design-modal">
+<div class="design-modal">
 
-    <!-- Header -->
-    <div class="dm-header">
-      <i class="fa fa-palette" style="color:#10b46a;font-size:18px"></i>
-      <span class="dm-title">محرر التصميم</span>
-      <span id="dm-prod-label" style="font-size:12px;color:#8fa895;font-family:'Cairo',sans-serif"></span>
-      <button class="dm-close" onclick="closeDesignEditor()"><i class="fa fa-xmark"></i></button>
+  <!-- ── TOPBAR ── -->
+  <div class="dm-header">
+    <i class="fa fa-palette" style="color:#10b46a;font-size:15px;flex-shrink:0"></i>
+    <span class="dm-title">محرر التصميم</span>
+    <span id="dm-prod-label" class="dm-prod-lbl"></span>
+    <div class="dm-tb-sep"></div>
+
+    <!-- tools -->
+    <button class="dm-tb on" id="dm-t-sel" onclick="dmTool('select')"><i class="fa fa-arrow-pointer"></i></button>
+    <button class="dm-tb" id="dm-t-draw" onclick="dmTool('draw')"><i class="fa fa-pen"></i></button>
+    <div id="dm-draw-opts">
+      <label>لون</label><input type="color" id="dm-brush-clr" value="#10b46a" oninput="dmUpdateBrush()">
+      <label>سُمك</label><input type="range" min="1" max="40" value="4" id="dm-brush-w" oninput="dmUpdateBrush()">
+    </div>
+    <div class="dm-tb-sep"></div>
+
+    <!-- shapes -->
+    <div class="dm-shapes-dd">
+      <button class="dm-tb" onclick="dmToggleShapes()"><i class="fa fa-shapes"></i><span style="font-size:9px">▾</span></button>
+      <div class="dm-shapes-menu" id="dm-shapes-menu">
+        <button onclick="dmAddRect();dmCloseShapes()"><i class="fa fa-square"></i>مستطيل</button>
+        <button onclick="dmAddRounded();dmCloseShapes()"><i class="fa fa-square"></i>مدوّر</button>
+        <button onclick="dmAddCircle();dmCloseShapes()"><i class="fa fa-circle"></i>دائرة</button>
+        <button onclick="dmAddTriangle();dmCloseShapes()"><i class="fa fa-play fa-rotate-270"></i>مثلث</button>
+        <button onclick="dmAddDiamond();dmCloseShapes()"><i class="fa fa-diamond"></i>معيّن</button>
+        <button onclick="dmAddStar();dmCloseShapes()"><i class="fa fa-star"></i>نجمة</button>
+        <button onclick="dmAddLine();dmCloseShapes()"><i class="fa fa-minus"></i>خط</button>
+        <button onclick="dmAddArrow();dmCloseShapes()"><i class="fa fa-arrow-left"></i>سهم</button>
+        <button onclick="dmAddFrame();dmCloseShapes()"><i class="fa fa-border-all"></i>إطار</button>
+      </div>
     </div>
 
-    <!-- Body -->
-    <div class="dm-body">
+    <!-- image -->
+    <button class="dm-tb" onclick="document.getElementById('dm-img-in').click()"><i class="fa fa-image"></i></button>
+    <input type="file" id="dm-img-in" accept="image/*" style="display:none" onchange="dmUploadImg(event)">
 
-      <!-- Vertical tools -->
-      <div class="dm-tools">
-        <button class="dm-tool-btn act" id="dm-sel" onclick="dmTool('select')" title="اختيار"><i class="fa fa-arrow-pointer"></i></button>
-        <div class="dm-sep"></div>
-        <button class="dm-tool-btn" onclick="dmAddText()" title="نص"><i class="fa fa-font"></i></button>
-        <button class="dm-tool-btn" onclick="dmAddRect()" title="مستطيل"><i class="fa fa-square"></i></button>
-        <button class="dm-tool-btn" onclick="dmAddCircle()" title="دائرة"><i class="fa fa-circle"></i></button>
-        <button class="dm-tool-btn" onclick="dmAddLine()" title="خط"><i class="fa fa-minus"></i></button>
-        <div class="dm-sep"></div>
-        <button class="dm-tool-btn" onclick="document.getElementById('dm-img-in').click()" title="رفع صورة"><i class="fa fa-image"></i></button>
-        <input type="file" id="dm-img-in" accept="image/*" style="display:none" onchange="dmUploadImg(event)">
-        <div class="dm-sep"></div>
-        <button class="dm-tool-btn" onclick="dmUndo()" title="تراجع"><i class="fa fa-rotate-left"></i></button>
-        <button class="dm-tool-btn" onclick="dmRedo()" title="إعادة"><i class="fa fa-rotate-right"></i></button>
-        <div class="dm-sep"></div>
-        <button class="dm-tool-btn" onclick="dmDelete()" title="حذف"><i class="fa fa-trash" style="color:#e74c3c"></i></button>
-      </div>
+    <!-- bg -->
+    <label class="dm-tb" style="cursor:pointer">
+      <i class="fa fa-fill-drip"></i>
+      <input type="color" id="dm-bg-picker" value="#ffffff" oninput="dmSetBg(this.value)" style="width:0;height:0;opacity:0;position:absolute">
+    </label>
 
-      <!-- Canvas -->
-      <div class="dm-canvas-area" id="dm-canvas-area">
-        <div id="dm-canvas-wrap">
-          <canvas id="dm-canvas"></canvas>
-        </div>
-      </div>
+    <!-- grid -->
+    <button class="dm-tb" id="dm-grid-btn" onclick="dmToggleGrid()"><i class="fa fa-grid-4"></i></button>
 
-      <!-- Properties -->
-      <div class="dm-props" id="dm-props">
-        <div style="font-size:12px;color:#8fa895;text-align:center;padding:16px 0" id="dm-no-sel">
-          <i class="fa fa-arrow-pointer" style="font-size:22px;margin-bottom:6px;display:block"></i>
-          اختر عنصراً
-        </div>
+    <div class="dm-tb-sep"></div>
 
-        <!-- Text props -->
-        <div id="dm-text-props" style="display:none">
-          <div class="dm-sec">النص</div>
-          <div class="dm-inp-row" style="margin-bottom:6px">
-            <label>حجم</label>
-            <input type="number" class="dm-inp" id="dp-fsize" min="8" max="200" oninput="dmSet('fontSize',+this.value)">
-          </div>
-          <div class="dm-inp-row" style="margin-bottom:8px">
-            <label>لون</label>
-            <input type="color" class="dm-color" id="dp-fcolor" onchange="dmSet('fill',this.value)">
-          </div>
-          <div class="dm-align-row" style="margin-bottom:6px">
-            <button class="dm-align-btn" onclick="dmSet('fontWeight',dmC()?.fontWeight==='bold'?'normal':'bold')"><i class="fa fa-bold"></i></button>
-            <button class="dm-align-btn" onclick="dmSet('fontStyle',dmC()?.fontStyle==='italic'?'normal':'italic')"><i class="fa fa-italic"></i></button>
-          </div>
-          <div class="dm-align-row">
-            <button class="dm-align-btn" onclick="dmSet('textAlign','right')"><i class="fa fa-align-right"></i></button>
-            <button class="dm-align-btn" onclick="dmSet('textAlign','center')"><i class="fa fa-align-center"></i></button>
-            <button class="dm-align-btn" onclick="dmSet('textAlign','left')"><i class="fa fa-align-left"></i></button>
-          </div>
-        </div>
+    <!-- size -->
+    <select class="dm-sz" id="dm-size-sel" onchange="dmApplySizeFromSel(this.value)">
+      <option value="800x800">مربع 800</option>
+      <option value="1200x630">بانر ويب</option>
+      <option value="1080x1920">ستوري</option>
+      <option value="1080x1080">انستقرام</option>
+      <option value="400x400">ملصق</option>
+    </select>
 
-        <!-- Shape/Image props -->
-        <div id="dm-shape-props" style="display:none">
-          <div class="dm-sec">التعبئة</div>
-          <div class="dm-inp-row" style="margin-bottom:8px">
-            <label>لون</label>
-            <input type="color" class="dm-color" id="dp-fill" onchange="dmSet('fill',this.value)">
-          </div>
-          <div class="dm-sec">الحدود</div>
-          <div class="dm-inp-row" style="margin-bottom:6px">
-            <label>لون</label>
-            <input type="color" class="dm-color" id="dp-stroke" onchange="dmSet('stroke',this.value)">
-          </div>
-          <div class="dm-inp-row">
-            <label>سُمك</label>
-            <input type="number" class="dm-inp" id="dp-strokew" min="0" max="30" oninput="dmSet('strokeWidth',+this.value)">
-          </div>
-        </div>
+    <!-- zoom -->
+    <button class="dm-tb" onclick="dmZoomFit()"><i class="fa fa-expand"></i></button>
+    <button class="dm-tb" onclick="dmZoomStep(-.1)"><i class="fa fa-minus" style="font-size:9px"></i></button>
+    <span class="dm-zoom-lbl" id="dm-zoom-lbl">100%</span>
+    <button class="dm-tb" onclick="dmZoomStep(.1)"><i class="fa fa-plus" style="font-size:9px"></i></button>
 
-        <!-- Common -->
-        <div id="dm-common-props" style="display:none">
-          <div class="dm-sec">شفافية</div>
-          <input type="range" min="0" max="1" step=".05" id="dp-opacity"
-                 oninput="dmSet('opacity',+this.value)" style="width:100%;accent-color:#10b46a;margin-bottom:8px">
-          <div class="dm-sec">محاذاة</div>
-          <div class="dm-align-row" style="margin-bottom:4px">
-            <button class="dm-align-btn" onclick="dmAlign('left')"><i class="fa fa-align-left"></i></button>
-            <button class="dm-align-btn" onclick="dmAlign('center-h')"><i class="fa fa-align-center"></i></button>
-            <button class="dm-align-btn" onclick="dmAlign('right')"><i class="fa fa-align-right"></i></button>
-          </div>
-          <div class="dm-align-row">
-            <button class="dm-align-btn" onclick="dmAlign('top')"><i class="fa fa-arrow-up"></i></button>
-            <button class="dm-align-btn" onclick="dmAlign('center-v')"><i class="fa fa-arrows-up-down"></i></button>
-            <button class="dm-align-btn" onclick="dmAlign('bottom')"><i class="fa fa-arrow-down"></i></button>
-          </div>
-        </div>
+    <div class="dm-tb-sep"></div>
 
-        <!-- Background -->
-        <div class="dm-sec" style="margin-top:12px">خلفية</div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px">
-          @foreach(['#ffffff','#000000','#f5f0eb','#0f1512','#10b46a','#1e40af','#dc2626','#fbbf24'] as $c)
-          <div style="width:24px;height:24px;background:{{ $c }};border-radius:5px;cursor:pointer;border:2px solid rgba(255,255,255,.15)"
-               onclick="dmSetBg('{{ $c }}')"></div>
-          @endforeach
-          <label style="width:24px;height:24px;border-radius:5px;overflow:hidden;cursor:pointer;border:2px solid rgba(255,255,255,.15)">
-            <input type="color" style="width:32px;height:32px;margin:-4px;border:none;cursor:pointer" onchange="dmSetBg(this.value)">
-          </label>
-        </div>
-      </div>
+    <!-- undo/redo -->
+    <button class="dm-tb" onclick="dmUndo()"><i class="fa fa-rotate-left"></i></button>
+    <button class="dm-tb" onclick="dmRedo()"><i class="fa fa-rotate-right"></i></button>
 
-    </div><!-- .dm-body -->
-
-    <!-- Footer -->
-    <div class="dm-footer">
-      <div class="dm-hint">
-        <i class="fa fa-lightbulb" style="color:#f59e0b"></i>
-        أضف نصاً أو صورة على المنتج ثم اضغط "أضف للسلة مع التصميم"
-      </div>
-      <button class="dm-btn secondary" onclick="closeDesignEditor()">إلغاء</button>
-      <button class="dm-btn secondary" onclick="dmClearDesign()"><i class="fa fa-eraser"></i> مسح</button>
-      <button class="dm-btn primary" id="dm-add-cart-btn" onclick="dmAddToCart()">
-        <i class="fa fa-cart-plus"></i> أضف للسلة مع التصميم
-      </button>
+    <!-- align bar -->
+    <div id="dm-align-bar">
+      <div class="dm-tb-sep"></div>
+      <button class="dm-tb" onclick="dmAlign('left')"><i class="fa fa-align-left"></i></button>
+      <button class="dm-tb" onclick="dmAlign('hcenter')"><i class="fa fa-align-center"></i></button>
+      <button class="dm-tb" onclick="dmAlign('right')"><i class="fa fa-align-right"></i></button>
+      <button class="dm-tb" onclick="dmAlign('top')"><i class="fa fa-arrow-up"></i></button>
+      <button class="dm-tb" onclick="dmAlign('vcenter')"><i class="fa fa-arrows-up-down"></i></button>
+      <button class="dm-tb" onclick="dmAlign('bottom')"><i class="fa fa-arrow-down"></i></button>
+      <button class="dm-tb" onclick="dmClone()"><i class="fa fa-copy"></i></button>
+      <button class="dm-tb" style="color:#e05c5c" onclick="dmDelete()"><i class="fa fa-trash"></i></button>
     </div>
 
-  </div><!-- .design-modal -->
+    <button class="dm-close" onclick="closeDesignEditor()"><i class="fa fa-xmark"></i></button>
+  </div>
+
+  <!-- ── BODY ── -->
+  <div class="dm-body">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="dm-sidebar">
+      <div class="dm-sb-tabs">
+        <div class="dm-sb-tab on"  onclick="dmTab('text')"      title="نص">     <i class="fa fa-font"></i>نص</div>
+        <div class="dm-sb-tab"     onclick="dmTab('shapes')"    title="أشكال">  <i class="fa fa-shapes"></i>أشكال</div>
+        <div class="dm-sb-tab"     onclick="dmTab('image')"     title="صور">    <i class="fa fa-image"></i>صور</div>
+        <div class="dm-sb-tab"     onclick="dmTab('bg')"        title="خلفية">  <i class="fa fa-fill-drip"></i>خلفية</div>
+        <div class="dm-sb-tab"     onclick="dmTab('templates')" title="قوالب">  <i class="fa fa-palette"></i>قوالب</div>
+      </div>
+      <div class="dm-sb-panes">
+
+        <!-- TEXT -->
+        <div class="dm-sb-pane on" id="dm-pane-text">
+          <div class="dm-ssec">إضافة نص</div>
+          <div class="dm-s-row">
+            <div class="dm-sbtn" onclick="dmMkText('عنوان رئيسي',{fontSize:36,fontWeight:'bold'})"><i class="fa fa-heading"></i>عنوان</div>
+            <div class="dm-sbtn" onclick="dmMkText('نص فرعي',{fontSize:22})"><i class="fa fa-font"></i>فرعي</div>
+          </div>
+          <div class="dm-sbtn" style="width:100%;margin-bottom:7px" onclick="dmMkText('نص عادي',{fontSize:16})"><i class="fa fa-align-right"></i>نص عادي</div>
+          <div class="dm-ssec">نصوص مصمّمة</div>
+          <div class="dm-styled-grid">
+            <div class="dm-styled" onclick="dmAddStyled('sale')">🏷️ خصم</div>
+            <div class="dm-styled" onclick="dmAddStyled('badge')">⭐ شارة</div>
+            <div class="dm-styled" onclick="dmAddStyled('price')">💰 سعر</div>
+            <div class="dm-styled" onclick="dmAddStyled('title')">🎨 عنوان</div>
+            <div class="dm-styled" onclick="dmAddStyled('quote')">💬 اقتباس</div>
+            <div class="dm-styled" onclick="dmAddStyled('label')">📌 ملصق</div>
+          </div>
+          <div class="dm-ssec">الخط</div>
+          <div class="dm-fonts" id="dm-font-chips"></div>
+        </div>
+
+        <!-- SHAPES -->
+        <div class="dm-sb-pane" id="dm-pane-shapes">
+          <div class="dm-ssec">أشكال</div>
+          <div class="dm-shapes-grid">
+            <div class="dm-shape" onclick="dmAddRect()"><i class="fa fa-square"></i>مستطيل</div>
+            <div class="dm-shape" onclick="dmAddRounded()"><i class="fa fa-square"></i>مدوّر</div>
+            <div class="dm-shape" onclick="dmAddCircle()"><i class="fa fa-circle"></i>دائرة</div>
+            <div class="dm-shape" onclick="dmAddTriangle()"><i class="fa fa-play fa-rotate-270"></i>مثلث</div>
+            <div class="dm-shape" onclick="dmAddDiamond()"><i class="fa fa-diamond"></i>معيّن</div>
+            <div class="dm-shape" onclick="dmAddStar()"><i class="fa fa-star"></i>نجمة</div>
+            <div class="dm-shape" onclick="dmAddLine()"><i class="fa fa-minus"></i>خط</div>
+            <div class="dm-shape" onclick="dmAddArrow()"><i class="fa fa-arrow-left"></i>سهم</div>
+            <div class="dm-shape" onclick="dmAddHeart()"><i class="fa fa-heart"></i>قلب</div>
+          </div>
+          <div class="dm-ssec">إطارات</div>
+          <div class="dm-s-row">
+            <div class="dm-sbtn" onclick="dmAddFrame()"><i class="fa fa-border-all"></i>بسيط</div>
+            <div class="dm-sbtn" onclick="dmAddFrame('double')"><i class="fa fa-border-outer"></i>مزدوج</div>
+          </div>
+        </div>
+
+        <!-- IMAGE -->
+        <div class="dm-sb-pane" id="dm-pane-image">
+          <div class="dm-ssec">رفع صورة</div>
+          <div class="dm-upload" onclick="document.getElementById('dm-img-in').click()">
+            <i class="fa fa-cloud-arrow-up"></i>
+            <p>اضغط لرفع صورة</p>
+          </div>
+          <div class="dm-ssec">من رابط</div>
+          <div style="display:flex;gap:4px;margin-bottom:6px">
+            <input id="dm-url-inp" class="dm-pp-inp" placeholder="https://..." style="flex:1;font-size:10px">
+            <button class="dm-sbtn" style="flex:0 0 auto;padding:5px 8px" onclick="dmAddImageUrl()"><i class="fa fa-plus"></i></button>
+          </div>
+        </div>
+
+        <!-- BG -->
+        <div class="dm-sb-pane" id="dm-pane-bg">
+          <div class="dm-ssec">لون مخصص</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <label style="font-size:10px;color:#7a9282">اختر</label>
+            <input type="color" class="dm-pp-clr" id="dm-bg-picker2" value="#ffffff" oninput="dmSetBg(this.value);document.getElementById('dm-bg-picker').value=this.value">
+          </div>
+          <div class="dm-ssec">ألوان جاهزة</div>
+          <div class="dm-swatches">
+            @foreach(['#ffffff','#000000','#1a1a2e','#16213e','#e74c3c','#e67e22','#f39c12','#27ae60','#2980b9','#8e44ad','#f5f0eb','#2c3e50','#ecf0f1','#bdc3c7','#d35400','#34495e'] as $c)
+            <div class="dm-swatch" style="background:{{$c}}" onclick="dmSetBg('{{$c}}');document.getElementById('dm-bg-picker').value='{{$c}}';document.getElementById('dm-bg-picker2').value='{{$c}}'"></div>
+            @endforeach
+          </div>
+          <div class="dm-ssec">تدرجات</div>
+          <div class="dm-gradients">
+            <div class="dm-grad" style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="dmSetBgGrad('#667eea','#764ba2')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#f093fb,#f5576c)" onclick="dmSetBgGrad('#f093fb','#f5576c')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" onclick="dmSetBgGrad('#4facfe','#00f2fe')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#43e97b,#38f9d7)" onclick="dmSetBgGrad('#43e97b','#38f9d7')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#fa709a,#fee140)" onclick="dmSetBgGrad('#fa709a','#fee140')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)" onclick="dmSetBgGrad('#a18cd1','#fbc2eb')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#ffd89b,#19547b)" onclick="dmSetBgGrad('#ffd89b','#19547b')"></div>
+            <div class="dm-grad" style="background:linear-gradient(135deg,#11998e,#38ef7d)" onclick="dmSetBgGrad('#11998e','#38ef7d')"></div>
+          </div>
+        </div>
+
+        <!-- TEMPLATES -->
+        <div class="dm-sb-pane" id="dm-pane-templates">
+          <div class="dm-ssec">قوالب جاهزة</div>
+          <div id="dm-tmpl-grid">
+            <div style="text-align:center;padding:16px 0;color:#7a9282;font-size:10px">
+              <i class="fa fa-spinner fa-spin" style="font-size:18px;display:block;margin-bottom:5px"></i>جاري التحميل...
+            </div>
+          </div>
+        </div>
+
+      </div><!-- .dm-sb-panes -->
+    </div><!-- .dm-sidebar -->
+
+    <!-- CANVAS -->
+    <div class="dm-canvas-area" id="dm-canvas-area">
+      <div id="dm-canvas-wrap">
+        <canvas id="dm-canvas"></canvas>
+        <canvas id="dm-grid-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="dm-panel" id="dm-panel">
+
+      <div id="dm-pp-empty" class="dm-pp-empty">
+        <i class="fa fa-arrow-pointer"></i>
+        <p>اختر عنصراً للتعديل</p>
+      </div>
+
+      <!-- pos -->
+      <div id="dm-pp-pos" class="dm-pp-sec" style="display:none">
+        <div class="dm-pp-lbl">موضع وحجم</div>
+        <div class="dm-pp-row">
+          <label>X</label><input type="number" class="dm-pp-num" id="dp-x" oninput="dmSetXY()">
+          <label>Y</label><input type="number" class="dm-pp-num" id="dp-y" oninput="dmSetXY()">
+        </div>
+        <div class="dm-pp-row">
+          <label>عرض</label><input type="number" class="dm-pp-num" id="dp-w" oninput="dmSetWH()">
+          <label>ارتفاع</label><input type="number" class="dm-pp-num" id="dp-h" oninput="dmSetWH()">
+        </div>
+        <div class="dm-pp-row">
+          <label>دوران</label><input type="number" class="dm-pp-inp" id="dp-rot" oninput="dmSet('angle',+this.value)">
+        </div>
+        <div class="dm-pp-row">
+          <label>شفافية</label><input type="range" class="dm-pp-range" min="0" max="1" step=".05" id="dp-op" oninput="dmSet('opacity',+this.value)">
+        </div>
+      </div>
+
+      <!-- fill -->
+      <div id="dm-pp-fill" class="dm-pp-sec" style="display:none">
+        <div class="dm-pp-lbl">التعبئة</div>
+        <div class="dm-pp-tabs">
+          <div class="dm-pp-tab on" id="dp-fill-solid" onclick="dmSwitchFill('solid')">صلب</div>
+          <div class="dm-pp-tab"    id="dp-fill-grad"  onclick="dmSwitchFill('grad')">تدرج</div>
+          <div class="dm-pp-tab"    id="dp-fill-none"  onclick="dmSwitchFill('none')">شفاف</div>
+        </div>
+        <div id="dp-fill-solid-pane">
+          <div class="dm-pp-row"><label>لون</label><input type="color" class="dm-pp-clr" id="dp-fill-clr" oninput="dmSet('fill',this.value)"></div>
+        </div>
+        <div id="dp-fill-grad-pane" style="display:none">
+          <div class="dm-pp-row">
+            <label>لون 1</label><input type="color" class="dm-pp-clr" id="dp-gc1" value="#10b46a">
+            <label>لون 2</label><input type="color" class="dm-pp-clr" id="dp-gc2" value="#a78bfa">
+          </div>
+          <div class="dm-pp-row"><label>زاوية</label><input type="range" class="dm-pp-range" min="0" max="360" value="135" id="dp-gang"></div>
+          <button class="dm-pp-btn" onclick="dmApplyGrad()"><i class="fa fa-paint-roller"></i> تطبيق</button>
+        </div>
+        <div class="dm-pp-row" style="margin-top:7px"><label>حدود</label>
+          <input type="color" class="dm-pp-clr" id="dp-stroke-clr" oninput="dmSet('stroke',this.value)">
+          <input type="number" class="dm-pp-num" id="dp-stroke-w" min="0" max="50" oninput="dmSet('strokeWidth',+this.value)">
+        </div>
+        <div class="dm-dash-row">
+          <div class="dm-dash on" id="dp-dash-solid"  onclick="dmApplyDash('solid')">─ صلب</div>
+          <div class="dm-dash"    id="dp-dash-dashed" onclick="dmApplyDash('dashed')">-- مقطّع</div>
+          <div class="dm-dash"    id="dp-dash-dotted" onclick="dmApplyDash('dotted')">·· نقاط</div>
+        </div>
+        <div class="dm-pp-row"><label>rx</label><input type="number" class="dm-pp-num" id="dp-rx" min="0" max="200" oninput="dmSet('rx',+this.value);dmSet('ry',+this.value)"></div>
+        <div class="dm-pp-row"><label>مزج</label>
+          <select class="dm-pp-inp" id="dp-blend" onchange="dmSet('globalCompositeOperation',this.value)">
+            <option value="source-over">عادي</option>
+            <option value="multiply">ضرب</option>
+            <option value="screen">شاشة</option>
+            <option value="overlay">تراكب</option>
+            <option value="darken">تعتيم</option>
+            <option value="lighten">تفتيح</option>
+            <option value="difference">فرق</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- text -->
+      <div id="dm-pp-text" class="dm-pp-sec" style="display:none">
+        <div class="dm-pp-lbl">النص</div>
+        <div class="dm-pp-row">
+          <label>حجم</label><input type="number" class="dm-pp-num" id="dp-fsize" min="6" max="400" oninput="dmSet('fontSize',+this.value)">
+          <label>لون</label><input type="color" class="dm-pp-clr" id="dp-fclr" oninput="dmSet('fill',this.value)">
+        </div>
+        <div class="dm-bold-row">
+          <div class="dm-bold" id="dp-bold"   onclick="dmToggleBold()"><b>B</b></div>
+          <div class="dm-bold" id="dp-italic" onclick="dmToggleItalic()"><i>I</i></div>
+          <div class="dm-bold" id="dp-under"  onclick="dmToggleUnder()"><u>U</u></div>
+        </div>
+        <div class="dm-pp-row">
+          <div style="display:flex;gap:2px;flex:1">
+            <button class="dm-pp-align" onclick="dmSet('textAlign','right')"><i class="fa fa-align-right"></i></button>
+            <button class="dm-pp-align" onclick="dmSet('textAlign','center')"><i class="fa fa-align-center"></i></button>
+            <button class="dm-pp-align" onclick="dmSet('textAlign','left')"><i class="fa fa-align-left"></i></button>
+          </div>
+        </div>
+        <div class="dm-pp-row">
+          <label>اتجاه</label>
+          <button class="dm-pp-align" onclick="dmSetDir('rtl')"><i class="fa fa-align-right"></i> ع</button>
+          <button class="dm-pp-align" onclick="dmSetDir('ltr')"><i class="fa fa-align-left"></i> en</button>
+        </div>
+        <div class="dm-pp-row">
+          <label>تباعد</label><input type="number" class="dm-pp-num" id="dp-csp" step="1" oninput="dmSet('charSpacing',+this.value)">
+          <label>أسطر</label><input type="number" class="dm-pp-num" id="dp-lh"  step=".1" min=".5" oninput="dmSet('lineHeight',+this.value)">
+        </div>
+      </div>
+
+      <!-- image filters -->
+      <div id="dm-pp-img" class="dm-pp-sec" style="display:none">
+        <div class="dm-pp-lbl">فلاتر الصورة
+          <button class="dm-pp-btn" style="width:auto;padding:2px 6px;margin:0;font-size:9px" onclick="dmResetFilters()">إعادة</button>
+        </div>
+        <div class="dm-pp-row"><label>إضاءة</label><input type="range" class="dm-pp-range" min="-1" max="1" step=".05" value="0" id="dp-bright" oninput="dmApplyFilters()"></div>
+        <div class="dm-pp-row"><label>تباين</label><input type="range" class="dm-pp-range" min="-1" max="1" step=".05" value="0" id="dp-cont"   oninput="dmApplyFilters()"></div>
+        <div class="dm-pp-row"><label>تشبّع</label><input type="range" class="dm-pp-range" min="-1" max="1" step=".05" value="0" id="dp-sat"    oninput="dmApplyFilters()"></div>
+        <div class="dm-pp-row"><label>ضبابية</label><input type="range" class="dm-pp-range" min="0"  max="1" step=".02" value="0" id="dp-blur"   oninput="dmApplyFilters()"></div>
+        <div class="dm-pp-row"><label>لون</label><input type="range" class="dm-pp-range" min="-2" max="2" step=".1"  value="0" id="dp-hue"    oninput="dmApplyFilters()"></div>
+      </div>
+
+      <!-- shadow -->
+      <div id="dm-pp-shadow" class="dm-pp-sec" style="display:none">
+        <div class="dm-pp-lbl">الظل والتوهج</div>
+        <div class="dm-pp-tabs">
+          <div class="dm-pp-tab on" id="dp-eff-shadow" onclick="dmSwitchEff('shadow')">ظل</div>
+          <div class="dm-pp-tab"    id="dp-eff-glow"   onclick="dmSwitchEff('glow')">توهج</div>
+        </div>
+        <div id="dp-shadow-pane">
+          <div class="dm-pp-row"><label>لون</label><input type="color" class="dm-pp-clr" id="dp-sh-clr" value="#000000"></div>
+          <div class="dm-pp-row"><label>إزاحة X</label><input type="range" class="dm-pp-range" min="-30" max="30" value="5" id="dp-sh-x"></div>
+          <div class="dm-pp-row"><label>إزاحة Y</label><input type="range" class="dm-pp-range" min="-30" max="30" value="5" id="dp-sh-y"></div>
+          <div class="dm-pp-row"><label>ضبابية</label><input type="range" class="dm-pp-range" min="0" max="30" value="8" id="dp-sh-blur"></div>
+          <div class="dm-pp-row"><label>شفافية</label><input type="range" class="dm-pp-range" min="0" max="1" step=".05" value=".5" id="dp-sh-op"></div>
+          <div style="display:flex;gap:3px;margin-top:4px">
+            <button class="dm-pp-btn" onclick="dmApplyShadow()"><i class="fa fa-check"></i> تطبيق</button>
+            <button class="dm-pp-btn dng" onclick="dmRemoveShadow()"><i class="fa fa-xmark"></i> إزالة</button>
+          </div>
+        </div>
+        <div id="dp-glow-pane" style="display:none">
+          <div class="dm-pp-row"><label>لون</label><input type="color" class="dm-pp-clr" id="dp-gl-clr" value="#10b46a"></div>
+          <div class="dm-pp-row"><label>حجم</label><input type="range" class="dm-pp-range" min="0" max="40" value="12" id="dp-gl-size"></div>
+          <div class="dm-pp-row"><label>شفافية</label><input type="range" class="dm-pp-range" min="0" max="1" step=".05" value=".8" id="dp-gl-op"></div>
+          <div style="display:flex;gap:3px;margin-top:4px">
+            <button class="dm-pp-btn" onclick="dmApplyGlow(true)"><i class="fa fa-sparkles"></i> تطبيق</button>
+            <button class="dm-pp-btn dng" onclick="dmApplyGlow(false)"><i class="fa fa-xmark"></i> إزالة</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- layer -->
+      <div id="dm-pp-layer" class="dm-pp-sec" style="display:none">
+        <div class="dm-pp-lbl">الطبقة</div>
+        <div style="display:flex;gap:2px">
+          <button class="dm-pp-align" onclick="dm.bringToFront(dmC());dm.renderAll()" title="للمقدمة"><i class="fa fa-angle-double-up"></i></button>
+          <button class="dm-pp-align" onclick="dm.bringForward(dmC());dm.renderAll()" title="للأمام"><i class="fa fa-angle-up"></i></button>
+          <button class="dm-pp-align" onclick="dm.sendBackwards(dmC());dm.renderAll()" title="للخلف"><i class="fa fa-angle-down"></i></button>
+          <button class="dm-pp-align" onclick="dm.sendToBack(dmC());dm.renderAll()" title="للخلفية"><i class="fa fa-angle-double-down"></i></button>
+        </div>
+        <button class="dm-pp-btn dng" onclick="dmDelete()" style="margin-top:5px"><i class="fa fa-trash"></i> حذف العنصر</button>
+      </div>
+
+    </div><!-- .dm-panel -->
+
+  </div><!-- .dm-body -->
+
+  <!-- FOOTER -->
+  <div class="dm-footer">
+    <div class="dm-hint"><i class="fa fa-lightbulb" style="color:#f59e0b"></i> عدّل على القالب ثم اضغط "أضف للسلة مع التصميم"</div>
+    <button class="dm-btn secondary" onclick="closeDesignEditor()">إلغاء</button>
+    <button class="dm-btn secondary" onclick="dmClearDesign()"><i class="fa fa-eraser"></i> مسح</button>
+    <button class="dm-btn primary" id="dm-add-cart-btn" onclick="dmAddToCart()">
+      <i class="fa fa-cart-plus"></i> أضف للسلة مع التصميم
+    </button>
+  </div>
+
+</div><!-- .design-modal -->
 </div><!-- .design-veil -->
 
 <!-- Fabric.js -->
@@ -842,297 +1112,500 @@ renderCart();
 init();
 
 /* ═══════════════════════════════════════════
-   DESIGN EDITOR
+   DESIGN EDITOR — Advanced Canva-like Modal
 ═══════════════════════════════════════════ */
-let dm = null;           // Fabric canvas
-let dmHistory = [], dmHistIdx = -1;
-let dmProductImgUrl = '';
+let dm = null;
+let dmHist = [], dmHistIdx = -1;
+let dmZoom = 1, dmGridOn = false;
+let _dmTemplates = [], _dmTemplatesLoaded = false;
 
-// ── فتح وإغلاق ──
+const DM_FONTS = ['Cairo','Tajawal','Amiri','Arial','Georgia','Impact','Tahoma'];
+
+/* ── Open / Close ── */
 function openDesignEditor() {
   if (!_prod) return;
-  const veil = document.getElementById('design-veil');
-  veil.classList.add('on');
+  document.getElementById('design-veil').classList.add('on');
   document.body.style.overflow = 'hidden';
-  setTimeout(() => { initDmCanvas(); }, 50);
   document.getElementById('dm-prod-label').textContent = _prod.name || '';
+  setTimeout(initDmCanvas, 60);
 }
-
 function closeDesignEditor() {
   document.getElementById('design-veil').classList.remove('on');
   document.body.style.overflow = '';
 }
 
-// ── تهيئة canvas ──
+/* ── Init ── */
 function initDmCanvas() {
   if (dm) { dm.dispose(); dm = null; }
 
-  // حجم canvas بناءً على حاوية الـ modal
-  const area = document.getElementById('dm-canvas-area');
-  const maxW  = area.clientWidth  - 40;
-  const maxH  = area.clientHeight - 40;
-  const side  = Math.min(maxW, maxH, 600);
-
   dm = new fabric.Canvas('dm-canvas', {
-    width: side, height: side,
     backgroundColor: '#ffffff',
     preserveObjectStacking: true,
+    selection: true,
   });
 
+  dmApplyCanvasSize(800, 800);
+  dmBuildFontChips();
+  dmBindEvents();
+  dmLoadTemplates();
+}
+
+/* ── Canvas size & zoom ── */
+function dmApplyCanvasSize(w, h) {
+  dm.setWidth(w); dm.setHeight(h);
+  const gc = document.getElementById('dm-grid-canvas');
+  if (gc) { gc.width = w; gc.height = h; }
+  dm.renderAll();
+  setTimeout(dmZoomFit, 30);
+}
+function dmApplySizeFromSel(val) {
+  const [w, h] = val.split('x').map(Number);
+  dmApplyCanvasSize(w, h);
+}
+function dmZoomFit() {
+  const area  = document.getElementById('dm-canvas-area');
+  const wrap  = document.getElementById('dm-canvas-wrap');
+  if (!area || !wrap) return;
+  const avail  = Math.max(60, area.clientWidth  - 40);
+  const availH = Math.max(60, area.clientHeight - 40);
+  const scale  = Math.min(1, avail / dm.width, availH / dm.height);
+  dmZoom = scale;
+  wrap.style.transform       = `scale(${scale})`;
+  wrap.style.transformOrigin = 'top center';
+  wrap.style.width  = dm.width  + 'px';
+  wrap.style.height = dm.height + 'px';
+  document.getElementById('dm-zoom-lbl').textContent = Math.round(scale * 100) + '%';
+}
+function dmZoomStep(d) {
   const wrap = document.getElementById('dm-canvas-wrap');
-  wrap.style.width  = side + 'px';
-  wrap.style.height = side + 'px';
-
-  // نضع صورة المنتج كطبقة شبه شفافة (ghost) في الخلفية
-  const imgs = Array.isArray(_prod.image_fullpath) ? _prod.image_fullpath : (_prod.image_fullpath ? [_prod.image_fullpath] : []);
-  const realImg = imgs.find(u => u && !u.includes('img2.jpg'));
-  if (realImg) {
-    dmProductImgUrl = realImg;
-    fabric.Image.fromURL(realImg, img => {
-      // مقياس يناسب الـ canvas
-      const scaleX = (side * 0.85) / img.width;
-      const scaleY = (side * 0.85) / img.height;
-      const scale  = Math.min(scaleX, scaleY);
-      img.set({
-        left: side / 2, top: side / 2,
-        originX: 'center', originY: 'center',
-        scaleX: scale, scaleY: scale,
-        opacity: 0.25,
-        selectable: false, evented: false,
-        excludeFromExport: true,  // لا تُصدَّر مع التصميم النهائي
-        isProductGhost: true,
-      });
-      dm.add(img);
-      dm.sendToBack(img);
-      dm.renderAll();
-    }, { crossOrigin: 'anonymous' });
-  }
-
-  dm.on('selection:created',  dmUpdateProps);
-  dm.on('selection:updated',  dmUpdateProps);
-  dm.on('selection:cleared',  dmClearProps);
-  dm.on('object:modified',    () => { dmUpdateProps(); dmSaveHistory(); });
-
-  dmSaveHistory();
-  dmHistIdx = 0; dmHistory = [JSON.stringify(dm.toJSON())];
+  dmZoom = Math.max(0.1, Math.min(3, dmZoom + d));
+  wrap.style.transform       = `scale(${dmZoom})`;
+  wrap.style.transformOrigin = 'top center';
+  document.getElementById('dm-zoom-lbl').textContent = Math.round(dmZoom * 100) + '%';
 }
 
-// ── أدوات ──
+/* ── Grid ── */
+function dmDrawGrid() {
+  const gc = document.getElementById('dm-grid-canvas');
+  if (!gc) return;
+  const ctx = gc.getContext('2d');
+  ctx.clearRect(0, 0, gc.width, gc.height);
+  ctx.strokeStyle = 'rgba(255,255,255,.1)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= gc.width;  x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,gc.height); ctx.stroke(); }
+  for (let y = 0; y <= gc.height; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(gc.width,y); ctx.stroke(); }
+}
+function dmToggleGrid() {
+  dmGridOn = !dmGridOn;
+  const gc = document.getElementById('dm-grid-canvas');
+  gc.style.display = dmGridOn ? 'block' : 'none';
+  document.getElementById('dm-grid-btn').classList.toggle('on', dmGridOn);
+  if (dmGridOn) dmDrawGrid();
+}
+
+/* ── Tools ── */
 function dmTool(t) {
-  document.querySelectorAll('.dm-tool-btn').forEach(b => b.classList.remove('act'));
-  if (t === 'select') document.getElementById('dm-sel').classList.add('act');
-  dm.isDrawingMode = false;
+  document.getElementById('dm-t-sel').classList.toggle('on',  t === 'select');
+  document.getElementById('dm-t-draw').classList.toggle('on', t === 'draw');
+  const opts = document.getElementById('dm-draw-opts');
+  if (t === 'draw') {
+    dm.isDrawingMode = true;
+    dm.freeDrawingBrush = new fabric.PencilBrush(dm);
+    dmUpdateBrush();
+    opts.style.display = 'flex';
+  } else {
+    dm.isDrawingMode = false;
+    opts.style.display = 'none';
+  }
+}
+function dmUpdateBrush() {
+  if (!dm.freeDrawingBrush) return;
+  dm.freeDrawingBrush.color = document.getElementById('dm-brush-clr').value;
+  dm.freeDrawingBrush.width = +document.getElementById('dm-brush-w').value;
 }
 
-function dmAddText(txt = 'اكتب هنا', size = 22) {
-  if (!dm) return;
-  const o = new fabric.IText(txt, {
-    right: 30, top: 30, fontFamily: 'Cairo',
-    fontSize: size, fill: '#000', textAlign: 'right',
-    direction: 'rtl', originX: 'right',
+/* ── Shapes dropdown ── */
+function dmToggleShapes() { document.getElementById('dm-shapes-menu').classList.toggle('open'); }
+function dmCloseShapes()  { document.getElementById('dm-shapes-menu').classList.remove('open'); }
+document.addEventListener('click', e => { if (!e.target.closest('.dm-shapes-dd')) dmCloseShapes(); });
+
+/* ── Sidebar tabs ── */
+function dmTab(name) {
+  ['text','shapes','image','bg','templates'].forEach(n => {
+    document.getElementById('dm-pane-'+n).classList.toggle('on', n===name);
   });
-  dm.add(o); dm.setActiveObject(o); dm.renderAll(); dmSaveHistory();
+  document.querySelectorAll('.dm-sb-tab').forEach((el,i) => {
+    el.classList.toggle('on', ['text','shapes','image','bg','templates'][i]===name);
+  });
+  if (name==='templates') dmLoadTemplates();
 }
-function dmAddRect() {
+
+/* ── Text ── */
+function dmMkText(txt, opts={}) {
   if (!dm) return;
-  const o = new fabric.Rect({ left:60,top:60,width:160,height:100,fill:'#10b46a',rx:6,ry:6 });
-  dm.add(o); dm.setActiveObject(o); dm.renderAll(); dmSaveHistory();
+  const o = new fabric.IText(txt, Object.assign({
+    right:40, top:40, fontFamily:'Cairo', fontSize:24,
+    fontWeight:'normal', fill:'#000000', textAlign:'right',
+    direction:'rtl', originX:'right', selectable:true,
+  }, opts));
+  dm.add(o); dm.setActiveObject(o); o.enterEditing(); dm.renderAll(); dmSaveHist();
 }
-function dmAddCircle() {
-  if (!dm) return;
-  const o = new fabric.Circle({ left:80,top:80,radius:70,fill:'#4ecdc4' });
-  dm.add(o); dm.setActiveObject(o); dm.renderAll(); dmSaveHistory();
+function dmAddStyled(style) {
+  const s = {
+    sale:  {txt:'خصم 50%',    fs:38,fw:'900',fill:'#e05c5c'},
+    badge: {txt:'⭐ الأفضل',  fs:18,fw:'700',fill:'#fff',  bg:'#f59e0b'},
+    price: {txt:'١٩٩ ريال',  fs:34,fw:'800',fill:'#10b46a'},
+    title: {txt:'عنوان رئيسي',fs:36,fw:'900',fill:'#1a1a2e'},
+    quote: {txt:'"نص اقتباس"',fs:20,fw:'400',fill:'#555'},
+    label: {txt:'تسمية',      fs:13,fw:'700',fill:'#fff',  bg:'#8e44ad'},
+  }[style];
+  if (!s) return;
+  const o = new fabric.IText(s.txt, {
+    right:100, top:100, fontFamily:'Cairo', fontSize:s.fs, fontWeight:s.fw,
+    fill:s.fill, textAlign:'right', direction:'rtl', originX:'right',
+    backgroundColor: s.bg||'',
+  });
+  dm.add(o); dm.setActiveObject(o); dm.renderAll(); dmSaveHist();
 }
-function dmAddLine() {
-  if (!dm) return;
-  const o = new fabric.Line([30,30,250,30],{stroke:'#000',strokeWidth:3});
-  dm.add(o); dm.setActiveObject(o); dm.renderAll(); dmSaveHistory();
+
+/* ── Shapes ── */
+function _dmAdd(obj) { dm.add(obj); dm.setActiveObject(obj); dm.renderAll(); dmSaveHist(); }
+function dmAddRect()     { _dmAdd(new fabric.Rect({left:80,top:80,width:180,height:110,fill:'#10b46a',stroke:'transparent',strokeWidth:0})); }
+function dmAddRounded()  { _dmAdd(new fabric.Rect({left:80,top:80,width:180,height:110,fill:'#a78bfa',stroke:'transparent',strokeWidth:0,rx:20,ry:20})); }
+function dmAddCircle()   { _dmAdd(new fabric.Circle({left:90,top:90,radius:70,fill:'#4facfe',stroke:'transparent',strokeWidth:0})); }
+function dmAddTriangle() { _dmAdd(new fabric.Triangle({left:80,top:70,width:150,height:130,fill:'#f093fb',stroke:'transparent',strokeWidth:0})); }
+function dmAddDiamond()  { _dmAdd(new fabric.Polygon([{x:80,y:0},{x:160,y:80},{x:80,y:160},{x:0,y:80}],{left:90,top:90,fill:'#f59e0b',stroke:'transparent',strokeWidth:0})); }
+function dmAddStar() {
+  const pts=[]; for(let i=0;i<10;i++){const a=(Math.PI/5)*i-Math.PI/2,r=i%2===0?80:36;pts.push({x:Math.cos(a)*r,y:Math.sin(a)*r});}
+  _dmAdd(new fabric.Polygon(pts,{left:90,top:90,fill:'#ffd89b',stroke:'transparent',strokeWidth:0}));
 }
+function dmAddLine()  { _dmAdd(new fabric.Line([40,40,300,40],{stroke:'#000',strokeWidth:3,selectable:true})); }
+function dmAddArrow() {
+  _dmAdd(new fabric.Path('M 0 0 L 150 0 M 110 -25 L 150 0 L 110 25',{left:90,top:90,stroke:'#000',strokeWidth:4,fill:'transparent'}));
+}
+function dmAddHeart() {
+  _dmAdd(new fabric.Path('M 0,-30 C 0,-70 -60,-70 -60,-30 C -60,10 0,50 0,70 C 0,50 60,10 60,-30 C 60,-70 0,-70 0,-30 Z',{left:90,top:80,fill:'#e05c5c',stroke:'transparent',strokeWidth:0}));
+}
+function dmAddFrame(type='simple') {
+  const cw=dm.width, ch=dm.height, m=20, r=type==='double'?2:3;
+  _dmAdd(new fabric.Rect({left:m,top:m,width:cw-m*2,height:ch-m*2,fill:'transparent',stroke:'#000',strokeWidth:r,rx:4,ry:4}));
+  if(type==='double') _dmAdd(new fabric.Rect({left:m+10,top:m+10,width:cw-m*2-20,height:ch-m*2-20,fill:'transparent',stroke:'#000',strokeWidth:1,rx:4,ry:4}));
+}
+
+/* ── Image ── */
 function dmUploadImg(ev) {
-  const f = ev.target.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = e => fabric.Image.fromURL(e.target.result, img => {
-    img.scaleToWidth(Math.min(220, dm.width * 0.4));
-    img.set({left:60, top:60});
-    dm.add(img); dm.setActiveObject(img); dm.renderAll(); dmSaveHistory();
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>fabric.Image.fromURL(e.target.result,img=>{
+    img.scaleToWidth(Math.min(280,dm.width*.45));
+    img.set({left:60,top:60});
+    dm.add(img); dm.setActiveObject(img); dm.renderAll(); dmSaveHist();
   });
-  r.readAsDataURL(f);
-  ev.target.value = '';
+  r.readAsDataURL(f); ev.target.value='';
+}
+function dmAddImageUrl() {
+  const url=document.getElementById('dm-url-inp').value.trim(); if(!url) return;
+  fabric.Image.fromURL(url,img=>{
+    if(!img) return;
+    img.scaleToWidth(Math.min(280,dm.width*.45));
+    img.set({left:60,top:60,crossOrigin:'anonymous'});
+    dm.add(img); dm.setActiveObject(img); dm.renderAll(); dmSaveHist();
+  },{crossOrigin:'anonymous'});
+  document.getElementById('dm-url-inp').value='';
 }
 
-// ── خلفية ──
-function dmSetBg(color) {
-  if (!dm) return;
-  dm.setBackgroundColor(color, () => dm.renderAll());
-  dmSaveHistory();
+/* ── Background ── */
+function dmSetBg(color) { if(!dm) return; dm.setBackgroundColor(color,()=>dm.renderAll()); dmSaveHist(); }
+function dmSetBgGrad(c1,c2) {
+  if(!dm) return;
+  dm.setBackgroundColor(new fabric.Gradient({type:'linear',coords:{x1:0,y1:0,x2:dm.width,y2:dm.height},colorStops:[{offset:0,color:c1},{offset:1,color:c2}]}),()=>dm.renderAll());
+  dmSaveHist();
 }
 
-// ── خصائص ──
+/* ── Object helpers ── */
 function dmC() { return dm?.getActiveObject(); }
-
-function dmSet(prop, val) {
-  const o = dmC(); if (!o) return;
-  o.set(prop, val); dm.renderAll();
-}
-
-function dmAlign(pos) {
-  const o = dmC(); if (!o) return;
-  const cw = dm.width, ch = dm.height;
-  const ow = o.getScaledWidth(), oh = o.getScaledHeight();
-  if (pos==='left')     o.set({left:0, originX:'left'});
-  if (pos==='right')    o.set({left:cw-ow, originX:'left'});
-  if (pos==='center-h') o.set({left:(cw-ow)/2, originX:'left'});
-  if (pos==='top')      o.set({top:0, originY:'top'});
-  if (pos==='bottom')   o.set({top:ch-oh, originY:'top'});
-  if (pos==='center-v') o.set({top:(ch-oh)/2, originY:'top'});
+function dmSet(prop,val) { const o=dmC(); if(!o||o.isProductGhost) return; o.set(prop,val); dm.renderAll(); }
+function dmSetXY() {
+  const o=dmC(); if(!o) return;
+  o.set({left:+document.getElementById('dp-x').value, top:+document.getElementById('dp-y').value});
   o.setCoords(); dm.renderAll();
 }
-
+function dmSetWH() {
+  const o=dmC(); if(!o) return;
+  const w=+document.getElementById('dp-w').value, h=+document.getElementById('dp-h').value;
+  o.set({scaleX:w/o.width, scaleY:h/o.height}); o.setCoords(); dm.renderAll();
+}
+function dmAlign(pos) {
+  const o=dmC(); if(!o||o.isProductGhost) return;
+  const cw=dm.width, ch=dm.height, ow=o.getScaledWidth(), oh=o.getScaledHeight();
+  if(pos==='left')    o.set({left:0,originX:'left'});
+  if(pos==='right')   o.set({left:cw-ow,originX:'left'});
+  if(pos==='hcenter') o.set({left:(cw-ow)/2,originX:'left'});
+  if(pos==='top')     o.set({top:0,originY:'top'});
+  if(pos==='bottom')  o.set({top:ch-oh,originY:'top'});
+  if(pos==='vcenter') o.set({top:(ch-oh)/2,originY:'top'});
+  o.setCoords(); dm.renderAll(); dmSaveHist();
+}
 function dmDelete() {
-  const o = dmC(); if (!o || o.isProductGhost) return;
-  if (o.type === 'activeSelection') { o.getObjects().forEach(x => !x.isProductGhost && dm.remove(x)); dm.discardActiveObject(); }
+  const o=dmC(); if(!o||o.isProductGhost) return;
+  if(o.type==='activeSelection'){o.getObjects().forEach(x=>!x.isProductGhost&&dm.remove(x));dm.discardActiveObject();}
   else dm.remove(o);
-  dm.renderAll(); dmSaveHistory();
+  dm.renderAll(); dmSaveHist();
+}
+function dmClone() {
+  const o=dmC(); if(!o||o.isProductGhost) return;
+  o.clone(cl=>{cl.set({left:o.left+20,top:o.top+20});dm.add(cl);dm.setActiveObject(cl);dm.renderAll();dmSaveHist();});
 }
 
-function dmUpdateProps() {
-  const o = dmC();
-  document.getElementById('dm-no-sel').style.display = o ? 'none' : '';
-  document.getElementById('dm-text-props').style.display = (o?.type==='i-text'||o?.type==='text') ? '' : 'none';
-  document.getElementById('dm-shape-props').style.display = (o && o.type!=='i-text' && o.type!=='text') ? '' : 'none';
-  document.getElementById('dm-common-props').style.display = o ? '' : 'none';
-  if (!o) return;
-  if (o.type==='i-text'||o.type==='text') {
-    document.getElementById('dp-fsize').value  = o.fontSize || 22;
-    document.getElementById('dp-fcolor').value = dmHex(o.fill||'#000');
-  } else {
-    document.getElementById('dp-fill').value   = dmHex(o.fill||'#10b46a');
-    document.getElementById('dp-stroke').value = dmHex(o.stroke||'#000');
-    document.getElementById('dp-strokew').value = o.strokeWidth || 0;
+/* ── Fill ── */
+function dmSwitchFill(tab) {
+  ['solid','grad','none'].forEach(t=>{
+    document.getElementById('dp-fill-'+t).classList.toggle('on',t===tab);
+    const p=document.getElementById('dp-fill-'+t+'-pane'); if(p) p.style.display=t===tab?'':'none';
+  });
+  if(tab==='none'){const o=dmC();if(o){o.set('fill','transparent');dm.renderAll();}}
+  if(tab==='solid'){const o=dmC();if(o){o.set('fill',document.getElementById('dp-fill-clr').value);dm.renderAll();}}
+}
+function dmApplyGrad() {
+  const o=dmC(); if(!o) return;
+  const c1=document.getElementById('dp-gc1').value, c2=document.getElementById('dp-gc2').value;
+  const ang=+document.getElementById('dp-gang').value*Math.PI/180;
+  const w=o.width||100, h=o.height||100;
+  o.set('fill',new fabric.Gradient({type:'linear',coords:{x1:(w/2)-Math.cos(ang)*(w/2),y1:(h/2)-Math.sin(ang)*(h/2),x2:(w/2)+Math.cos(ang)*(w/2),y2:(h/2)+Math.sin(ang)*(h/2)},colorStops:[{offset:0,color:c1},{offset:1,color:c2}]}));
+  dm.renderAll();
+}
+function dmApplyDash(style) {
+  const o=dmC(); if(!o) return;
+  const sw=o.strokeWidth||2;
+  ['solid','dashed','dotted'].forEach(s=>document.getElementById('dp-dash-'+s).classList.toggle('on',s===style));
+  if(style==='solid')  o.set('strokeDashArray',null);
+  if(style==='dashed') o.set('strokeDashArray',[sw*4,sw*2]);
+  if(style==='dotted') o.set('strokeDashArray',[sw,sw*2]);
+  dm.renderAll();
+}
+
+/* ── Text controls ── */
+function dmToggleBold()   { const o=dmC();if(!o)return;o.set('fontWeight',o.fontWeight==='bold'?'normal':'bold');dm.renderAll();document.getElementById('dp-bold').classList.toggle('on',o.fontWeight==='bold'); }
+function dmToggleItalic() { const o=dmC();if(!o)return;o.set('fontStyle',o.fontStyle==='italic'?'normal':'italic');dm.renderAll();document.getElementById('dp-italic').classList.toggle('on',o.fontStyle==='italic'); }
+function dmToggleUnder()  { const o=dmC();if(!o)return;o.set('underline',!o.underline);dm.renderAll();document.getElementById('dp-under').classList.toggle('on',!!o.underline); }
+function dmSetDir(dir)    { const o=dmC();if(!o)return;o.set({direction:dir,textAlign:dir==='rtl'?'right':'left'});dm.renderAll(); }
+
+/* ── Image filters ── */
+function dmApplyFilters() {
+  const o=dmC(); if(!o||o.type!=='image') return;
+  o.filters=[
+    new fabric.Image.filters.Brightness({brightness:+document.getElementById('dp-bright').value}),
+    new fabric.Image.filters.Contrast({contrast:+document.getElementById('dp-cont').value}),
+    new fabric.Image.filters.Saturation({saturation:+document.getElementById('dp-sat').value}),
+    new fabric.Image.filters.Blur({blur:+document.getElementById('dp-blur').value}),
+    new fabric.Image.filters.HueRotation({rotation:+document.getElementById('dp-hue').value}),
+  ];
+  o.applyFilters(); dm.renderAll();
+}
+function dmResetFilters() {
+  ['dp-bright','dp-cont','dp-sat','dp-blur','dp-hue'].forEach(id=>document.getElementById(id).value=0);
+  const o=dmC();if(o&&o.type==='image'){o.filters=[];o.applyFilters();dm.renderAll();}
+}
+
+/* ── Shadow / Glow ── */
+function dmSwitchEff(tab) {
+  ['shadow','glow'].forEach(t=>{
+    document.getElementById('dp-eff-'+t).classList.toggle('on',t===tab);
+    document.getElementById('dp-'+t+'-pane').style.display=t===tab?'':'none';
+  });
+}
+function dmHex2rgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`${r},${g},${b}`;}
+function dmApplyShadow() {
+  const o=dmC();if(!o) return;
+  o.set('shadow',new fabric.Shadow({color:`rgba(${dmHex2rgb(document.getElementById('dp-sh-clr').value)},${+document.getElementById('dp-sh-op').value})`,offsetX:+document.getElementById('dp-sh-x').value,offsetY:+document.getElementById('dp-sh-y').value,blur:+document.getElementById('dp-sh-blur').value}));
+  dm.renderAll();
+}
+function dmRemoveShadow() { const o=dmC();if(o){o.set('shadow',null);dm.renderAll();} }
+function dmApplyGlow(on) {
+  if(!on){dmRemoveShadow();return;}
+  const o=dmC();if(!o)return;
+  o.set('shadow',new fabric.Shadow({color:`rgba(${dmHex2rgb(document.getElementById('dp-gl-clr').value)},${+document.getElementById('dp-gl-op').value})`,offsetX:0,offsetY:0,blur:+document.getElementById('dp-gl-size').value}));
+  dm.renderAll();
+}
+
+/* ── Fonts ── */
+function dmBuildFontChips() {
+  const grid=document.getElementById('dm-font-chips'); if(!grid||grid.children.length) return;
+  DM_FONTS.forEach(f=>{
+    const c=document.createElement('span'); c.className='dm-font'; c.textContent=f; c.style.fontFamily=f;
+    c.onclick=()=>{dmSet('fontFamily',f);document.querySelectorAll('.dm-font').forEach(x=>x.classList.toggle('on',x.textContent===f));};
+    grid.appendChild(c);
+  });
+}
+
+/* ── Events ── */
+function dmBindEvents() {
+  dm.on('selection:created', dmOnSel);
+  dm.on('selection:updated', dmOnSel);
+  dm.on('selection:cleared', dmOnClear);
+  dm.on('object:modified',   ()=>{dmUpdatePanel();dmSaveHist();});
+  dm.on('path:created',      ()=>dmSaveHist());
+}
+function dmOnSel() {
+  document.getElementById('dm-align-bar').style.display='flex';
+  dmUpdatePanel();
+}
+function dmOnClear() {
+  document.getElementById('dm-align-bar').style.display='none';
+  ['dm-pp-pos','dm-pp-fill','dm-pp-text','dm-pp-img','dm-pp-shadow','dm-pp-layer'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('dm-pp-empty').style.display='';
+}
+function dmUpdatePanel() {
+  const o=dmC(); if(!o||o.isProductGhost){dmOnClear();return;}
+  document.getElementById('dm-pp-empty').style.display='none';
+  ['dm-pp-pos','dm-pp-fill','dm-pp-shadow','dm-pp-layer'].forEach(id=>document.getElementById(id).style.display='');
+  document.getElementById('dm-pp-text').style.display='none';
+  document.getElementById('dm-pp-img').style.display='none';
+
+  document.getElementById('dp-x').value  =Math.round(o.left);
+  document.getElementById('dp-y').value  =Math.round(o.top);
+  document.getElementById('dp-w').value  =Math.round(o.getScaledWidth());
+  document.getElementById('dp-h').value  =Math.round(o.getScaledHeight());
+  document.getElementById('dp-rot').value=Math.round(o.angle||0);
+  document.getElementById('dp-op').value =o.opacity??1;
+
+  if(o.type==='i-text'||o.type==='text') {
+    document.getElementById('dm-pp-text').style.display='';
+    document.getElementById('dp-fsize').value=o.fontSize||16;
+    document.getElementById('dp-fclr').value=dmHex(o.fill||'#000');
+    document.getElementById('dp-csp').value=o.charSpacing||0;
+    document.getElementById('dp-lh').value=o.lineHeight||1.16;
+    document.getElementById('dp-bold').classList.toggle('on',o.fontWeight==='bold');
+    document.getElementById('dp-italic').classList.toggle('on',o.fontStyle==='italic');
+    document.getElementById('dp-under').classList.toggle('on',!!o.underline);
+    document.querySelectorAll('.dm-font').forEach(c=>c.classList.toggle('on',c.textContent===(o.fontFamily||'Cairo')));
+  } else if(o.type==='image') {
+    document.getElementById('dm-pp-img').style.display='';
   }
-  document.getElementById('dp-opacity').value = o.opacity ?? 1;
-}
 
-function dmClearProps() {
-  document.getElementById('dm-no-sel').style.display = '';
-  document.getElementById('dm-text-props').style.display = 'none';
-  document.getElementById('dm-shape-props').style.display = 'none';
-  document.getElementById('dm-common-props').style.display = 'none';
+  if(o.fill&&typeof o.fill==='string'&&o.fill!=='transparent'){
+    document.getElementById('dp-fill-clr').value=dmHex(o.fill); dmSwitchFill('solid');
+  } else if(o.fill&&o.fill.type){ dmSwitchFill('grad'); }
+  else { dmSwitchFill('none'); }
+  if(o.stroke) document.getElementById('dp-stroke-clr').value=dmHex(o.stroke);
+  if(o.strokeWidth!==undefined) document.getElementById('dp-stroke-w').value=o.strokeWidth;
+  if(o.rx!==undefined)          document.getElementById('dp-rx').value=o.rx||0;
+  if(o.globalCompositeOperation) document.getElementById('dp-blend').value=o.globalCompositeOperation;
 }
 
 function dmHex(color) {
-  if (!color || color==='transparent') return '#000000';
-  if (color.startsWith('#')) return color.length===4
-    ? '#'+color[1]+color[1]+color[2]+color[2]+color[3]+color[3] : color;
-  const m = color.match(/\d+/g);
-  if (!m) return '#000000';
+  if(!color||color==='transparent') return '#000000';
+  if(typeof color!=='string') return '#000000';
+  if(color.startsWith('#')) return color.length===4?'#'+color[1]+color[1]+color[2]+color[2]+color[3]+color[3]:color;
+  const m=color.match(/\d+/g); if(!m) return '#000000';
   return '#'+[m[0],m[1],m[2]].map(n=>(+n).toString(16).padStart(2,'0')).join('');
 }
 
-// ── History ──
-function dmSaveHistory() {
-  if (!dm) return;
-  // استبعاد صورة الـ ghost من التاريخ
-  const objs = dm.getObjects().filter(o => !o.isProductGhost);
-  const json  = JSON.stringify(dm.toJSON(['isProductGhost','excludeFromExport']));
-  dmHistory = dmHistory.slice(0, dmHistIdx + 1);
-  dmHistory.push(json);
-  dmHistIdx = dmHistory.length - 1;
+/* ── History ── */
+function dmSaveHist() {
+  if(!dm) return;
+  const json=JSON.stringify(dm.toJSON(['isProductGhost','excludeFromExport','selectable','evented','shadow','globalCompositeOperation','strokeDashArray']));
+  dmHist=dmHist.slice(0,dmHistIdx+1); dmHist.push(json); dmHistIdx=dmHist.length-1;
 }
-function dmUndo() {
-  if (!dm || dmHistIdx <= 0) return;
-  dmHistIdx--;
-  dm.loadFromJSON(dmHistory[dmHistIdx], () => {
-    dm.getObjects().forEach(o => { if (o.isProductGhost) { o.selectable=false; o.evented=false; } });
+function dmRestoreHist(idx) {
+  dm.loadFromJSON(dmHist[idx],()=>{
+    dm.getObjects().forEach(o=>{ if(o.isProductGhost){o.selectable=false;o.evented=false;o.excludeFromExport=true;} });
     dm.renderAll();
   });
 }
-function dmRedo() {
-  if (!dm || dmHistIdx >= dmHistory.length-1) return;
-  dmHistIdx++;
-  dm.loadFromJSON(dmHistory[dmHistIdx], () => {
-    dm.getObjects().forEach(o => { if (o.isProductGhost) { o.selectable=false; o.evented=false; } });
-    dm.renderAll();
-  });
-}
+function dmUndo() { if(!dm||dmHistIdx<=0) return; dmHistIdx--; dmRestoreHist(dmHistIdx); }
+function dmRedo() { if(!dm||dmHistIdx>=dmHist.length-1) return; dmHistIdx++; dmRestoreHist(dmHistIdx); }
 
-// ── مسح التصميم ──
-function dmClearDesign() {
-  if (!dm) return;
-  const ghosts = dm.getObjects().filter(o => o.isProductGhost);
-  dm.clear();
-  dm.setBackgroundColor('#ffffff', () => dm.renderAll());
-  ghosts.forEach(g => dm.add(g));
-  dm.renderAll();
-  dmSaveHistory();
-}
-
-// ── أضف للسلة مع التصميم ──
-async function dmAddToCart() {
-  if (!dm || !_prod) return;
-
-  const btn = document.getElementById('dm-add-cart-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> جاري الحفظ...';
-
+/* ── Templates ── */
+async function dmLoadTemplates() {
+  if(_dmTemplatesLoaded&&_dmTemplates.length) { dmRenderTemplates(); return; }
   try {
-    // 1. إخفاء صورة الـ ghost مؤقتاً للتصدير
-    const ghosts = dm.getObjects().filter(o => o.isProductGhost);
-    ghosts.forEach(o => o.set('opacity', 0));
-    dm.renderAll();
+    const res=await fetch(`${window.location.origin}/api/v1/design-templates`);
+    _dmTemplates=res.ok?await res.json():[];
+  } catch(e){_dmTemplates=[];}
+  _dmTemplatesLoaded=true;
+  dmRenderTemplates();
 
-    // 2. تصدير canvas
-    const dataUrl = dm.toDataURL({ format: 'png', quality: 0.92, multiplier: 2 });
-
-    // 3. إعادة الـ ghost
-    ghosts.forEach(o => o.set('opacity', 0.25));
-    dm.renderAll();
-
-    // 4. رفع الصورة للسيرفر
-    const res = await fetch(`${API}/design/upload`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ image: dataUrl, product_id: _prod.id }),
-    });
-
-    if (!res.ok) throw new Error('فشل رفع التصميم');
-    const { url: designUrl } = await res.json();
-
-    // 5. أضف للسلة مع design_image + design_url
-    const qty = parseInt(document.getElementById('qty').value) || 1;
-    const price = parseFloat(_prod.price || _prod.unit_price || 0);
-    const disc  = parseFloat(_prod.discount || 0);
-    const finalPrice = disc > 0 ? price - price * disc / 100 : price;
-    const imgSrc = (_prod.image_fullpath && Array.isArray(_prod.image_fullpath) && _prod.image_fullpath[0])
-      ? _prod.image_fullpath[0] : '';
-
-    const existing = cart.find(i => i.id === _prod.id && i.design_url === designUrl);
-    if (existing) {
-      existing.qty += qty;
-    } else {
-      cart.push({
-        id:        _prod.id,
-        name:      _prod.name,
-        price:     finalPrice,
-        qty:       qty,
-        img:       imgSrc,
-        design_url:    designUrl,    // رابط الصورة للعرض
-        has_design: true,
+  // Auto-load template for this product
+  if(_prod) {
+    const tmpl=_dmTemplates.find(t=>t.product_id==_prod.id&&t.canvas_json);
+    if(tmpl) {
+      dmApplyCanvasSize(tmpl.canvas_width||800, tmpl.canvas_height||800);
+      dm.loadFromJSON(tmpl.canvas_json,()=>{
+        dm.renderAll(); dmSaveHist(); dmHistIdx=0; dmHist=[dmHist[dmHist.length-1]];
+        // Sync bg picker
+        const bg=dm.backgroundColor;
+        if(typeof bg==='string'&&bg.startsWith('#')){
+          document.getElementById('dm-bg-picker').value=bg;
+          document.getElementById('dm-bg-picker2').value=bg;
+        }
       });
+    } else {
+      dmSaveHist(); dmHistIdx=0; dmHist=[dmHist[dmHist.length-1]];
     }
+  }
+}
+function dmRenderTemplates() {
+  const grid=document.getElementById('dm-tmpl-grid');
+  const list=_dmTemplates.filter(t=>!t.product_id||t.product_id==(_prod?.id));
+  if(!list.length){
+    grid.innerHTML='<div style="text-align:center;padding:16px;color:#7a9282;font-size:10px">لا توجد قوالب</div>'; return;
+  }
+  grid.innerHTML='<div class="dm-tmpl-grid">'+list.map(t=>`
+    <div class="dm-tmpl" onclick="dmLoadTemplate(${t.id})">
+      ${t.thumbnail?`<img src="${t.thumbnail}">`:'<div class="dm-tmpl-ph"><i class="fa fa-palette"></i></div>'}
+      <div class="dm-tmpl-nm">${t.name}</div>
+    </div>`).join('')+'</div>';
+}
+function dmLoadTemplate(id) {
+  const t=_dmTemplates.find(x=>x.id===id); if(!t||!t.canvas_json) return;
+  if(!confirm(`تحميل قالب "${t.name}"؟ سيُمسح التصميم الحالي.`)) return;
+  dm.clear();
+  dmApplyCanvasSize(t.canvas_width||800,t.canvas_height||800);
+  dm.loadFromJSON(t.canvas_json,()=>{
+    dm.renderAll(); dmSaveHist(); dmHistIdx=0; dmHist=[dmHist[dmHist.length-1]];
+  });
+}
 
-    localStorage.setItem('f_cart', JSON.stringify(cart));
-    renderCart();
 
-    closeDesignEditor();
-    toast('✓ أُضيف للسلة مع التصميم المخصص');
-    openCart();
+/* ── Clear ── */
+function dmClearDesign() {
+  if(!dm) return;
+  dm.clear(); dm.setBackgroundColor('#ffffff',()=>dm.renderAll());
+  dmSaveHist();
+}
 
-  } catch (err) {
-    toast('خطأ: ' + (err.message || 'حدث خطأ غير متوقع'), 'err');
+/* ── Add to cart ── */
+async function dmAddToCart() {
+  if(!dm||!_prod) return;
+  const btn=document.getElementById('dm-add-cart-btn');
+  btn.disabled=true; btn.innerHTML='<i class="fa fa-spinner fa-spin"></i> جاري الحفظ...';
+  try {
+    const dataUrl=dm.toDataURL({format:'png',quality:.92,multiplier:2});
+
+    const res=await fetch(`${API}/design/upload`,{
+      method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({image:dataUrl,product_id:_prod.id}),
+    });
+    if(!res.ok) throw new Error('فشل رفع التصميم');
+    const {url:designUrl}=await res.json();
+
+    const qty=parseInt(document.getElementById('qty').value)||1;
+    const price=parseFloat(_prod.price||_prod.unit_price||0);
+    const disc=parseFloat(_prod.discount||0);
+    const finalPrice=disc>0?price-price*disc/100:price;
+    const imgSrc=(_prod.image_fullpath&&Array.isArray(_prod.image_fullpath)&&_prod.image_fullpath[0])?_prod.image_fullpath[0]:'';
+    const existing=cart.find(i=>i.id===_prod.id&&i.design_url===designUrl);
+    if(existing){existing.qty+=qty;}
+    else{cart.push({id:_prod.id,name:_prod.name,price:finalPrice,qty,img:imgSrc,design_url:designUrl,has_design:true});}
+    localStorage.setItem('f_cart',JSON.stringify(cart)); renderCart();
+    closeDesignEditor(); toast('✓ أُضيف للسلة مع التصميم المخصص'); openCart();
+  } catch(err){
+    toast('خطأ: '+(err.message||'حدث خطأ غير متوقع'),'err');
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa fa-cart-plus"></i> أضف للسلة مع التصميم';
+    btn.disabled=false; btn.innerHTML='<i class="fa fa-cart-plus"></i> أضف للسلة مع التصميم';
   }
 }
 

@@ -91,6 +91,11 @@ Route::group(['middleware' => 'localization'], function () {
         Route::get('/', 'getClients');
     });
 
+    // Design templates (admin-managed Fabric.js templates for the storefront editor)
+    Route::prefix('design-templates')->controller(\App\Http\Controllers\Api\V1\DesignTemplateController::class)->group(function () {
+        Route::get('/', 'getTemplates');
+    });
+
     // Notifications
     Route::prefix('notifications')->middleware('guest_user')->controller(NotificationController::class)->group(function () {
         Route::get('/', 'getNotifications');

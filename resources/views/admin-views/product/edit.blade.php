@@ -407,6 +407,49 @@
                             </div>
                         </div>
                     </div>
+                    {{-- قسم قالب التصميم (اختياري) --}}
+                    @php
+                        $productTmpl    = \App\Models\DesignTemplate::where('product_id', $product->id)->first();
+                        $editDesignTmpl = \App\Models\DesignTemplate::active()->orderBy('position')->orderBy('id','desc')->get(['id','name','thumbnail','category_id','product_id']);
+                        // الـ selectedId هو القالب المصدر — نبحث عن القالب بنفس الـ canvas_json إن وجد، أو null
+                        $editSelectedId = null;
+                    @endphp
+                    <div class="card mb-3 mt-3" id="design-tmpl-card">
+                        <div class="card-header bg-light" style="cursor:pointer" onclick="toggleDesignTmpl()"
+                             data-toggle="collapse" data-target="#design-tmpl-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h6 class="mb-0 fw-semibold d-flex align-items-center gap-2">
+                                    <i class="tio-layers nav-icon fs-18"></i>
+                                    {{ translate('section_design_template') ?: 'قالب التصميم (اختياري)' }}
+                                </h6>
+                                <div class="d-flex align-items-center gap-3">
+                                    <label class="switcher mb-0" onclick="event.stopPropagation()">
+                                        <input type="checkbox" class="switcher_input" id="enable-design-tmpl"
+                                               {{ $productTmpl ? 'checked' : '' }}
+                                               onchange="toggleDesignTmplEnabled(this.checked)">
+                                        <span class="switcher_control"></span>
+                                    </label>
+                                    <i class="fa fa-chevron-down text-muted" id="design-tmpl-chevron"
+                                       style="{{ $productTmpl ? 'transform:rotate(180deg)' : '' }}"></i>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                {{ translate('design_template_hint') ?: 'اختر قالباً يظهر للعميل عند الضغط على "صمّم منتجك" في صفحة هذا المنتج.' }}
+                                @if($productTmpl)
+                                    &nbsp;<strong class="text-success">✓ {{ translate('current_template') ?: 'القالب الحالي' }}: {{ $productTmpl->name }}</strong>
+                                @endif
+                            </small>
+                        </div>
+                        <div class="card-body" id="design-tmpl-body" style="{{ $productTmpl ? 'display:block' : 'display:none' }}">
+                            <input type="hidden" name="tmpl_selected_id" id="tmpl-selected-id" value="">
+                            @include('admin-views.design-template._template_picker', [
+                                'designTemplates' => $editDesignTmpl,
+                                'selectedId'      => $editSelectedId,
+                                'inputId'         => 'tmpl-selected-id',
+                            ])
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">{{translate('submit')}}</button>
                 </form>
             </div>
@@ -424,6 +467,26 @@
 
         function toggleProductVisibilityPanel(cb) {
             document.getElementById('prod-vis-panel').style.display = cb.checked ? 'none' : '';
+        }
+
+        /* ── Design Template section toggle (edit page) ── */
+        function toggleDesignTmpl() {
+            const body = document.getElementById('design-tmpl-body');
+            const chev = document.getElementById('design-tmpl-chevron');
+            const open = body.style.display === 'none';
+            body.style.display = open ? 'block' : 'none';
+            chev.style.transform = open ? 'rotate(180deg)' : '';
+        }
+
+        function toggleDesignTmplEnabled(checked) {
+            const body = document.getElementById('design-tmpl-body');
+            if (checked && body.style.display === 'none') {
+                body.style.display = 'block';
+                document.getElementById('design-tmpl-chevron').style.transform = 'rotate(180deg)';
+            }
+            if (!checked) {
+                document.getElementById('tmpl-selected-id').value = '';
+            }
         }
 
         function syncUserTypePricePlaceholders(basePrice) {

@@ -206,7 +206,7 @@
                             <small class="tio-more-horizontal nav-subtitle-replacer"></small>
                         </li>
 
-                        <li class="navbar-vertical-aside-has-menu {{Request::is('admin/product*') || Request::is('admin/attribute*') || Request::is('admin/tag*')?'active':''}}">
+                        <li class="navbar-vertical-aside-has-menu {{Request::is('admin/product*') || Request::is('admin/attribute*') || Request::is('admin/tag*') || Request::is('admin/design-template*')?'active':''}}">
                             <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:"
                             >
                                 <i class="tio-premium-outlined nav-icon"></i>
@@ -214,7 +214,7 @@
                                     class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{translate('products')}}</span>
                             </a>
                             <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
-                                style="display: {{Request::is('admin/product*') || Request::is('admin/attribute*') || Request::is('admin/tag*')?'block':'none'}}">
+                                style="display: {{Request::is('admin/product*') || Request::is('admin/attribute*') || Request::is('admin/tag*') || Request::is('admin/design-template*')?'block':'none'}}">
                                 <li class="nav-item {{Request::is('admin/product/add-new')?'active':''}}">
                                     <a class="nav-link" href="{{route('admin.product.add-new')}}"
                                        title="{{translate('add new product')}}">
@@ -255,6 +255,13 @@
                                        title="{{translate('bulk export')}}">
                                         <span class="tio-circle nav-indicator-icon"></span>
                                         <span class="text-truncate">{{translate('bulk_export')}}</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item {{Request::is('admin/design-template*')?'active':''}}">
+                                    <a class="nav-link" href="{{ route('admin.design-template.add-new') }}"
+                                       title="{{ translate('design_templates') ?: 'قوالب التصميم' }}">
+                                        <span class="tio-circle nav-indicator-icon"></span>
+                                        <span class="text-truncate">{{ translate('design_templates') ?: 'قوالب التصميم' }}</span>
                                     </a>
                                 </li>
                             </ul>

@@ -1072,7 +1072,6 @@ button { font-family: var(--font); }
           <li><a href="/storefront/offers">العروض</a></li>
           <li><a href="/storefront/orders/track">تتبع الطلب</a></li>
           <li><a href="/storefront/account">حسابي</a></li>
-          <li><a href="/admin/auth/login">لوحة التحكم</a></li>
         </ul>
       </div>
 

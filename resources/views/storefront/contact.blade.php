@@ -187,7 +187,7 @@ a{text-decoration:none;color:inherit}
 <div class="footer-mini">
   <a href="/">الرئيسية</a> &nbsp;·&nbsp;
   <a href="/storefront/products">المنتجات</a> &nbsp;·&nbsp;
-  <a href="/admin/auth/login">لوحة التحكم</a>
+  <a href="/storefront/account">حسابي</a>
 </div>
 
 <div class="toasts" id="toasts"></div>

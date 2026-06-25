@@ -412,6 +412,37 @@
                             </div>
                         </div>
 
+                        {{-- قسم قالب التصميم (اختياري) --}}
+                        <div class="card mb-3" id="design-tmpl-card">
+                            <div class="card-header bg-light" style="cursor:pointer" onclick="toggleDesignTmpl()"
+                                 data-toggle="collapse" data-target="#design-tmpl-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <h6 class="mb-0 fw-semibold d-flex align-items-center gap-2">
+                                        <i class="tio-layers nav-icon fs-18"></i>
+                                        {{ translate('section_design_template') ?: 'قالب التصميم (اختياري)' }}
+                                    </h6>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <label class="switcher mb-0" onclick="event.stopPropagation()">
+                                            <input type="checkbox" class="switcher_input" id="enable-design-tmpl"
+                                                   onchange="toggleDesignTmplEnabled(this.checked)">
+                                            <span class="switcher_control"></span>
+                                        </label>
+                                        <i class="fa fa-chevron-down text-muted" id="design-tmpl-chevron"></i>
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    {{ translate('design_template_hint') ?: 'اختر قالباً يظهر للعميل عند الضغط على "صمّم منتجك" في صفحة هذا المنتج.' }}
+                                </small>
+                            </div>
+                            <div class="card-body" id="design-tmpl-body" style="display:none">
+                                <input type="hidden" name="tmpl_selected_id" id="tmpl-selected-id" value="">
+                                @include('admin-views.design-template._template_picker', [
+                                    'designTemplates' => $designTemplates,
+                                    'selectedId'      => null,
+                                ])
+                            </div>
+                        </div>
+
                         {{-- أزرار الحفظ --}}
                         <div class="card mb-3">
                             <div class="card-body d-flex flex-wrap justify-content-end gap-2">
@@ -436,6 +467,26 @@
 
         function toggleProductVisibilityPanel(cb) {
             document.getElementById('prod-vis-panel').style.display = cb.checked ? 'none' : '';
+        }
+
+        /* ── Design Template section toggle ── */
+        function toggleDesignTmpl() {
+            const body = document.getElementById('design-tmpl-body');
+            const chev = document.getElementById('design-tmpl-chevron');
+            const open = body.style.display === 'none';
+            body.style.display = open ? 'block' : 'none';
+            chev.style.transform = open ? 'rotate(180deg)' : '';
+        }
+
+        function toggleDesignTmplEnabled(checked) {
+            const body = document.getElementById('design-tmpl-body');
+            if (checked && body.style.display === 'none') {
+                body.style.display = 'block';
+                document.getElementById('design-tmpl-chevron').style.transform = 'rotate(180deg)';
+            }
+            if (!checked) {
+                document.getElementById('tmpl-selected-id').value = '';
+            }
         }
 
         function syncUserTypePricePlaceholders(basePrice) {
