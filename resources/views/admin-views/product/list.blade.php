@@ -235,16 +235,28 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="d-flex gap-2 justify-content-center">
+                                <div class="d-flex gap-2 justify-content-center flex-wrap">
                                     <a class="btn btn-outline-primary square-btn"
-                                       href="{{route('admin.product.edit',[$product['id']])}}">
+                                       href="{{route('admin.product.edit',[$product['id']])}}"
+                                       title="{{ translate('edit') }}">
                                         <i class="tio tio-edit"></i>
                                     </a>
                                     <a class="btn btn-outline-danger square-btn form-alert"
                                        href="javascript:"
                                        data-id="product-{{$product['id']}}"
-                                       data-message="{{translate('Want to delete this product ?')}}">
+                                       data-message="{{translate('Want to delete this product ?')}}"
+                                       title="{{ translate('delete') }}">
                                         <i class="tio tio-delete"></i>
+                                    </a>
+                                    <a class="btn btn-outline-success square-btn"
+                                       href="{{ route('admin.design-template.add-new') }}?product_id={{ $product['id'] }}"
+                                       title="إضافة قالب تصميم">
+                                        <i class="fa fa-plus" style="font-size:13px"></i>
+                                    </a>
+                                    <a class="btn btn-outline-info square-btn"
+                                       href="{{ route('admin.design-template.by-category') }}?product_id={{ $product['id'] }}"
+                                       title="عرض قوالب المنتج">
+                                        <i class="fa fa-palette" style="font-size:13px"></i>
                                     </a>
                                 </div>
                                 <form action="{{route('admin.product.delete',[$product['id']])}}"

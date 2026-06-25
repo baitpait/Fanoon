@@ -27,7 +27,8 @@ class DesignTemplateController extends Controller
 
     public function byCategory(Request $request)
     {
-        $search = $request->input('search', '');
+        $search    = $request->input('search', '');
+        $productId = $request->input('product_id');
 
         $query = DesignTemplate::with(['mainCategory.parent', 'product'])
             ->orderBy('position')
@@ -35,6 +36,10 @@ class DesignTemplateController extends Controller
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($productId) {
+            $query->where('product_id', $productId);
         }
 
         $all = $query->get();
@@ -52,8 +57,10 @@ class DesignTemplateController extends Controller
             $grouped->put('بدون تصنيف', $none);
         }
 
+        $filterProduct = $productId ? Product::select('id', 'name')->find($productId) : null;
+
         return view('admin-views.design-template.by-category',
-            compact('grouped', 'search'));
+            compact('grouped', 'search', 'productId', 'filterProduct'));
     }
 
     public function index(Request $request)

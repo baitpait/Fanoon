@@ -106,11 +106,24 @@
 
     {{-- ── Page Header ── --}}
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-        <h2 class="mb-0 d-flex align-items-center gap-2" style="font-size:20px">
-            <i class="fa fa-th-large" style="color:var(--primary-clr,#EC2227)"></i>
-            قوالب التصميم حسب التصنيف
-        </h2>
-        <a href="{{ route('admin.design-template.add-new') }}" class="btn btn-primary btn-sm">
+        <div>
+            <h2 class="mb-0 d-flex align-items-center gap-2" style="font-size:20px">
+                <i class="fa fa-th-large" style="color:var(--primary-clr,#EC2227)"></i>
+                قوالب التصميم حسب التصنيف
+            </h2>
+            @if($filterProduct)
+                <div class="mt-1 d-flex align-items-center gap-2">
+                    <span class="badge badge-soft-info" style="font-size:12px">
+                        <i class="fa fa-box me-1"></i> {{ $filterProduct->name }}
+                    </span>
+                    <a href="{{ route('admin.design-template.by-category') }}" class="text-muted" style="font-size:11px">
+                        <i class="fa fa-xmark"></i> إلغاء الفلتر
+                    </a>
+                </div>
+            @endif
+        </div>
+        <a href="{{ route('admin.design-template.add-new') }}{{ $productId ? '?product_id='.$productId : '' }}"
+           class="btn btn-primary btn-sm">
             <i class="fa fa-plus me-1"></i> إضافة قالب جديد
         </a>
     </div>
@@ -162,6 +175,9 @@
 
     {{-- ── Search ── --}}
     <form action="{{ route('admin.design-template.by-category') }}" method="GET" class="bc-search-bar">
+        @if($productId)
+            <input type="hidden" name="product_id" value="{{ $productId }}">
+        @endif
         <i class="fa fa-search" style="color:#8c98a4"></i>
         <input type="search" name="search" value="{{ $search }}"
                placeholder="بحث بالاسم..."
@@ -170,7 +186,8 @@
             <i class="fa fa-search me-1"></i> بحث
         </button>
         @if($search)
-        <a href="{{ route('admin.design-template.by-category') }}" class="btn btn-soft-secondary btn-sm">
+        <a href="{{ route('admin.design-template.by-category') }}{{ $productId ? '?product_id='.$productId : '' }}"
+           class="btn btn-soft-secondary btn-sm">
             <i class="fa fa-xmark me-1"></i> مسح
         </a>
         @endif
