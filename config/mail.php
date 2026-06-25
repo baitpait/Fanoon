@@ -7,7 +7,7 @@ return [
     | Default Mailer
     |--------------------------------------------------------------------------
     |
-    | This option controls the default mailer that is used to send any email
+| This option controls the default mailer that is used to send any email
     | messages sent by your application. Alternative mailers may be setup
     | and used as needed; however, this mailer will be used by default.
     |
@@ -24,7 +24,7 @@ return [
     | their respective settings. Several examples have been configured for
     | you and you are free to add your own as your application requires.
     |
-    | Laravel supports a variety of mail "transport" drivers to be used while
+| Laravel supports a variety of mail "transport" drivers to be used while
     | sending an e-mail. You will specify which one you are using for your
     | mailers below. You are free to add additional mailers as required.
     |
@@ -34,7 +34,7 @@ return [
     */
 
     'mailers' => [
-        'smtp' => [
+'smtp' => [
             'transport' => 'smtp',
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
             'port' => env('MAIL_PORT', 587),
@@ -47,7 +47,7 @@ return [
             'transport' => 'ses',
         ],
 
-        'sendmail' => [
+'sendmail' => [
             'transport' => 'sendmail',
             'path' => '/usr/sbin/sendmail -bs',
         ],
@@ -60,6 +60,7 @@ return [
         'array' => [
             'transport' => 'array',
         ],
+
     ],
 
     /*
@@ -67,7 +68,7 @@ return [
     | Global "From" Address
     |--------------------------------------------------------------------------
     |
-    | You may wish for all e-mails sent by your application to be sent from
+| You may wish for all e-mails sent by your application to be sent from
     | the same address. Here, you may specify a name and address that is
     | used globally for all e-mails that are sent by your application.
     |
@@ -75,7 +76,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
     /*

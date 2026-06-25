@@ -28,10 +28,9 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
-    'mode' => env('APP_MODE', 'live'),
+'mode' => env('APP_MODE', 'live'),
 
     'software_version' => env('SOFTWARE_VERSION'),
-
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
@@ -45,9 +44,8 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
-    /* قائمة نقطة البيع في لوحة التحكم — ضع APP_SHOW_POS_MENU=false في .env للإخفاء */
+/* قائمة نقطة البيع في لوحة التحكم — ضع APP_SHOW_POS_MENU=false في .env للإخفاء */
     'show_pos_menu' => (bool) env('APP_SHOW_POS_MENU', true),
-
     /*
     |--------------------------------------------------------------------------
     | Application URL
@@ -63,7 +61,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Auto-generated customer email domain
+| Auto-generated customer email domain
     |--------------------------------------------------------------------------
     | When registration omits email, we build: u{phone_digits}@{domain}
     | Set AUTO_EMAIL_DOMAIN (e.g. elitevape.online). If empty, host from APP_URL is used.
@@ -98,7 +96,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'ar'),
+'locale' => env('APP_LOCALE', 'ar'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

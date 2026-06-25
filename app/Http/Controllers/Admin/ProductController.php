@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductUserTypeDiscount;
 use App\Models\ProductUserTypePrice;
 use App\Models\Review;
+use App\Models\DesignTemplate;
 use App\Models\Tag;
 use App\Models\Translation;
 use App\Models\UserType;
@@ -180,7 +181,8 @@ class ProductController extends Controller
         $categories = $this->category->where(['parent_id' => 0])->orderBy('position')->get();
         $userTypes = UserType::orderBy('id')->get();
         $productsForRelated = $this->product->withoutGlobalScopes()->orderBy('name')->limit(500)->get(['id', 'name']);
-        return view('admin-views.product.index', compact('categories', 'userTypes', 'productsForRelated'));
+        $designTemplates = DesignTemplate::active()->orderBy('position')->orderBy('id', 'desc')->get(['id', 'name', 'thumbnail', 'category_id', 'product_id']);
+        return view('admin-views.product.index', compact('categories', 'userTypes', 'productsForRelated', 'designTemplates'));
     }
 
     /**
@@ -645,6 +647,9 @@ class ProductController extends Controller
 
         $this->translation->insert($data);
 
+        // Save design template if admin designed one for this product
+        $this->saveProductDesignTemplate($request, $product);
+
         if ($request->has('user_type_price') && is_array($request->user_type_price)) {
             foreach ($request->user_type_price as $userTypeId => $price) {
                 $userTypeId = (int) $userTypeId;
@@ -700,8 +705,9 @@ class ProductController extends Controller
         $categories = $this->category->where(['parent_id' => 0])->get();
         $userTypes = UserType::orderBy('id')->get();
         $productsForRelated = $this->product->withoutGlobalScopes()->where('id', '!=', $id)->orderBy('name')->limit(500)->get(['id', 'name']);
-        $selectedTagIds = $product->tags->pluck('id')->toArray();
-        return view('admin-views.product.edit', compact('product', 'product_category', 'categories', 'userTypes', 'productsForRelated', 'selectedTagIds'));
+        $selectedTagIds  = $product->tags->pluck('id')->toArray();
+        $designTemplates = DesignTemplate::active()->orderBy('position')->orderBy('id', 'desc')->get(['id', 'name', 'thumbnail', 'category_id', 'product_id']);
+        return view('admin-views.product.edit', compact('product', 'product_category', 'categories', 'userTypes', 'productsForRelated', 'selectedTagIds', 'designTemplates'));
     }
 
     /**
@@ -1050,6 +1056,8 @@ class ProductController extends Controller
                 }
             }
         }
+
+        $this->saveProductDesignTemplate($request, $product);
 
         return response()->json(['success' => true, 'message' => translate('product updated successfully!')], 200);
     }
@@ -1405,5 +1413,65 @@ class ProductController extends Controller
         }
 
         return (float) abs($fallback);
+    }
+
+    private function saveProductDesignTemplate(Request $request, Product $product): void
+    {
+        // Case 1: user selected an existing template from the picker
+        $selectedId = (int) $request->input('tmpl_selected_id', 0);
+        if ($selectedId > 0) {
+            $source = DesignTemplate::find($selectedId);
+            if ($source) {
+                // Remove any existing product-specific template
+                DesignTemplate::where('product_id', $product->id)->delete();
+
+                // Duplicate selected template and link to this product
+                $copy = $source->replicate();
+                $copy->product_id  = $product->id;
+                $copy->category_id = $product->category_id ?? $source->category_id;
+                $copy->name        = $product->name ?: $source->name;
+                $copy->save();
+
+                \Illuminate\Support\Facades\Cache::forget(CACHE_DESIGN_TEMPLATES);
+            }
+            return;
+        }
+
+        // Case 2: user drew a custom template inline (legacy embed path — kept for edit page)
+        $canvasJson = $request->input('tmpl_canvas_json', '');
+        if (empty($canvasJson) || $canvasJson === 'null') {
+            return;
+        }
+        json_decode($canvasJson);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return;
+        }
+
+        $template = DesignTemplate::firstOrNew(['product_id' => $product->id]);
+        $template->name          = $product->name ?: ('قالب #' . $product->id);
+        $template->product_id    = $product->id;
+        $template->category_id   = $product->category_id ?? null;
+        $template->canvas_json   = $canvasJson;
+        $template->canvas_width  = max(100, (int) $request->input('tmpl_canvas_width', 800));
+        $template->canvas_height = max(100, (int) $request->input('tmpl_canvas_height', 800));
+        $template->status        = 1;
+        $template->position      = 0;
+
+        $thumbnail = $request->input('tmpl_thumbnail_base64', '');
+        if ($thumbnail && str_starts_with($thumbnail, 'data:image')) {
+            $data = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $thumbnail));
+            if ($data && strlen($data) <= 3 * 1024 * 1024) {
+                if ($template->thumbnail) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete('design-templates/' . $template->thumbnail);
+                }
+                $filename = \Illuminate\Support\Str::uuid() . '.png';
+                \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('design-templates');
+                \Illuminate\Support\Facades\Storage::disk('public')->put('design-templates/' . $filename, $data);
+                $template->thumbnail = $filename;
+            }
+        }
+
+        $template->save();
+        \Illuminate\Support\Facades\Cache::forget(CACHE_DESIGN_TEMPLATES);
     }
 }

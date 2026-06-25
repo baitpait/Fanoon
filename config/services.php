@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'mailgun' => [
+'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
@@ -30,7 +30,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'google_translate' => [
+'google_translate' => [
         'api_key' => env('GOOGLE_TRANSLATE_API_KEY'),
     ],
 
