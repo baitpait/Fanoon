@@ -5,6 +5,29 @@
 
 ---
 
+## [2026-06-25] fix — استعادة المشروع وحلّ تعارضات دمج محفوظة في الكوميت
+
+### الملخص
+
+كان مجلد العمل مفرّغاً من ملفات المشروع (مستعادة من Git)، والأخطر أن الكوميت الأخير على `main` كان يحتوي على **علامات تعارض دمج غير محلولة** (`<<<<<<< HEAD`) مكتوبة فعلياً داخل 19 ملفاً، ما منع `composer install` و`npm install`. حُسمت كل التعارضات لصالح جانب **HEAD** (تطبيق Fanoon الحقيقي: Passport + Modules + CentralLogics + واجهة Laravel-Mix/Vue2)، لأن الجانب الآخر (`234599e`) هيكل Laravel فارغ Breeze/Inertia/Vite غير متوافق مع الكود الموجود. أُعيد توليد ملفات القفل وبُنيت الأصول والمشروع يعمل على `127.0.0.1:8000` (HTTP 200).
+
+### الملفات
+
+| الملف |
+|-------|
+| `composer.json`, `package.json` — حسم التعارض لصالح HEAD + إعادة توليد `composer.lock`, `package-lock.json` |
+| `config/{app,auth,cache,database,filesystems,logging,mail,queue,services,session}.php` — حسم التعارض لصالح HEAD |
+| `phpunit.xml`, `README.md`, `database/.gitignore` — حسم التعارض لصالح HEAD |
+| `database/factories/UserFactory.php`, `database/seeders/DatabaseSeeder.php` — حسم التعارض لصالح HEAD |
+| `public/css/app.css`, `public/js/app.js` — إعادة بناء الأصول (`npm run build`) |
+
+### ملاحظات
+
+- لم تُنفّذ أي هجرات جديدة؛ قاعدة `fanoon` كانت مُحدّثة بالكامل مسبقاً.
+- تبقى تحذيرات `npm audit` (حزم الواجهة القديمة Vue2/Bootstrap4) دون تغيير.
+
+---
+
 ## [2026-03-24] موقع المتجر في إعدادات العمل + API ‎`config`
 
 ### الملخص

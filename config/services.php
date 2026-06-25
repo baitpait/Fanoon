@@ -14,7 +14,6 @@ return [
     |
     */
 
-<<<<<<< HEAD
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
@@ -23,14 +22,6 @@ return [
 
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
-=======
-    'postmark' => [
-        'key' => env('POSTMARK_API_KEY'),
-    ],
-
-    'resend' => [
-        'key' => env('RESEND_API_KEY'),
->>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     ],
 
     'ses' => [
@@ -39,21 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-<<<<<<< HEAD
     'google_translate' => [
         'api_key' => env('GOOGLE_TRANSLATE_API_KEY'),
-=======
-    'slack' => [
-        'notifications' => [
-            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
-        ],
-    ],
-
-    // Polotno Studio embedded editor — get key from https://polotno.dev
-    'polotno' => [
-        'key' => env('POLOTNO_KEY', 'nFt5StABaKom'),
->>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     ],
 
 ];

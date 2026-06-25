@@ -28,13 +28,10 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
-<<<<<<< HEAD
     'mode' => env('APP_MODE', 'live'),
 
     'software_version' => env('SOFTWARE_VERSION'),
 
-=======
->>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
@@ -48,12 +45,9 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
-<<<<<<< HEAD
     /* قائمة نقطة البيع في لوحة التحكم — ضع APP_SHOW_POS_MENU=false في .env للإخفاء */
     'show_pos_menu' => (bool) env('APP_SHOW_POS_MENU', true),
 
-=======
->>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     /*
     |--------------------------------------------------------------------------
     | Application URL
@@ -69,7 +63,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-<<<<<<< HEAD
     | Auto-generated customer email domain
     |--------------------------------------------------------------------------
     | When registration omits email, we build: u{phone_digits}@{domain}
@@ -83,8 +76,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-=======
->>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
     | Application Timezone
     |--------------------------------------------------------------------------
     |
@@ -107,11 +98,7 @@ return [
     |
     */
 
-<<<<<<< HEAD
     'locale' => env('APP_LOCALE', 'ar'),
-=======
-    'locale' => env('APP_LOCALE', 'en'),
->>>>>>> 234599e73e73522fe1ac606664f852ec8702d836
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
