@@ -1,81 +1,71 @@
-# نشر Fanoon على elitepal.net
+# نشر Fanoon على elitepal.net — مرجع سريع
+
+> **دليل مفصّل:** [docs/DEPLOY-ELITEPAL.md](../docs/DEPLOY-ELITEPAL.md)
 
 ## معلومات السيرفر
 
 | البند | القيمة |
 |-------|--------|
 | النطاق | `elitepal.net` |
-| مسار المشروع | `/home/baitpait/public_html/elitepalnet` |
-| Document Root | `/home/baitpait/public_html/elitepalnet/public` |
-| قاعدة البيانات | `baitpait_elitepal` |
-| المستخدم | `baitpait_elitepal` |
+| المسار | `/home/baitpait/public_html/elitepalnet` |
+| Document Root المفضّل | `.../elitepalnet/public` |
+| DB | `baitpait_elitepal` / `baitpait_elitepal` |
 
 ---
 
-## أوامر السيرفر (نسخ ولصق)
-
-### أول مرة — استنساخ
+## أول نشر
 
 ```bash
 cd /home/baitpait/public_html
-git clone git@github.com:baitpait/Fanoon.git elitepalnet
+git clone https://github.com/baitpait/Fanoon.git elitepalnet
 cd elitepalnet
-chmod +x deploy/server_setup.sh
-./deploy/server_setup.sh
+chown -R baitpait:baitpait .
+chmod +x deploy/*.sh
+COMPOSER_ALLOW_SUPERUSER=1 REMOVE_DEPLOY_ENV=1 ./deploy/server_setup.sh
+./deploy/fix_public_symlinks.sh
+php artisan route:cache && php artisan config:cache
 ```
 
-### تحديث لاحق — بعد تعديلات على GitHub
+---
+
+## تحديث لاحق
 
 ```bash
 cd /home/baitpait/public_html/elitepalnet
-chmod +x deploy/pull_update.sh
-./deploy/pull_update.sh
+git config --global --add safe.directory "$(pwd)"
+COMPOSER_ALLOW_SUPERUSER=1 ./deploy/pull_update.sh
+./deploy/fix_public_symlinks.sh
+php artisan route:cache && php artisan config:cache
 ```
 
-أو يدوياً:
+---
+
+## سكربتات `deploy/`
+
+| السكربت | متى |
+|---------|-----|
+| `server_setup.sh` | أول إعداد |
+| `pull_update.sh` | بعد `git pull` |
+| `fix_public_symlinks.sh` | CSS/JS/storage لا تعمل |
+| `sync_migrations_after_dump.sql` | خطأ `Table already exists` |
+| `env.elitepal.net` | قالب `.env` — احذفه بعد الإعداد |
+| `htaccess.project-root` | `.htaccess` لجذر المشروع |
+
+---
+
+## تحقق سريع
 
 ```bash
-git config --global --add safe.directory /home/baitpait/public_html/elitepalnet
-chown -R baitpait:baitpait /home/baitpait/public_html/elitepalnet
-git pull origin main
-COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction
-mysql -u baitpait_elitepal -p baitpait_elitepal < deploy/sync_migrations_after_dump.sql
-php artisan migrate --force
-php artisan config:cache && php artisan route:cache && php artisan view:cache
-```
-
-### أول إعداد + حذف ملف البيئة من Git فوراً
-
-```bash
-REMOVE_DEPLOY_ENV=1 ./deploy/server_setup.sh
+curl -sI "https://elitepal.net/css/demo.css" | head -1
+curl -sI "https://elitepal.net/api/v1/config" | head -1
 ```
 
 ---
 
-## قبل الرفع (cPanel)
-
-1. أنشئ قاعدة بيانات `baitpait_elitepal` والمستخدم `baitpait_elitepal` بكلمة المرور من `deploy/env.elitepal.net`
-2. امنح المستخدم صلاحيات كاملة على القاعدة
-3. فعّل SSL لـ `elitepal.net`
-4. اضبط **Document Root** → `elitepalnet/public`
-
----
-
-## ملفات مهمة
-
-| الملف | الغرض |
-|-------|--------|
-| `deploy/env.elitepal.net` | بيئة الإنتاج — يُنسخ إلى `.env` |
-| `deploy/server_setup.sh` | سكربت الإعداد الكامل |
-| `database/fanoun_dump.sql` | بيانات أولية (منتجات، إعدادات، admin) |
-| `docs/DEPLOY-ELITEPAL.md` | دليل مفصّل |
-
----
-
-## بعد الإعداد
+## روابط
 
 - الموقع: https://elitepal.net
 - Admin: https://elitepal.net/admin/auth/login
 - API: https://elitepal.net/api/v1/config
 
-**احذف** `deploy/env.elitepal.net` من السيرفر بعد التأكد من عمل الموقع.
+**الدخول (من dump):** `info@baitpait.com` / `100200300`

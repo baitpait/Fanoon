@@ -5,6 +5,65 @@
 
 ---
 
+## [2026-06-27] deploy — نشر إنتاجي على elitepal.net + إصلاحات الاستضافة
+
+### الملخص
+
+نُشر مشروع Fanoon على `https://elitepal.net` عبر Git (HTTPS) على السيرفر `server1` في `/home/baitpait/public_html/elitepalnet`. وُجدت مشاكل نموذجية للاستضافة المشتركة: Document Root غير `public/`، فشل Git SSH كـ root، تعارض migrations بعد استيراد dump، و404/500 على CSS و`/storage/` للصور المرفوعة. أُضيفت سكربتات وتوثيق نشر كامل في `deploy/` و`docs/DEPLOY-ELITEPAL.md`.
+
+### البنية على السيرفر
+
+| البند | القيمة |
+|-------|--------|
+| النطاق | `elitepal.net` |
+| المسار | `/home/baitpait/public_html/elitepalnet` |
+| DB | `baitpait_elitepal` |
+| الريبو | `baitpait/Fanoon` فرع `main` |
+
+### الملفات المُضافة/المُحدَّثة
+
+| الملف | الغرض |
+|-------|--------|
+| `deploy/env.elitepal.net` | قالب `.env` للإنتاج (DB, CORS, Google Translate) |
+| `deploy/server_setup.sh` | إعداد أولي: composer, DB import, passport, cache |
+| `deploy/pull_update.sh` | تحديث من GitHub |
+| `deploy/fix_public_symlinks.sh` | symlinks لـ css/assets/js + `.htaccess` |
+| `deploy/htaccess.project-root` | توجيه `/storage/` عند جذر غير `public/` |
+| `deploy/sync_migrations_after_dump.sql` | تسجيل migrations لتجنب `Table already exists` |
+| `docs/DEPLOY-ELITEPAL.md` | دليل نشر مفصّل |
+| `routes/web.php` | Route `storage/{path}` — fallback لعرض الصور المرفوعة |
+| `public/.htaccess` | قاعدة `^storage/` قبل front controller |
+| `config/cors.php` | نمط `*.elitepal.net` |
+
+### مشاكل وُاجهت وحلولها
+
+| المشكلة | الحل |
+|---------|------|
+| `git clone` SSH → Repository not found | HTTPS: `git clone https://github.com/baitpait/Fanoon.git` |
+| `su - baitpait` → account not available | تنفيذ كـ root + `chown baitpait:baitpait` |
+| MySQL Access denied | ضبط كلمة المرور في cPanel و`.env` |
+| `migrate` → Table `users` exists | `sync_migrations_after_dump.sql` |
+| `--fake` غير مدعوم (Laravel 12) | SQL sync بدلاً من `migrate --fake` |
+| DNS NXDOMAIN | ضبط A record للدومين |
+| CSS/JS 404 (`demo.css`, `style.css`) | `fix_public_symlinks.sh` (symlinks من الجذر) |
+| صورة تُرفع لكن 500 على `/storage/` | `.htaccess` + Route `storage/{path}` |
+| `curl 127.0.0.1` → 404 | اختبار بـ `https://elitepal.net` (vhost مختلف) |
+
+### أوامر التحقق الناجحة
+
+```bash
+curl -sI "https://elitepal.net/css/demo.css"           # HTTP 200
+curl -sI "https://elitepal.net/storage/admin/....webp" # HTTP 200
+```
+
+### ملاحظات
+
+- Document Root المفضّل: `elitepalnet/public` — إن تعذّر، استخدم `fix_public_symlinks.sh`.
+- احذف `deploy/env.elitepal.net` من السيرفر بعد الإعداد (أسرار).
+- الدخول الافتراضي من dump: `info@baitpait.com` / `100200300` — يُغيَّر فوراً.
+
+---
+
 ## [2026-06-25] fix — استعادة المشروع وحلّ تعارضات دمج محفوظة في الكوميت
 
 ### الملخص

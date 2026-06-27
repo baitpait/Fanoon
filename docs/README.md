@@ -40,6 +40,7 @@
 |-------|--------|
 | **[DATABASE-BACKUP-GUIDE.md](DATABASE-BACKUP-GUIDE.md)** | النسخ الاحتياطي والاستعادة |
 | **[UPLOAD-AND-DATABASE-INSTRUCTIONS.md](UPLOAD-AND-DATABASE-INSTRUCTIONS.md)** | رفع الملفات وقاعدة البيانات على السيرفر |
+| **[DEPLOY-ELITEPAL.md](DEPLOY-ELITEPAL.md)** | **نشر إنتاجي elitepal.net** — Git, DB, CSS, storage, استكشاف أخطاء |
 | **[DEPLOYMENT-REDIS-CACHE.md](DEPLOYMENT-REDIS-CACHE.md)** | إعداد Redis للتخزين المؤقت |
 
 ---
