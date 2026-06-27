@@ -5,6 +5,33 @@ use App\Http\Controllers\StorefrontController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
+// ═══ Uploaded media (shared hosting: Apache may not serve public/storage symlink) ═══
+Route::get('storage/{path}', function (string $path) {
+    if (str_contains($path, '..')) {
+        abort(400);
+    }
+    $fullPath = storage_path('app/public/' . $path);
+    if (!is_file($fullPath)) {
+        abort(404);
+    }
+    $publicRoot = realpath(storage_path('app/public'));
+    $resolved = realpath($fullPath);
+    if ($publicRoot && $resolved && !str_starts_with($resolved, $publicRoot)) {
+        abort(404);
+    }
+    $mimes = [
+        'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png',
+        'gif' => 'image/gif', 'webp' => 'image/webp', 'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon',
+    ];
+    $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+
+    return response()->file($fullPath, [
+        'Content-Type' => $mimes[$ext] ?? 'application/octet-stream',
+        'Cache-Control' => 'public, max-age=604800',
+    ]);
+})->where('path', '.*')->name('storage.serve');
+
 // ═══ STOREFRONT ═══
 Route::get('/', [StorefrontController::class, 'home'])->name('storefront.home');
 Route::prefix('storefront')->name('storefront.')->group(function () {

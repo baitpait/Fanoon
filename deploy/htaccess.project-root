@@ -5,9 +5,8 @@
 
     RewriteEngine On
 
-    # رفع الصور: /storage/admin/... → storage/app/public/admin/...
-    # (مطلوب عندما Document Root = جذر المشروع وليس public/)
-    RewriteRule ^storage/(.*)$ storage/app/public/$1 [L]
+    # رفع الصور عبر public/storage (symlink) — يتجنب حظر مجلد storage/ في Apache
+    RewriteRule ^storage/(.*)$ public/storage/$1 [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
