@@ -125,10 +125,25 @@
 @section('content')
 <div class="content container-fluid">
     <div class="mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <h2 class="text-capitalize mb-0 d-flex align-items-center gap-2">
-            <i class="tio-layers fs-22"></i>
-            {{ translate('design_templates') ?: 'قوالب التصميم' }}
-        </h2>
+        <div>
+            <h2 class="text-capitalize mb-0 d-flex align-items-center gap-2">
+                <i class="tio-layers fs-22"></i>
+                {{ $fromProduct ? 'إضافة قالب للمنتج' : (translate('design_templates') ?: 'قوالب التصميم') }}
+            </h2>
+            @if($fromProduct)
+            <div class="mt-1 d-flex align-items-center gap-2">
+                <span class="badge badge-soft-success" style="font-size:13px;padding:5px 12px">
+                    <i class="fa fa-box me-1"></i> {{ $fromProduct->name }}
+                </span>
+                <a href="{{ route('admin.design-template.add-new') }}" class="text-muted small">
+                    <i class="fa fa-xmark"></i> إلغاء
+                </a>
+            </div>
+            @endif
+        </div>
+        <a href="{{ route('admin.design-template.by-category') }}" class="btn btn-soft-secondary btn-sm">
+            <i class="fa fa-list me-1"></i> عرض كل القوالب
+        </a>
     </div>
 
     @if(session('success'))
@@ -150,12 +165,18 @@
                 <input type="hidden" name="canvas_width"      id="f_canvas_width"  value="800">
                 <input type="hidden" name="canvas_height"     id="f_canvas_height" value="800">
                 <input type="hidden" name="thumbnail_base64"  id="f_thumbnail">
+                @if($fromProductId)
+                    <input type="hidden" name="product_id"    value="{{ $fromProductId }}">
+                    <input type="hidden" name="category_id"   value="">
+                @endif
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="input-label">{{ translate('template_name') ?: 'اسم القالب' }} <span class="text-danger">*</span></label>
                         <input type="text" name="name" class="form-control" placeholder="مثال: بطاقة عمل احترافية" required maxlength="255">
                     </div>
+
+                    @if(!$fromProductId)
                     <div class="col-md-3">
                         <label class="input-label">{{ translate('main_category') ?: 'التصنيف الرئيسي' }}</label>
                         <select id="main-cat-sel" class="form-control" onchange="onMainCatChange(this.value)">
@@ -181,6 +202,8 @@
                             @endforeach
                         </select>
                     </div>
+                    @endif
+
                     <div class="col-md-2">
                         <label class="input-label">{{ translate('position') ?: 'الترتيب' }}</label>
                         <input type="number" name="position" class="form-control" value="0" min="0">

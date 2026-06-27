@@ -235,7 +235,8 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                {{-- Row 1: Edit / Delete --}}
+                                <div class="d-flex gap-1 justify-content-center mb-1">
                                     <a class="btn btn-outline-primary square-btn"
                                        href="{{route('admin.product.edit',[$product['id']])}}"
                                        title="{{ translate('edit') }}">
@@ -248,15 +249,18 @@
                                        title="{{ translate('delete') }}">
                                         <i class="tio tio-delete"></i>
                                     </a>
-                                    <a class="btn btn-outline-success square-btn"
+                                </div>
+                                {{-- Row 2: Template actions --}}
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <a class="btn btn-sm btn-success d-flex align-items-center gap-1"
                                        href="{{ route('admin.design-template.add-new') }}?product_id={{ $product['id'] }}"
-                                       title="إضافة قالب تصميم">
-                                        <i class="fa fa-plus" style="font-size:13px"></i>
+                                       style="font-size:11px;padding:3px 8px;white-space:nowrap">
+                                        <i class="fa fa-plus" style="font-size:10px"></i> قالب جديد
                                     </a>
-                                    <a class="btn btn-outline-info square-btn"
+                                    <a class="btn btn-sm btn-info d-flex align-items-center gap-1"
                                        href="{{ route('admin.design-template.by-category') }}?product_id={{ $product['id'] }}"
-                                       title="عرض قوالب المنتج">
-                                        <i class="fa fa-palette" style="font-size:13px"></i>
+                                       style="font-size:11px;padding:3px 8px;white-space:nowrap;color:#fff">
+                                        <i class="fa fa-palette" style="font-size:10px"></i> القوالب
                                     </a>
                                 </div>
                                 <form action="{{route('admin.product.delete',[$product['id']])}}"

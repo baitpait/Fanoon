@@ -27,20 +27,19 @@ class DesignTemplateController extends Controller
 
     public function byCategory(Request $request)
     {
-        $search    = $request->input('search', '');
-        $productId = $request->input('product_id');
+        $search     = $request->input('search', '');
+        $productId  = $request->input('product_id');
+        $categoryId = $request->input('category_id');
+        $status     = $request->input('status', '');   // '' | '1' | '0'
 
         $query = DesignTemplate::with(['mainCategory.parent', 'product'])
             ->orderBy('position')
             ->orderBy('id', 'desc');
 
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%");
-        }
-
-        if ($productId) {
-            $query->where('product_id', $productId);
-        }
+        if ($search)     $query->where('name', 'like', "%{$search}%");
+        if ($productId)  $query->where('product_id',  $productId);
+        if ($categoryId) $query->where('category_id', $categoryId);
+        if ($status !== '') $query->where('status', (int) $status);
 
         $all = $query->get();
 
@@ -57,16 +56,19 @@ class DesignTemplateController extends Controller
             $grouped->put('بدون تصنيف', $none);
         }
 
-        $filterProduct = $productId ? Product::select('id', 'name')->find($productId) : null;
+        $filterProduct  = $productId ? Product::select('id', 'name')->find($productId) : null;
+        $allProducts    = $this->products();
+        [$mainCategories] = $this->categories();
 
         return view('admin-views.design-template.by-category',
-            compact('grouped', 'search', 'productId', 'filterProduct'));
+            compact('grouped', 'search', 'productId', 'categoryId', 'status', 'filterProduct', 'allProducts', 'mainCategories'));
     }
 
     public function index(Request $request)
     {
-        $search  = $request->input('search', '');
-        $perPage = (int) $request->input('per_page', 20);
+        $search      = $request->input('search', '');
+        $perPage     = (int) $request->input('per_page', 20);
+        $fromProductId = $request->input('product_id');
 
         $query = DesignTemplate::with('mainCategory')->orderBy('position')->orderBy('id', 'desc');
         if ($search) {
@@ -76,10 +78,11 @@ class DesignTemplateController extends Controller
         $templates = $query->paginate($perPage)->withQueryString();
         [$mainCategories, $subCategories] = $this->categories();
 
-        $products = $this->products();
+        $products      = $this->products();
+        $fromProduct   = $fromProductId ? Product::select('id', 'name')->find($fromProductId) : null;
 
         return view('admin-views.design-template.index',
-            compact('templates', 'search', 'perPage', 'mainCategories', 'subCategories', 'products'));
+            compact('templates', 'search', 'perPage', 'mainCategories', 'subCategories', 'products', 'fromProduct', 'fromProductId'));
     }
 
     public function store(Request $request)

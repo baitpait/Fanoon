@@ -174,23 +174,47 @@
     </div>
 
     {{-- ── Search ── --}}
-    <form action="{{ route('admin.design-template.by-category') }}" method="GET" class="bc-search-bar">
-        @if($productId)
-            <input type="hidden" name="product_id" value="{{ $productId }}">
-        @endif
-        <i class="fa fa-search" style="color:#8c98a4"></i>
-        <input type="search" name="search" value="{{ $search }}"
-               placeholder="بحث بالاسم..."
-               autocomplete="off">
-        <button type="submit" class="btn btn-primary btn-sm px-4">
-            <i class="fa fa-search me-1"></i> بحث
-        </button>
-        @if($search)
-        <a href="{{ route('admin.design-template.by-category') }}{{ $productId ? '?product_id='.$productId : '' }}"
-           class="btn btn-soft-secondary btn-sm">
-            <i class="fa fa-xmark me-1"></i> مسح
-        </a>
-        @endif
+    <form action="{{ route('admin.design-template.by-category') }}" method="GET" class="bc-search-bar" style="flex-wrap:wrap;gap:8px">
+        {{-- Search --}}
+        <div style="display:flex;align-items:center;gap:6px;flex:2;min-width:180px">
+            <i class="fa fa-search" style="color:#8c98a4;flex-shrink:0"></i>
+            <input type="search" name="search" value="{{ $search }}"
+                   placeholder="بحث بالاسم..." autocomplete="off" style="min-width:0">
+        </div>
+
+        {{-- Filter by Product --}}
+        <select name="product_id" style="border:1px solid #d5dae3;border-radius:7px;padding:7px 10px;font-size:12px;flex:1;min-width:150px;outline:none;color:#1e2d3d">
+            <option value="">كل المنتجات</option>
+            @foreach($allProducts as $p)
+                <option value="{{ $p->id }}" {{ $productId == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+            @endforeach
+        </select>
+
+        {{-- Filter by Category --}}
+        <select name="category_id" style="border:1px solid #d5dae3;border-radius:7px;padding:7px 10px;font-size:12px;flex:1;min-width:140px;outline:none;color:#1e2d3d">
+            <option value="">كل التصنيفات</option>
+            @foreach($mainCategories as $cat)
+                <option value="{{ $cat->id }}" {{ ($categoryId ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+            @endforeach
+        </select>
+
+        {{-- Filter by Status --}}
+        <select name="status" style="border:1px solid #d5dae3;border-radius:7px;padding:7px 10px;font-size:12px;flex:0 0 120px;outline:none;color:#1e2d3d">
+            <option value=""  {{ ($status ?? '') === ''  ? 'selected' : '' }}>كل الحالات</option>
+            <option value="1" {{ ($status ?? '') === '1' ? 'selected' : '' }}>مفعّل</option>
+            <option value="0" {{ ($status ?? '') === '0' ? 'selected' : '' }}>معطّل</option>
+        </select>
+
+        <div style="display:flex;gap:6px;flex-shrink:0">
+            <button type="submit" class="btn btn-primary btn-sm px-3">
+                <i class="fa fa-filter me-1"></i> فلترة
+            </button>
+            @if($search || $productId || !empty($categoryId) || $status !== '')
+            <a href="{{ route('admin.design-template.by-category') }}" class="btn btn-soft-secondary btn-sm px-3">
+                <i class="fa fa-xmark me-1"></i> مسح
+            </a>
+            @endif
+        </div>
     </form>
 
     {{-- ── Categories ── --}}
