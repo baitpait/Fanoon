@@ -99,6 +99,10 @@ if [ "$IMPORT_DB" = "1" ]; then
   if command -v mysql >/dev/null 2>&1; then
     MYSQL_PWD="$DB_PASS" mysql -h "$DB_HOST" -u "$DB_USER" "$DB_NAME" < database/fanoun_dump.sql
     green "تم استيراد قاعدة البيانات."
+    if [ -f "$SCRIPT_DIR/sync_migrations_after_dump.sql" ]; then
+      MYSQL_PWD="$DB_PASS" mysql -h "$DB_HOST" -u "$DB_USER" "$DB_NAME" < "$SCRIPT_DIR/sync_migrations_after_dump.sql"
+      green "تم مزامنة سجل migrations."
+    fi
   else
     yellow "mysql CLI غير متوفر — استورد يدوياً عبر phpMyAdmin:"
     yellow "  الملف: database/fanoun_dump.sql"
@@ -107,6 +111,16 @@ if [ "$IMPORT_DB" = "1" ]; then
 fi
 
 step "تشغيل migrations (أي تحديثات جديدة فوق الـ dump)"
+if [ -f "$SCRIPT_DIR/sync_migrations_after_dump.sql" ] && [ "$IMPORT_DB" != "1" ]; then
+  DB_USER="$(read_env_value DB_USERNAME .env)"
+  DB_PASS="$(read_env_value DB_PASSWORD .env)"
+  DB_NAME="$(read_env_value DB_DATABASE .env)"
+  DB_HOST="$(read_env_value DB_HOST .env)"
+  DB_HOST="${DB_HOST:-localhost}"
+  if command -v mysql >/dev/null 2>&1; then
+    MYSQL_PWD="$DB_PASS" mysql -h "$DB_HOST" -u "$DB_USER" "$DB_NAME" < "$SCRIPT_DIR/sync_migrations_after_dump.sql" 2>/dev/null || true
+  fi
+fi
 "$PHP_BIN" artisan migrate --force
 
 step "مفاتيح Passport (API)"

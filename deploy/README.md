@@ -28,13 +28,20 @@ chmod +x deploy/server_setup.sh
 
 ```bash
 cd /home/baitpait/public_html/elitepalnet
+chmod +x deploy/pull_update.sh
+./deploy/pull_update.sh
+```
+
+أو يدوياً:
+
+```bash
+git config --global --add safe.directory /home/baitpait/public_html/elitepalnet
+chown -R baitpait:baitpait /home/baitpait/public_html/elitepalnet
 git pull origin main
-composer install --no-dev --optimize-autoloader --no-interaction
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction
+mysql -u baitpait_elitepal -p baitpait_elitepal < deploy/sync_migrations_after_dump.sql
 php artisan migrate --force
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
 
 ### أول إعداد + حذف ملف البيئة من Git فوراً
