@@ -30,6 +30,7 @@ elitevape_deploy.zip
 
 # بيانات الإنتاج — لا تُرفع (استخدم migrations + seeders)
 *.sql
+!deploy/sync_migrations_after_dump.sql
 *.zip
 
 # ملفات الرفع والوسائط (يُنشأ محلياً عبر storage:link)
