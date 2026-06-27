@@ -3,18 +3,15 @@
 # إصلاح روابط الملفات العامة عندما Document Root
 # = /home/baitpait/public_html/elitepalnet (بدون /public)
 # ============================================
-# الاستخدام:
-#   cd /home/baitpait/public_html/elitepalnet
-#   chmod +x deploy/fix_public_symlinks.sh
-#   ./deploy/fix_public_symlinks.sh
-# ============================================
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 green() { printf '\033[0;32m%s\033[0m\n' "$*"; }
+yellow() { printf '\033[0;33m%s\033[0m\n' "$*"; }
 
 green "==> Laravel index من جذر المشروع"
 cat > index.php << 'EOF'
@@ -22,9 +19,10 @@ cat > index.php << 'EOF'
 require __DIR__.'/public/index.php';
 EOF
 
-cp public/.htaccess .htaccess
+green "==> .htaccess لجذر المشروع (يشمل /storage/ للصور المرفوعة)"
+cp "$SCRIPT_DIR/htaccess.project-root" .htaccess
 
-green "==> روابط للملفات الثابتة (css, js, assets, storage)"
+green "==> روابط للملفات الثابتة (css, js, assets)"
 ln -sfn public/assets assets
 ln -sfn public/css css
 ln -sfn public/js js
@@ -34,28 +32,24 @@ ln -sfn public/fonts fonts 2>/dev/null || true
 green "==> storage:link داخل public"
 php artisan storage:link --force 2>/dev/null || php artisan storage:link
 
-green "==> رابط storage من جذر المشروع"
-ln -sfn public/storage storage
+yellow "ملاحظة: لا يمكن symlink باسم storage في الجذر (يتعارض مع مجلد Laravel storage/)"
+yellow "الصور تُخدم عبر قاعدة RewriteRule في .htaccess"
 
 green "==> مجلدات الرفع + صلاحيات"
 mkdir -p storage/app/public/{admin,profile,product,category,ecommerce,banner,notification}
 chmod -R 775 storage bootstrap/cache
-chown -R baitpait:baitpait storage bootstrap/cache index.php .htaccess assets css js storage 2>/dev/null || true
+chown -R baitpait:baitpait storage bootstrap/cache index.php .htaccess assets css js 2>/dev/null || true
 
 green "==> اختبار"
-for path in assets/admin/css/style.css css/demo.css; do
-  if [ -f "public/${path#assets/}" ] 2>/dev/null; then :; fi
-  if [ -f "public/assets/admin/css/style.css" ] && [ "$path" = "assets/admin/css/style.css" ]; then
-    [ -e "$path" ] && green "OK: $path" || echo "MISSING: $path"
-  fi
-  if [ -f "public/css/demo.css" ] && [ "$path" = "css/demo.css" ]; then
-    [ -e "$path" ] && green "OK: $path" || echo "MISSING: $path"
-  fi
-done
+[ -e assets/admin/css/style.css ] && green "OK: assets/admin/css/style.css" || yellow "MISSING: assets/admin/css/style.css"
+[ -e css/demo.css ] && green "OK: css/demo.css" || yellow "MISSING: css/demo.css"
+[ -L public/storage ] && green "OK: public/storage -> $(readlink public/storage)" || yellow "MISSING: public/storage link"
 
-[ -L storage ] && green "OK: storage -> $(readlink storage)" || echo "WARN: storage link missing"
-[ -d storage/app/public/admin ] && green "OK: storage/app/public/admin writable" || true
+SAMPLE="$(ls storage/app/public/admin/*.* 2>/dev/null | head -1 || true)"
+if [ -n "$SAMPLE" ]; then
+  BASENAME="$(basename "$SAMPLE")"
+  yellow "اختبر صورة مرفوعة:"
+  echo "  curl -sI -H 'Host: elitepal.net' http://127.0.0.1/storage/admin/$BASENAME | head -1"
+fi
 
-green "تم. جرّب:"
-echo "  curl -sI -H 'Host: elitepal.net' http://127.0.0.1/css/demo.css | head -1"
-echo "  curl -sI -H 'Host: elitepal.net' http://127.0.0.1/assets/admin/css/style.css | head -1"
+green "تم."
