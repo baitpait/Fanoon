@@ -1,113 +1,66 @@
-# دليل رفع المشروع على الاستضافة المشتركة - elitevape.online
+# دليل رفع المشروع على الاستضافة — elitepal.net
 
 ## معلومات الاستضافة
 
 | البند | القيمة |
 |-------|--------|
-| النطاق | elitevape.online |
-| قاعدة البيانات | MySQL |
-| اسم قاعدة البيانات | anagmgxt_elitevape |
-| اسم المستخدم | anagmgxt_elitevape |
-| كلمة المرور | 56_qc%N7mp[0 |
+| النطاق | elitepal.net |
+| مسار المشروع | `/home/baitpait/public_html/elitepalnet` |
+| Document Root | `/home/baitpait/public_html/elitepalnet/public` |
+| قاعدة البيانات | `baitpait_elitepal` |
+| المستخدم | `baitpait_elitepal` |
 
-> **ملاحظة:** ضع كلمة مرور قاعدة البيانات في ملف `.env` عند الرفع. استخدم علامات تنصيص إذا احتوت على رموز خاصة: `DB_PASSWORD="56_qc%N7mp[0"`
-
----
-
-## إنشاء حزمة الرفع (قبل الرفع)
-
-من مجلد المشروع نفّذ:
-
-```bash
-./create_deploy_package.sh
-```
-
-سيُنشئ مجلد `elitevape_deploy` يحتوي على:
-- جميع ملفات المشروع (بما فيها `vendor` و `storage`)
-- صور المنتجات والتصنيفات والشعار من `storage/app/public`
-- نسخة من `public/storage` للوصول المباشر بدون أوامر شيل
-- `elitevape_database_import.sql` و `.env.hosting.example`
-
-**لتصدير قاعدة البيانات الحالية (مع المنتجات والتصنيفات):**
-```bash
-EXPORT_DB=1 ./create_deploy_package.sh
-```
-
-**لإنشاء أرشيف ZIP للرفع:**
-```bash
-cd elitevapeDB && zip -r elitevape_deploy.zip elitevape_deploy
-```
+> **ملاحظة:** كلمة مرور قاعدة البيانات في `deploy/env.elitepal.net` — استخدم علامات تنصيص للرموز الخاصة.
 
 ---
 
-## خطوات الرفع
-
-### 1. رفع الملفات
-
-- ارفع محتويات مجلد `elitevape_deploy` (أو الملف `elitevape_deploy.zip` بعد فك الضغط) إلى المجلد الرئيسي على الاستضافة (مثلاً `public_html` أو `elitevape`)
-- **مهم:** تأكد أن مجلد `public` يحتوي على `index.php` و `.htaccess`
-
-### 2. ضبط جذر الموقع (Document Root)
-
-في لوحة التحكم (cPanel / Hostinger):
-
-- **الطريقة المفضلة:** اجعل جذر الموقع يشير إلى مجلد `public` داخل المشروع  
-  مثال: إذا كان المشروع في `public_html/elitevapeDB` فاجعل الجذر: `public_html/elitevapeDB/public`
-
-- **بديل:** إذا لم تستطع تغيير الجذر، انقل محتويات مجلد `public` إلى الجذر وعدّل المسارات في `index.php` حسب الحاجة.
-
-### 3. إنشاء ملف .env
+## النشر السريع (Git + Shell)
 
 ```bash
-# انسخ القالب
-cp .env.hosting.example .env
-
-# أو أنشئ .env يدوياً وانسخ المحتوى من .env.hosting.example
+cd /home/baitpait/public_html
+git clone git@github.com:baitpait/Fanoon.git elitepalnet
+cd elitepalnet
+chmod +x deploy/server_setup.sh
+REMOVE_DEPLOY_ENV=1 ./deploy/server_setup.sh
 ```
 
-**توليد مفتاح التطبيق:**
+**دليل مفصّل:** [docs/DEPLOY-ELITEPAL.md](docs/DEPLOY-ELITEPAL.md)  
+**أوامر مختصرة:** [deploy/README.md](deploy/README.md)
+
+---
+
+## ما يُجهَّز في الريبو
+
+| الملف | الوظيفة |
+|-------|---------|
+| `deploy/env.elitepal.net` | `.env` جاهز للإنتاج |
+| `deploy/server_setup.sh` | إعداد تلقائي كامل |
+| `database/fanoun_dump.sql` | بيانات أولية |
+| `.env.hosting.example` | قالب بدون أسرار |
+
+---
+
+## خطوات cPanel (قبل الشيل)
+
+1. أنشئ قاعدة `baitpait_elitepal` ومستخدم `baitpait_elitepal`
+2. فعّل SSL
+3. Document Root → `elitepalnet/public`
+
+---
+
+## تحديث لاحق
+
 ```bash
-php artisan key:generate
+cd /home/baitpait/public_html/elitepalnet
+git pull origin main
+composer install --no-dev --optimize-autoloader --no-interaction
+php artisan migrate --force
+php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
-
-### 4. استيراد قاعدة البيانات (بدون شيل)
-
-**لا تحتاج أوامر الطرفية.** استخدم phpMyAdmin:
-
-1. أنشئ قاعدة بيانات باسم: `anagmgxt_elitevape` (إن لم تكن موجودة)
-2. أنشئ مستخدماً: `anagmgxt_elitevape` بكلمة المرور: `56_qc%N7mp[0`
-3. امنح المستخدم صلاحيات كاملة على قاعدة البيانات
-4. افتح phpMyAdmin → اختر قاعدة البيانات `anagmgxt_elitevape`
-5. اذهب إلى تبويب **استيراد (Import)**
-6. اختر الملف: `elitevape_database_import.sql` من مجلد المشروع
-7. اضغط **تنفيذ (Go)**
-
-### 5. إنشاء ملف .env يدوياً
-
-أنشئ ملف `.env` في جذر المشروع وانسخ المحتوى من `.env.hosting.example` ثم عدّل:
-- `APP_KEY=` — ولّد مفتاحاً من: https://generate-random.org/laravel-key-generator أو استخدم أحد المفاتيح الموجودة في `config/app.php`
-- `DB_PASSWORD="56_qc%N7mp[0"`
-
-### 6. رابط التخزين (بدون شيل)
-
-إذا لم يكن لديك وصول للشيل، أنشئ رابطاً رمزياً يدوياً:
-- في الاستضافة: `public/storage` → يجب أن يشير إلى `../storage/app/public`
-- أو انسخ `storage/app/public` إلى `public/storage`
-
-### 7. مسح الكاش (اختياري)
-
-في المتصفح: `https://elitevape.online/` — يجب أن يعمل الموقع مباشرة بعد استيراد قاعدة البيانات وضبط `.env`
 
 ---
 
 ## صلاحيات المجلدات
-
-تأكد من الصلاحيات التالية:
-
-| المجلد | الصلاحيات |
-|--------|-----------|
-| storage | 775 |
-| bootstrap/cache | 775 |
 
 ```bash
 chmod -R 775 storage bootstrap/cache
@@ -115,10 +68,10 @@ chmod -R 775 storage bootstrap/cache
 
 ---
 
-## SSL (HTTPS)
+## SSL
 
-- فعّل شهادة SSL للنطاق من لوحة التحكم
-- تأكد أن `FORCE_HTTPS=true` و `APP_URL=https://elitevape.online` في `.env`
+- `FORCE_HTTPS=true`
+- `APP_URL=https://elitepal.net`
 
 ---
 
@@ -126,15 +79,15 @@ chmod -R 775 storage bootstrap/cache
 
 | المشكلة | الحل |
 |---------|------|
-| 500 Internal Server Error | تحقق من صلاحيات المجلدات وملف `.env` |
-| قاعدة البيانات لا تتصل | راجع `DB_HOST` (غالباً `localhost`) وبيانات الاتصال |
-| الصور لا تظهر | نفّذ `php artisan storage:link` |
-| صفحة بيضاء | تأكد من `APP_DEBUG=true` مؤقتاً لرؤية الخطأ، ثم أعدها إلى `false` |
+| 500 Internal Server Error | `.env` + صلاحيات `storage` و `bootstrap/cache` |
+| قاعدة البيانات لا تتصل | `DB_HOST=localhost` وبيانات cPanel |
+| الصور لا تظهر | `php artisan storage:link` |
+| CORS | `CORS_ALLOWED_ORIGINS` في `.env` ثم `config:cache` |
 
 ---
 
-## ملاحظات أمنية
+## أمان
 
-- لا ترفع ملف `.env` إلى مستودع عام
-- احتفظ بنسخة احتياطية من قاعدة البيانات بانتظام
-- استخدم `APP_DEBUG=false` في الإنتاج
+- احذف `deploy/env.elitepal.net` بعد الإعداد على السيرفر
+- `APP_DEBUG=false` في الإنتاج
+- Document Root = مجلد `public/` فقط

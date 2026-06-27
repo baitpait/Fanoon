@@ -563,6 +563,7 @@ php artisan storage:link
 | قائمة Endpoints | [docs/API-ENDPOINTS-LIST.md](docs/API-ENDPOINTS-LIST.md) |
 | CORS لـ Flutter | [docs/CORS-SETUP-FOR-FLUTTER-WEB.md](docs/CORS-SETUP-FOR-FLUTTER-WEB.md) |
 | نشر الإنتاج | [docs/DEPLOY-ANAGHEEMHOME.md](docs/DEPLOY-ANAGHEEMHOME.md) |
+| نشر elitepal.net | [docs/DEPLOY-ELITEPAL.md](docs/DEPLOY-ELITEPAL.md) |
 | Redis والكاش | [docs/DEPLOYMENT-REDIS-CACHE.md](docs/DEPLOYMENT-REDIS-CACHE.md) |
 | فهرس كل التوثيق | [docs/README.md](docs/README.md) |
 

@@ -38,6 +38,7 @@ return [
         // أناغيم: الموقع الرئيسي، لوحة الإدارة، وتطبيقات ويب/Flutter على نفس النطاق
         '#^https://([a-z0-9-]+\.)?anagheemhome\.com$#',
         '#^https://([a-z0-9-]+\.)?divabloom\.store$#',
+        '#^https://([a-z0-9-]+\.)?elitepal\.net$#',
     ],
 
     /*
