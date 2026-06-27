@@ -5,12 +5,8 @@ use App\Http\Controllers\StorefrontController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
-// ═══ الصفحة الرئيسية للموقع = صفحة دخول الأدمن ═══
-Route::get('/', fn () => redirect()->route('admin.auth.login'))->name('home');
-
 // ═══ STOREFRONT ═══
-// واجهة المتجر متاحة على /home (الاسم storefront.home يبقى كما هو لتعمل الروابط الداخلية)
-Route::get('/home', [StorefrontController::class, 'home'])->name('storefront.home');
+Route::get('/', [StorefrontController::class, 'home'])->name('storefront.home');
 Route::prefix('storefront')->name('storefront.')->group(function () {
     Route::get('/products', [StorefrontController::class, 'products'])->name('products');
     Route::get('/product/{id}', [StorefrontController::class, 'product'])->name('product');
