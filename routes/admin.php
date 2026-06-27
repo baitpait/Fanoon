@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\WebhookController;
 use App\Http\Controllers\Admin\DeliveryChargeSetupController;
+use App\Http\Controllers\Admin\TemplateController;
 Route::group(['as' => 'admin.'], function () {
     Route::group(['namespace' => 'Auth', 'prefix' => 'auth', 'as' => 'auth.'], function () {
         Route::get('/code/captcha/{tmp}', [LoginController::class, 'captcha'])->name('default-captcha');
@@ -99,12 +100,23 @@ Route::group(['as' => 'admin.'], function () {
 
         Route::group(['prefix' => 'design-template', 'as' => 'design-template.'], function () {
             Route::get('add-new', [DesignTemplateController::class, 'index'])->name('add-new');
+            Route::get('from-order/{detail}', [DesignTemplateController::class, 'createFromOrderDetail'])->name('from-order');
             Route::get('by-category', [DesignTemplateController::class, 'byCategory'])->name('by-category');
             Route::post('store', [DesignTemplateController::class, 'store'])->name('store');
             Route::get('edit/{id}', [DesignTemplateController::class, 'edit'])->name('edit');
             Route::put('update/{id}', [DesignTemplateController::class, 'update'])->name('update');
             Route::get('status/{id}/{status}', [DesignTemplateController::class, 'status'])->name('status');
             Route::delete('delete/{id}', [DesignTemplateController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'templates', 'as' => 'templates.'], function () {
+            Route::get('/', [TemplateController::class, 'index'])->name('index');
+            Route::get('create', [TemplateController::class, 'create'])->name('create');
+            Route::post('/', [TemplateController::class, 'store'])->name('store');
+            Route::get('{productTemplate}/edit', [TemplateController::class, 'edit'])->name('edit');
+            Route::put('{productTemplate}', [TemplateController::class, 'update'])->name('update');
+            Route::patch('{productTemplate}/toggle', [TemplateController::class, 'toggle'])->name('toggle');
+            Route::delete('{productTemplate}', [TemplateController::class, 'destroy'])->name('destroy');
         });
 
         Route::group(['prefix' => 'attribute', 'as' => 'attribute.'], function () {

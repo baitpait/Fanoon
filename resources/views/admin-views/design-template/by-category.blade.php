@@ -7,11 +7,6 @@
 /* ── Page ── */
 .bc-wrap { padding: 0 }
 
-/* ── Search bar ── */
-.bc-search-bar { background:#fff; border:1px solid #e7eaf3; border-radius:10px; padding:14px 16px; margin-bottom:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap }
-.bc-search-bar input { border:1px solid #d5dae3; border-radius:7px; padding:7px 12px; font-size:13px; flex:1; min-width:200px; outline:none; transition:border-color .2s }
-.bc-search-bar input:focus { border-color:#EC2227 }
-
 /* ── Stats ── */
 .bc-stats { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:22px }
 .bc-stat { background:#fff; border:1px solid #e7eaf3; border-radius:10px; padding:12px 20px; display:flex; align-items:center; gap:10px; flex:1; min-width:140px }
@@ -108,23 +103,23 @@
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
         <div>
             <h2 class="mb-0 d-flex align-items-center gap-2" style="font-size:20px">
-                <i class="fa fa-th-large" style="color:var(--primary-clr,#EC2227)"></i>
+                <i class="tio tio-grid" style="color:var(--primary-clr,#EC2227)"></i>
                 قوالب التصميم حسب التصنيف
             </h2>
             @if($filterProduct)
                 <div class="mt-1 d-flex align-items-center gap-2">
                     <span class="badge badge-soft-info" style="font-size:12px">
-                        <i class="fa fa-box me-1"></i> {{ $filterProduct->name }}
+                        <i class="tio tio-cube me-1"></i> {{ $filterProduct->name }}
                     </span>
                     <a href="{{ route('admin.design-template.by-category') }}" class="text-muted" style="font-size:11px">
-                        <i class="fa fa-xmark"></i> إلغاء الفلتر
+                        <i class="tio tio-clear"></i> إلغاء الفلتر
                     </a>
                 </div>
             @endif
         </div>
         <a href="{{ route('admin.design-template.add-new') }}{{ $productId ? '?product_id='.$productId : '' }}"
            class="btn btn-primary btn-sm">
-            <i class="fa fa-plus me-1"></i> إضافة قالب جديد
+            <i class="tio tio-add me-1"></i> إضافة قالب جديد
         </a>
     </div>
 
@@ -137,7 +132,7 @@
     <div class="bc-stats">
         <div class="bc-stat">
             <div class="bc-stat-icon" style="background:#fff5f5">
-                <i class="fa fa-palette" style="color:#EC2227"></i>
+                <i class="tio tio-palette" style="color:#EC2227"></i>
             </div>
             <div>
                 <div class="bc-stat-num">{{ $totalTemplates }}</div>
@@ -146,7 +141,7 @@
         </div>
         <div class="bc-stat">
             <div class="bc-stat-icon" style="background:#f0fdf4">
-                <i class="fa fa-circle-check" style="color:#10b46a"></i>
+                <i class="tio tio-checkmark-circle" style="color:#10b46a"></i>
             </div>
             <div>
                 <div class="bc-stat-num">{{ $totalActive }}</div>
@@ -155,7 +150,7 @@
         </div>
         <div class="bc-stat">
             <div class="bc-stat-icon" style="background:#eff6ff">
-                <i class="fa fa-folder-open" style="color:#3b82f6"></i>
+                <i class="tio tio-folder-opened" style="color:#3b82f6"></i>
             </div>
             <div>
                 <div class="bc-stat-num">{{ $totalCats }}</div>
@@ -164,7 +159,7 @@
         </div>
         <div class="bc-stat">
             <div class="bc-stat-icon" style="background:#fefce8">
-                <i class="fa fa-ban" style="color:#f59e0b"></i>
+                <i class="tio tio-blocked" style="color:#f59e0b"></i>
             </div>
             <div>
                 <div class="bc-stat-num">{{ $totalTemplates - $totalActive }}</div>
@@ -173,54 +168,69 @@
         </div>
     </div>
 
-    {{-- ── Search ── --}}
-    <form action="{{ route('admin.design-template.by-category') }}" method="GET" class="bc-search-bar" style="flex-wrap:wrap;gap:8px">
-        {{-- Search --}}
-        <div style="display:flex;align-items:center;gap:6px;flex:2;min-width:180px">
-            <i class="fa fa-search" style="color:#8c98a4;flex-shrink:0"></i>
-            <input type="search" name="search" value="{{ $search }}"
-                   placeholder="بحث بالاسم..." autocomplete="off" style="min-width:0">
+    {{-- ── Filter (مطابق لأسلوب قائمة المنتجات) ── --}}
+    <div class="card mb-3">
+        <div class="p-3">
+            <form action="{{ route('admin.design-template.by-category') }}" method="GET" class="filter-form" id="template-filter-form">
+                <div class="bg-light rounded p-2">
+                    {{-- صف البحث --}}
+                    <div class="row g-2 mb-2">
+                        <div class="col-12">
+                            <input type="search" name="search" class="form-control"
+                                   placeholder="بحث بالاسم..." aria-label="بحث"
+                                   value="{{ $search }}" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row align-items-end g-2">
+                        {{-- التصنيف --}}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <label class="form-label small mb-1">التصنيف</label>
+                            <select class="form-control form-control-sm" name="category_id">
+                                <option value="">كل التصنيفات</option>
+                                @foreach($mainCategories as $cat)
+                                    <option value="{{ $cat->id }}" {{ (string)($categoryId ?? '') === (string)$cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- المنتج --}}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <label class="form-label small mb-1">المنتج</label>
+                            <select class="form-control form-control-sm" name="product_id">
+                                <option value="">كل المنتجات</option>
+                                @foreach($allProducts as $p)
+                                    <option value="{{ $p->id }}" {{ (string)($productId ?? '') === (string)$p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- الحالة --}}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <label class="form-label small mb-1">الحالة</label>
+                            <select class="form-control form-control-sm" name="status">
+                                <option value=""  {{ ($status ?? '') === ''  ? 'selected' : '' }}>كل الحالات</option>
+                                <option value="1" {{ ($status ?? '') === '1' ? 'selected' : '' }}>مفعّل</option>
+                                <option value="0" {{ ($status ?? '') === '0' ? 'selected' : '' }}>معطّل</option>
+                            </select>
+                        </div>
+
+                        {{-- الأزرار --}}
+                        <div class="col-6 col-md-4 col-lg-3 d-flex gap-2 align-items-end">
+                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="tio tio-checkmark-circle-outlined me-1"></i> عرض البيانات
+                            </button>
+                            <a href="{{ route('admin.design-template.by-category') }}" class="btn btn-soft-secondary btn-sm flex-grow-1 text-center">مسح</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-
-        {{-- Filter by Product --}}
-        <select name="product_id" style="border:1px solid #d5dae3;border-radius:7px;padding:7px 10px;font-size:12px;flex:1;min-width:150px;outline:none;color:#1e2d3d">
-            <option value="">كل المنتجات</option>
-            @foreach($allProducts as $p)
-                <option value="{{ $p->id }}" {{ $productId == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
-            @endforeach
-        </select>
-
-        {{-- Filter by Category --}}
-        <select name="category_id" style="border:1px solid #d5dae3;border-radius:7px;padding:7px 10px;font-size:12px;flex:1;min-width:140px;outline:none;color:#1e2d3d">
-            <option value="">كل التصنيفات</option>
-            @foreach($mainCategories as $cat)
-                <option value="{{ $cat->id }}" {{ ($categoryId ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-            @endforeach
-        </select>
-
-        {{-- Filter by Status --}}
-        <select name="status" style="border:1px solid #d5dae3;border-radius:7px;padding:7px 10px;font-size:12px;flex:0 0 120px;outline:none;color:#1e2d3d">
-            <option value=""  {{ ($status ?? '') === ''  ? 'selected' : '' }}>كل الحالات</option>
-            <option value="1" {{ ($status ?? '') === '1' ? 'selected' : '' }}>مفعّل</option>
-            <option value="0" {{ ($status ?? '') === '0' ? 'selected' : '' }}>معطّل</option>
-        </select>
-
-        <div style="display:flex;gap:6px;flex-shrink:0">
-            <button type="submit" class="btn btn-primary btn-sm px-3">
-                <i class="fa fa-filter me-1"></i> فلترة
-            </button>
-            @if($search || $productId || !empty($categoryId) || $status !== '')
-            <a href="{{ route('admin.design-template.by-category') }}" class="btn btn-soft-secondary btn-sm px-3">
-                <i class="fa fa-xmark me-1"></i> مسح
-            </a>
-            @endif
-        </div>
-    </form>
+    </div>
 
     {{-- ── Categories ── --}}
     @if($grouped->isEmpty())
         <div class="bc-empty">
-            <i class="fa fa-inbox"></i>
+            <i class="tio tio-inbox"></i>
             <p class="mb-0">لا توجد قوالب {{ $search ? 'تطابق البحث' : '' }}</p>
         </div>
     @else
@@ -229,7 +239,7 @@
 
             {{-- Category Header --}}
             <div class="bc-cat-header">
-                <i class="fa fa-folder bc-cat-icon"></i>
+                <i class="tio tio-folder bc-cat-icon"></i>
                 <span class="bc-cat-name">{{ $catName }}</span>
                 <span class="bc-cat-count">{{ $templates->count() }} قالب</span>
             </div>
@@ -244,7 +254,7 @@
                         @if($tmpl->thumbnail_fullpath)
                             <img src="{{ $tmpl->thumbnail_fullpath }}" alt="{{ $tmpl->name }}">
                         @else
-                            <i class="fa fa-palette bc-ph"></i>
+                            <i class="tio tio-palette bc-ph"></i>
                         @endif
                         <span class="bc-status-dot {{ $tmpl->status ? 'on' : 'off' }}"
                               title="{{ $tmpl->status ? 'مفعّل' : 'معطّل' }}"></span>
@@ -255,7 +265,7 @@
                         <div class="bc-tmpl-name" title="{{ $tmpl->name }}">{{ $tmpl->name }}</div>
                         @if($tmpl->product)
                             <div class="bc-tmpl-prod">
-                                <i class="fa fa-box" style="font-size:9px"></i>
+                                <i class="tio tio-cube" style="font-size:9px"></i>
                                 {{ $tmpl->product->name }}
                             </div>
                         @endif
@@ -278,13 +288,13 @@
                     <div class="bc-tmpl-foot">
                         <a href="{{ route('admin.design-template.edit', $tmpl->id) }}"
                            class="edit" title="تعديل">
-                            <i class="fa fa-pen-to-square"></i>
+                            <i class="tio tio-edit"></i>
                         </a>
                         <a href="javascript:" class="del form-alert"
                            data-id="del-bc-{{ $tmpl->id }}"
                            data-message="حذف قالب «{{ $tmpl->name }}»؟"
                            title="حذف">
-                            <i class="fa fa-trash"></i>
+                            <i class="tio tio-delete"></i>
                         </a>
                     </div>
 

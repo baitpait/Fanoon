@@ -251,12 +251,12 @@
                                     <a class="btn btn-outline-success square-btn"
                                        href="{{ route('admin.design-template.add-new') }}?product_id={{ $product['id'] }}"
                                        title="إضافة قالب تصميم">
-                                        <i class="fa fa-plus"></i>
+                                        <i class="tio tio-add"></i>
                                     </a>
                                     <a class="btn btn-outline-info square-btn"
                                        href="{{ route('admin.design-template.by-category') }}?product_id={{ $product['id'] }}"
                                        title="عرض قوالب المنتج">
-                                        <i class="fa fa-palette"></i>
+                                        <i class="tio tio-layers"></i>
                                     </a>
                                 </div>
                                 <form action="{{route('admin.product.delete',[$product['id']])}}"

@@ -293,9 +293,12 @@ async function placeOrder(){
       order_type:       'delivery',
       is_guest:         isGuest,
       cart: cart.map(i=>({
-        product_id:   i.id,
-        quantity:     i.qty,
-        design_image: i.design_url || null,
+        product_id:    i.id,
+        quantity:      i.qty,
+        design_image:  i.design_url || null,
+        design_json:   i.design_json || null,
+        design_width:  i.design_w || null,
+        design_height: i.design_h || null,
       })),
       delivery_address:{
         address:               fullAddr,

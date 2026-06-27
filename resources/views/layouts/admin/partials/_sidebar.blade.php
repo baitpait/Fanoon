@@ -380,7 +380,7 @@
                         </li>
                         <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/contact-us*') ? 'active' : '' }}">
                             <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:">
-                                <i class="tio-message-text-outlined nav-icon"></i>
+                                <i class="tio-message-outlined nav-icon"></i>
                                 <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ translate('Contact Us') }}</span>
                             </a>
                             <ul class="js-navbar-vertical-aside-submenu nav nav-sub"

@@ -1583,7 +1583,12 @@ async function dmAddToCart() {
   const btn=document.getElementById('dm-add-cart-btn');
   btn.disabled=true; btn.innerHTML='<i class="fa fa-spinner fa-spin"></i> جاري الحفظ...';
   try {
+    dm.discardActiveObject(); dm.renderAll();
     const dataUrl=dm.toDataURL({format:'png',quality:.92,multiplier:2});
+
+    // بيانات الـ canvas القابلة للتعديل — تُحفظ مع الطلب ليتمكن الأدمن من تحويلها لقالب
+    const designJson=JSON.stringify(dm.toJSON(['selectable','hasControls','shadow','globalCompositeOperation','strokeDashArray']));
+    const designW=dm.getWidth(), designH=dm.getHeight();
 
     const res=await fetch(`${API}/design/upload`,{
       method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
@@ -1599,7 +1604,7 @@ async function dmAddToCart() {
     const imgSrc=(_prod.image_fullpath&&Array.isArray(_prod.image_fullpath)&&_prod.image_fullpath[0])?_prod.image_fullpath[0]:'';
     const existing=cart.find(i=>i.id===_prod.id&&i.design_url===designUrl);
     if(existing){existing.qty+=qty;}
-    else{cart.push({id:_prod.id,name:_prod.name,price:finalPrice,qty,img:imgSrc,design_url:designUrl,has_design:true});}
+    else{cart.push({id:_prod.id,name:_prod.name,price:finalPrice,qty,img:imgSrc,design_url:designUrl,design_json:designJson,design_w:designW,design_h:designH,has_design:true});}
     localStorage.setItem('f_cart',JSON.stringify(cart)); renderCart();
     closeDesignEditor(); toast('✓ أُضيف للسلة مع التصميم المخصص'); openCart();
   } catch(err){

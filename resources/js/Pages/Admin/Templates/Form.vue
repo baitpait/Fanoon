@@ -56,7 +56,7 @@ function onFile(e) {
 
 function submit() {
     if (isEdit.value) {
-        form.transform(d => ({ ...d, _method: 'post' }))
+        form.transform(d => ({ ...d, _method: 'PUT' }))
             .post(route('admin.templates.update', props.template.id), { forceFormData: true });
     } else {
         form.post(route('admin.templates.store'), { forceFormData: true });

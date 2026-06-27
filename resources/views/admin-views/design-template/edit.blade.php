@@ -9,6 +9,9 @@
 <style>
 :root{--ed-green:#10b46a;--ed-accent:#a78bfa;--ed-bg:#141817;--ed-cbg:#1d2220;--ed-toolbar:#0e1210;--ed-sidebar:#161b19;--ed-panel:#1a1f1d;--ed-border:#2a3330;--ed-border2:#22292699;--ed-text:#e2ede6;--ed-text2:#7a9282;--ed-text3:#4a6055;--ed-inp:#202825;--ed-inp-h:#252e2a;--ed-danger:#e05c5c}
 .de-root{background:var(--ed-bg);border-radius:14px;overflow:hidden;border:1px solid var(--ed-border);display:flex;flex-direction:column;font-family:'Cairo',sans-serif}
+.de-root:fullscreen{width:100vw;height:100vh;border-radius:0;border:none}
+.de-root:fullscreen .de-body{flex:1;min-height:0}
+.de-root:-webkit-full-screen{width:100vw;height:100vh;border-radius:0;border:none}
 .de-topbar{background:var(--ed-toolbar);border-bottom:1px solid var(--ed-border);display:flex;align-items:center;gap:3px;padding:6px 10px;overflow-x:auto;flex-shrink:0;min-height:46px}
 .de-topbar::-webkit-scrollbar{height:3px}.de-topbar::-webkit-scrollbar-thumb{background:var(--ed-border)}
 .de-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;background:transparent;border:1px solid transparent;border-radius:7px;color:var(--ed-text2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit;line-height:1.3}
@@ -225,6 +228,8 @@
                         <span id="de-zoom-lbl" style="font-size:11px;color:var(--ed-text2);min-width:34px;text-align:center;cursor:default">100%</span>
                         <button type="button" class="de-btn de-btn-sm" onclick="deZoomChange(0.1)"><i class="fa fa-plus"></i></button>
                         <button type="button" class="de-btn de-btn-sm" onclick="deZoomFit()"><i class="fa fa-expand"></i></button>
+                        <div class="de-sep"></div>
+                        <button type="button" class="de-btn de-btn-sm" id="de-fs-btn" onclick="deToggleFullscreen()" title="وضع ملء الشاشة (F)"><i class="fa fa-up-right-and-down-left-from-center"></i></button>
                         <div class="de-sep"></div>
                         <button type="button" class="de-btn de-danger de-btn-sm" onclick="deClear()"><i class="fa fa-trash-can"></i></button>
                     </div>
@@ -445,6 +450,7 @@ window.addEventListener('DOMContentLoaded',()=>{
         if((e.ctrlKey||e.metaKey)&&e.key==='d'){e.preventDefault();deDuplicate();return;}
         if((e.ctrlKey||e.metaKey)&&e.key==='g'){e.preventDefault();deGroup();return;}
         if((e.ctrlKey||e.metaKey)&&e.key==='a'){e.preventDefault();deCanvas.setActiveObject(new fabric.ActiveSelection(deCanvas.getObjects(),{canvas:deCanvas}));deCanvas.renderAll();return;}
+        if(e.key==='f'||e.key==='F'){e.preventDefault();deToggleFullscreen();return;}
         const obj=deCanvas.getActiveObject();
         if(e.key==='Delete'||e.key==='Backspace'){if(obj&&!deCanvas.isDrawingMode)deDeleteSelected();return;}
         if(!obj)return;
@@ -462,6 +468,24 @@ function deApplySize(w,h){deCanvas.setWidth(w);deCanvas.setHeight(h);deCanvas.re
 function deZoomFit(){const area=document.getElementById('de-canvas-area'),wrap=document.getElementById('de-canvas-wrap');if(!area||!wrap||!deCanvas)return;const avail=area.clientWidth-56,scale=Math.min(1,avail/deCanvas.getWidth());deZoomScale=scale;wrap.style.transform=`scale(${scale})`;wrap.style.transformOrigin='top center';wrap.style.width=deCanvas.getWidth()+'px';wrap.style.height=deCanvas.getHeight()+'px';document.getElementById('de-zoom-lbl').textContent=Math.round(scale*100)+'%';}
 function deZoomChange(d){const wrap=document.getElementById('de-canvas-wrap');deZoomScale=Math.max(0.1,Math.min(3,deZoomScale+d));wrap.style.transform=`scale(${deZoomScale})`;wrap.style.transformOrigin='top center';document.getElementById('de-zoom-lbl').textContent=Math.round(deZoomScale*100)+'%';}
 function deChangeSize(val){if(val==='custom'){const w=parseInt(prompt('العرض (px):',deCanvas.getWidth())),h=parseInt(prompt('الارتفاع (px):',deCanvas.getHeight()));if(w>0&&h>0)deApplySize(w,h);document.getElementById('de-size-sel').value=deCanvas.getWidth()+'x'+deCanvas.getHeight();return;}deApplySize(...val.split('x').map(Number));}
+
+/* ── Fullscreen ── */
+function deToggleFullscreen(){
+    const root=document.getElementById('de-root');
+    if(!document.fullscreenElement && !document.webkitFullscreenElement){
+        (root.requestFullscreen||root.webkitRequestFullscreen||(()=>{})).call(root);
+    }else{
+        (document.exitFullscreen||document.webkitExitFullscreen||(()=>{})).call(document);
+    }
+}
+function deOnFullscreenChange(){
+    const on=!!(document.fullscreenElement||document.webkitFullscreenElement);
+    const icon=document.querySelector('#de-fs-btn i');
+    if(icon) icon.className='fa '+(on?'fa-down-left-and-up-right-to-center':'fa-up-right-and-down-left-from-center');
+    setTimeout(()=>deZoomFit(),120);
+}
+document.addEventListener('fullscreenchange',deOnFullscreenChange);
+document.addEventListener('webkitfullscreenchange',deOnFullscreenChange);
 function deDrawGrid(){const gc=document.getElementById('de-grid-canvas');if(!gc||!deCanvas)return;const w=deCanvas.getWidth(),h=deCanvas.getHeight(),step=40;gc.width=w;gc.height=h;if(!deGridOn)return;const ctx=gc.getContext('2d');ctx.clearRect(0,0,w,h);ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;for(let x=0;x<=w;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let y=0;y<=h;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}}
 function deToggleGrid(){deGridOn=!deGridOn;document.getElementById('de-grid-btn').classList.toggle('active',deGridOn);document.getElementById('de-grid-canvas').style.display=deGridOn?'block':'none';deDrawGrid();}
 function deTool(t){deCanvas.isDrawingMode=(t==='draw');document.querySelectorAll('[id^="de-tool-"]').forEach(b=>b.classList.remove('active'));document.getElementById('de-tool-'+t)?.classList.add('active');document.getElementById('de-draw-opts').style.display=t==='draw'?'inline-flex':'none';if(t==='draw'){deCanvas.freeDrawingBrush=new fabric.PencilBrush(deCanvas);deCanvas.freeDrawingBrush.color=document.getElementById('de-brush-color').value;deCanvas.freeDrawingBrush.width=+document.getElementById('de-brush-w').value;}}

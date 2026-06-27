@@ -187,9 +187,18 @@
                                                     </a>
                                                     <div class="mt-1">
                                                         <span class="badge badge-soft-success" style="font-size:11px">
-                                                            <i class="fa fa-palette"></i> تصميم مخصص من العميل
+                                                            <i class="tio tio-palette"></i> تصميم مخصص من العميل
                                                         </span>
                                                     </div>
+                                                    @if(!empty($detail->design_json))
+                                                    <div class="mt-2">
+                                                        <a href="{{ route('admin.design-template.from-order', $detail->id) }}"
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="فتح التصميم في المحرّر للتعديل ثم إضافته كقالب">
+                                                            <i class="tio tio-add"></i> إضافة كقالب
+                                                        </a>
+                                                    </div>
+                                                    @endif
                                                 </div>
                                                 @endif
                                             </div>

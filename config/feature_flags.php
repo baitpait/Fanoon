@@ -28,7 +28,7 @@ return [
     | return 403. Set to false to re-enable the send notifications page.
     */
 
-    'hide_send_notification_page' => env('HIDE_SEND_NOTIFICATION_PAGE', true),
+    'hide_send_notification_page' => env('HIDE_SEND_NOTIFICATION_PAGE', false),
 
     /*
     |--------------------------------------------------------------------------

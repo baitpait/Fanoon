@@ -16,7 +16,7 @@
     <li class="{{Request::is('admin/business-settings/login-setup')?'active':''}}"><a href="{{route('admin.business-settings.login-setup')}}" class="btn-nav">{{translate('Customer Login')}}</a></li>
     <li class="{{Request::is('admin/business-settings/otp-setup')?'active':''}}"><a href="{{route('admin.business-settings.otp-setup')}}" class="btn-nav">{{translate('OTP_setup')}}</a></li>
     <li class="d-none {{Request::is('admin/business-settings/firebase-auth')?'active':''}}"><a href="{{route('admin.business-settings.firebase-auth')}}" class="btn-nav">{{translate('firebase_auth')}}</a></li>
-    {{-- الإشعارات و Firebase — مخفية من القائمة فقط --}}
-    <li class="d-none {{Request::is('admin/business-settings/firebase-message-config')?'active':''}}"><a href="{{route('admin.business-settings.firebase_message_config_index')}}" class="btn-nav">{{translate('Firebase_Message_Config')}}</a></li>
-    <li class="d-none {{Request::is('admin/business-settings/fcm-index')?'active':''}}"><a href="{{route('admin.business-settings.fcm-index')}}" class="btn-nav">{{translate('Push_Notification')}}</a></li>
+    {{-- الإشعارات و Firebase --}}
+    <li class="{{Request::is('admin/business-settings/firebase-message-config')?'active':''}}"><a href="{{route('admin.business-settings.firebase_message_config_index')}}" class="btn-nav">{{translate('Firebase_Message_Config')}}</a></li>
+    <li class="{{Request::is('admin/business-settings/fcm-index')?'active':''}}"><a href="{{route('admin.business-settings.fcm-index')}}" class="btn-nav">{{translate('Push_Notification')}}</a></li>
 </ul>

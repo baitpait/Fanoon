@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\DesignTemplate;
+use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -32,23 +33,36 @@ class DesignTemplateController extends Controller
         $categoryId = $request->input('category_id');
         $status     = $request->input('status', '');   // '' | '1' | '0'
 
+        // فلاتر تعمل على أعمدة القالب نفسه (التصنيف نتعامل معه لاحقاً مع الاشتقاق من المنتج)
         $query = DesignTemplate::with(['mainCategory.parent', 'product'])
             ->orderBy('position')
             ->orderBy('id', 'desc');
 
-        if ($search)     $query->where('name', 'like', "%{$search}%");
-        if ($productId)  $query->where('product_id',  $productId);
-        if ($categoryId) $query->where('category_id', $categoryId);
+        if ($search)        $query->where('name', 'like', "%{$search}%");
+        if ($productId)     $query->where('product_id', $productId);
         if ($status !== '') $query->where('status', (int) $status);
 
         $all = $query->get();
 
-        // Group by category: "بدون تصنيف" | "اسم الرئيسي > اسم الفرعي"
-        $grouped = $all->groupBy(function ($t) {
-            if (!$t->mainCategory) return '__none__';
-            if ($t->mainCategory->parent_id == 0) return $t->mainCategory->name;
-            return ($t->mainCategory->parent->name ?? '—') . ' › ' . $t->mainCategory->name;
-        })->sortKeys();
+        // خريطة التصنيفات (id => [name, parent_id]) لاشتقاق تصنيف المنتج بدون استعلامات متكررة
+        $catMap = Category::get(['id', 'name', 'parent_id'])->keyBy('id');
+
+        // لكل قالب: احسب التصنيف الفعّال (الخاص به، وإلا المشتق من المنتج المرتبط)
+        $all->each(function ($t) use ($catMap) {
+            $t->setAttribute('effective_cat', $this->effectiveCategory($t, $catMap));
+        });
+
+        // فلترة حسب التصنيف على القيمة الفعّالة (رئيسي أو فرعي)
+        if ($categoryId) {
+            $all = $all->filter(function ($t) use ($categoryId) {
+                $ec = $t->effective_cat;
+                return (string) $ec['main_id'] === (string) $categoryId
+                    || (string) $ec['sub_id']  === (string) $categoryId;
+            })->values();
+        }
+
+        // التجميع حسب التسمية: "بدون تصنيف" | "الرئيسي" | "الرئيسي › الفرعي"
+        $grouped = $all->groupBy(fn ($t) => $t->effective_cat['label'])->sortKeys();
 
         // Move "بدون تصنيف" to the end
         if ($grouped->has('__none__')) {
@@ -62,6 +76,50 @@ class DesignTemplateController extends Controller
 
         return view('admin-views.design-template.by-category',
             compact('grouped', 'search', 'productId', 'categoryId', 'status', 'filterProduct', 'allProducts', 'mainCategories'));
+    }
+
+    /**
+     * يحسب التصنيف الفعّال للقالب: تصنيفه الخاص إن وُجد، وإلا المشتق من تصنيف المنتج المرتبط.
+     * يرجع ['main_id', 'sub_id', 'label'].
+     */
+    private function effectiveCategory(DesignTemplate $t, $catMap): array
+    {
+        // 1) تصنيف القالب نفسه
+        if ($t->category_id && $cat = $catMap->get($t->category_id)) {
+            if ((int) $cat->parent_id === 0) {
+                return ['main_id' => $cat->id, 'sub_id' => null, 'label' => $cat->name];
+            }
+            $parent = $catMap->get($cat->parent_id);
+            return [
+                'main_id' => $cat->parent_id,
+                'sub_id'  => $cat->id,
+                'label'   => ($parent->name ?? '—') . ' › ' . $cat->name,
+            ];
+        }
+
+        // 2) الاشتقاق من تصنيف المنتج المرتبط (category_ids: [{id, position}, ...])
+        if ($t->product) {
+            $raw = $t->product->getAttributes()['category_ids'] ?? null;
+            $ids = is_array($raw) ? $raw : json_decode((string) $raw, true);
+            if (is_array($ids) && count($ids)) {
+                $collection = collect($ids)->sortBy('position')->values();
+                $mainId = $collection->firstWhere('position', 1)['id'] ?? ($collection->first()['id'] ?? null);
+                $subId  = $collection->firstWhere('position', 2)['id'] ?? null;
+
+                $mainCat = $mainId ? $catMap->get($mainId) : null;
+                $subCat  = $subId  ? $catMap->get($subId)  : null;
+
+                if ($mainCat) {
+                    return [
+                        'main_id' => $mainCat->id,
+                        'sub_id'  => $subCat?->id,
+                        'label'   => $subCat ? ($mainCat->name . ' › ' . $subCat->name) : $mainCat->name,
+                    ];
+                }
+            }
+        }
+
+        return ['main_id' => null, 'sub_id' => null, 'label' => '__none__'];
     }
 
     public function index(Request $request)
@@ -80,9 +138,47 @@ class DesignTemplateController extends Controller
 
         $products      = $this->products();
         $fromProduct   = $fromProductId ? Product::select('id', 'name')->find($fromProductId) : null;
+        $prefill       = null;
 
         return view('admin-views.design-template.index',
-            compact('templates', 'search', 'perPage', 'mainCategories', 'subCategories', 'products', 'fromProduct', 'fromProductId'));
+            compact('templates', 'search', 'perPage', 'mainCategories', 'subCategories', 'products', 'fromProduct', 'fromProductId', 'prefill'));
+    }
+
+    /**
+     * يفتح محرّر القوالب محمّلاً بتصميم زبون من تفصيل طلب، ليعدّله الأدمن ثم يحفظه كقالب.
+     */
+    public function createFromOrderDetail($detailId)
+    {
+        $detail = OrderDetail::findOrFail($detailId);
+
+        if (empty($detail->design_json)) {
+            return redirect()
+                ->route('admin.orders.details', $detail->order_id)
+                ->with('error', 'هذا التصميم لا يحتوي على بيانات قابلة للتعديل.');
+        }
+
+        $search        = '';
+        $perPage       = 20;
+        $fromProductId = $detail->product_id;
+
+        $templates = DesignTemplate::with('mainCategory')
+            ->orderBy('position')->orderBy('id', 'desc')
+            ->paginate($perPage);
+
+        [$mainCategories, $subCategories] = $this->categories();
+        $products    = $this->products();
+        $fromProduct = $fromProductId ? Product::select('id', 'name')->find($fromProductId) : null;
+
+        $prefill = [
+            'json'       => $detail->design_json,
+            'width'      => (int) ($detail->design_width ?: 800),
+            'height'     => (int) ($detail->design_height ?: 800),
+            'product_id' => $detail->product_id,
+            'name'       => 'قالب من طلب #' . $detail->order_id,
+        ];
+
+        return view('admin-views.design-template.index',
+            compact('templates', 'search', 'perPage', 'mainCategories', 'subCategories', 'products', 'fromProduct', 'fromProductId', 'prefill'));
     }
 
     public function store(Request $request)
